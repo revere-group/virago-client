@@ -63,7 +63,7 @@ public class CookieLogin {
             JsonObject profileResponse = gson.fromJson(IOUtils.toString(connection.getInputStream()), JsonObject.class);
             return new LoginData(mcToken, null, profileResponse.get("id").getAsString(), profileResponse.get("name").getAsString());
         } catch (Exception e) {
-            Logger.err("Failed to login with cookie.", CookieLogin.class);
+            Logger.err("Failed to login with cookie. Err: " + e.getMessage(), CookieLogin.class);
             return null;
         }
     }

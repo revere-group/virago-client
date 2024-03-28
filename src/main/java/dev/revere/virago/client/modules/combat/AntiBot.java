@@ -1,17 +1,18 @@
 package dev.revere.virago.client.modules.combat;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.client.events.update.UpdateEvent;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Remi
@@ -25,21 +26,37 @@ public class AntiBot extends AbstractModule {
 
     @EventHandler
     private final Listener<UpdateEvent> playerUpdateEvent = event -> {
-        for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity instanceof EntityPlayer) {
-                if (entity != mc.thePlayer && !((EntityPlayer) entity).isSpectator()) {
-                    if (isBot((EntityLivingBase) entity) ) {
-                        mc.theWorld.removeEntity(entity);
-                    }
-                } else {
-                    bots.remove(entity);
-                }
+        List<EntityPlayer> playerEntities = mc.theWorld.playerEntities;
+        int i = 0;
+        int playerEntitiesSize = playerEntities.size();
+        while (i < playerEntitiesSize) {
+            EntityPlayer player = playerEntities.get(i);
+            if (player == null) {
+                return;
             }
+            if (player.getName().startsWith("\u00a7") && player.getName().contains("\u00a7c") || this.isEntityBot(player) && !player.getDisplayName().getFormattedText().contains("NPC")) {
+                mc.theWorld.removeEntity(player);
+            }
+            ++i;
         }
     };
 
-    private boolean isBot(EntityLivingBase entity) {
-        return (entity.isInvisible() && !entity.onGround && entity.isPotionActive(14) == false) || entity.motionY == 0 && !entity.onGround;
+
+    private boolean isEntityBot(Entity entity) {
+        if (!(entity instanceof EntityPlayer)) {
+            return false;
+        }
+        if (mc.getCurrentServerData() != null) return AntiBot.mc.getCurrentServerData().serverIP.toLowerCase().contains("hypixel") && entity.getDisplayName().getFormattedText().startsWith("&") || !this.isOnTab(entity) && AntiBot.mc.thePlayer.ticksExisted > 100;
+        return false;
+    }
+
+    private boolean isOnTab(Entity entity) {
+        Iterator<NetworkPlayerInfo> iterator = mc.getNetHandler().getPlayerInfoMap().iterator();
+        do {
+            if (iterator.hasNext()) continue;
+            return false;
+        } while (!iterator.next().getGameProfile().getName().equals(entity.getName()));
+        return true;
     }
 
     @Override
