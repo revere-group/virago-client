@@ -1,0 +1,93 @@
+package dev.revere.virago;
+
+import dev.revere.virago.api.event.core.EventBus;
+import dev.revere.virago.api.protection.ViragoUser;
+import dev.revere.virago.api.service.IService;
+import dev.revere.virago.api.service.ServiceManager;
+import dev.revere.virago.client.gui.panel.PanelGUI;
+import dev.revere.virago.client.services.*;
+import dev.revere.virago.util.Logger;
+import dev.revere.virago.util.input.KeybindManager;
+import lombok.Getter;
+import lombok.Setter;
+import net.minecraft.client.Minecraft;
+
+import javax.swing.*;
+import java.io.File;
+
+/**
+ * @author Remi
+ * @project Virago
+ * @date 3/17/2024
+ */
+
+@Getter
+@Setter
+public class Virago {
+    @Getter private static final Virago instance = new Virago();
+
+    private final String name = "Virago";
+    private final String version = "1.0.0";
+    private final String gitCommit = "ffe0b5d";
+    private final String author = "Revere";
+
+    private final File clientDir = new File(Minecraft.getMinecraft().mcDataDir, getName().toLowerCase());
+
+    private ServiceManager serviceManager;
+    private ViragoUser viragoUser;
+    private PanelGUI panelGUI;
+    private EventBus eventBus;
+
+    /**
+     * Starts all services and registers all events
+     */
+    public void startVirago() {
+        System.out.println("Starting Virago...");
+
+        if (!clientDir.exists() && clientDir.mkdir())
+            Logger.info("Created client directory.", getClass());
+
+        handleEvents();
+        handleServices();
+        handleManagers();
+    }
+
+    /**
+     * Stops all services
+     */
+    public void stopVirago() {
+        System.out.println("Stopping Virago...");
+        this.serviceManager.getServices().values().forEach(IService::stopService);
+        this.serviceManager.getServices().values().forEach(IService::destroyService);
+    }
+
+    /**
+     * Initializes all managers
+     */
+    private void handleManagers() {
+        this.panelGUI = new PanelGUI();
+    }
+
+    /**
+     * Initializes and registers all events
+     */
+    private void handleEvents() {
+        this.eventBus = new EventBus();
+        this.eventBus.register(new KeybindManager());
+    }
+
+    /**
+     * Initializes and starts all services
+     */
+    private void handleServices() {
+        this.serviceManager = new ServiceManager();
+        this.serviceManager.addService(new NotificationService());
+        this.serviceManager.addService(new CommandService());
+        this.serviceManager.addService(new ModuleService());
+        this.serviceManager.addService(new DraggableService());
+        this.serviceManager.addService(new FontService());
+        this.serviceManager.addService(new AltService());
+        this.serviceManager.getServices().values().forEach(IService::initService);
+        this.serviceManager.getServices().values().forEach(IService::startService);
+    }
+}
