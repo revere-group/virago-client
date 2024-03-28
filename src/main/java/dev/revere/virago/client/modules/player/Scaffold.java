@@ -284,7 +284,7 @@ public class Scaffold extends AbstractModule {
         boolean timerReady =
                 placeTimer.hasTimeElapsed(placeDelay.getValue(), true);
 
-        return correctMotion && correctBlockStuff;
+        return correctMotion && correctBlockStuff && timerReady;
     }
 
     private ItemStack getPlacingItem() {
