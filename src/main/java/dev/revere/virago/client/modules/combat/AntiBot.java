@@ -6,6 +6,7 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.util.Logger;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,6 +36,7 @@ public class AntiBot extends AbstractModule {
                 return;
             }
             if (player.getName().startsWith("\u00a7") && player.getName().contains("\u00a7c") || this.isEntityBot(player) && !player.getDisplayName().getFormattedText().contains("NPC")) {
+                Logger.addChatMessage("Removed bot: " + player.getName());
                 mc.theWorld.removeEntity(player);
             }
             ++i;
