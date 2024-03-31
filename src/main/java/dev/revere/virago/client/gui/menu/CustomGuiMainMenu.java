@@ -2,6 +2,7 @@ package dev.revere.virago.client.gui.menu;
 
 
 import dev.revere.virago.Virago;
+import dev.revere.virago.client.compose.TestUI;
 import dev.revere.virago.client.gui.menu.alt.GuiAltManager;
 import dev.revere.virago.client.gui.menu.components.GuiImageButton;
 import dev.revere.virago.client.services.FontService;
@@ -32,6 +33,7 @@ public class CustomGuiMainMenu extends GuiScreen {
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(1, centerX - 85, centerY + 37, 170, 18, "S I N G L E P L A Y E R"));
         this.buttonList.add(new GuiButton(2, centerX - 85, centerY + 60, 170, 18, "M U L T I P L A Y E R"));
+        this.buttonList.add(new GuiButton(3, 15, 15, 60, 18, "Compose Testing"));
 
         int BUTTON_WIDTH = 20;
         int BUTTON_HEIGHT = 20;
@@ -89,6 +91,9 @@ public class CustomGuiMainMenu extends GuiScreen {
                     break;
                 case 2:
                     this.mc.displayGuiScreen(new GuiMultiplayer(this));
+                    break;
+                case 3:
+                    this.mc.displayGuiScreen(TestUI.INSTANCE.build());
                     break;
                 case 4:
                     this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
