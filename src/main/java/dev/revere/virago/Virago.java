@@ -4,6 +4,7 @@ import dev.revere.virago.api.event.core.EventBus;
 import dev.revere.virago.api.protection.ViragoUser;
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.api.service.ServiceManager;
+import dev.revere.virago.api.skia.Renderer;
 import dev.revere.virago.client.gui.panel.PanelGUI;
 import dev.revere.virago.client.services.*;
 import dev.revere.virago.util.Logger;
@@ -46,6 +47,9 @@ public class Virago {
 
         if (!clientDir.exists() && clientDir.mkdir())
             Logger.info("Created client directory.", getClass());
+
+        Renderer.INSTANCE.init();
+        Renderer.INSTANCE.createSurface();
 
         handleEvents();
         handleServices();
