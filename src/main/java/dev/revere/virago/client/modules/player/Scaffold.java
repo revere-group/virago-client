@@ -1,6 +1,5 @@
 package dev.revere.virago.client.modules.player;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
@@ -9,7 +8,6 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.MoveEvent;
-import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.update.PostMotionEvent;
@@ -17,12 +15,13 @@ import dev.revere.virago.client.events.update.PreMotionEvent;
 import dev.revere.virago.client.events.update.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.TimerUtil;
 import lombok.Getter;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -82,6 +81,10 @@ public class Scaffold extends AbstractModule {
             .describedBy("Automatically jumps while Keep Y is enabled.")
             .childOf(keepY);
 
+    private final Setting<Boolean> swing = new Setting<>("Swing", true)
+            .describedBy("Swings the item while placing.")
+            .childOf(keepY);
+
     private final Setting<TowerMode> towerMode = new Setting<>("Tower Mode", TowerMode.MOTION)
             .describedBy("The mode of the tower.");
 
@@ -114,38 +117,43 @@ public class Scaffold extends AbstractModule {
 
     @EventHandler
     private final Listener<UpdateEvent> updateEventListener = e -> {
-        if(mc.thePlayer == null || mc.theWorld == null) this.toggle();
-        if(Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null) return;
+        if (mc.thePlayer == null || mc.theWorld == null) this.toggle();
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null)
+            return;
 
-        if(keepY.getValue() && !mc.thePlayer.movementInput.jump) info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+        if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
+            info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
         else info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
 
-        if(mode.getValue() == Mode.WATCHDOG) {
-            if(mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 3 == 0)) mc.timer.timerSpeed = timer.getValue().floatValue();
+        if (mode.getValue() == Mode.WATCHDOG) {
+            if (mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 3 == 0))
+                mc.timer.timerSpeed = timer.getValue().floatValue();
             else mc.timer.timerSpeed = 1.0f;
         } else mc.timer.timerSpeed = timer.getValue().floatValue();
 
-        if(info == null || info.pos == null) return;
+        if (info == null || info.pos == null) return;
 
         sprintTicks++;
     };
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = e -> {
-        if(info == null || info.pos == null || Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null) return;
+        if (info == null || info.pos == null || Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null)
+            return;
 
-        if(!isReplaceable(info)) return;
+        if (!isReplaceable(info)) return;
 
         this.setRotations(e);
 
-        if(sneaking) mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING));
+        if (sneaking)
+            mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING));
 
-        if(mc.thePlayer.onGround) {
+        if (mc.thePlayer.onGround) {
             yCoordinate = mc.thePlayer.posY;
-            if(keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
+            if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
 
-        if(mode.getValue() == Mode.WATCHDOG) {
+        if (mode.getValue() == Mode.WATCHDOG) {
 
         } else {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
@@ -153,15 +161,19 @@ public class Scaffold extends AbstractModule {
 
         stackToPlace = setStackToPlace();
 
-        if(placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG)) {
-            if(keepY.getValue() && !mc.thePlayer.movementInput.jump) info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-            else info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-            if(info.pos != null) this.placeBlock();
-        } else if(mode.getValue().equals(Mode.WATCHDOG)) {
-            if(!mc.gameSettings.keyBindJump.isKeyDown()) {
-                if(keepY.getValue() && !mc.thePlayer.movementInput.jump) info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-                else info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                if(info.pos != null) this.placeBlock();
+        if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG)) {
+            if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+            else
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+            if (info.pos != null) this.placeBlock();
+        } else if (mode.getValue().equals(Mode.WATCHDOG)) {
+            if (!mc.gameSettings.keyBindJump.isKeyDown()) {
+                if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+                else
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                if (info.pos != null) this.placeBlock();
             }
         }
 
@@ -170,15 +182,19 @@ public class Scaffold extends AbstractModule {
 
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = e -> {
-        if(placeMode.getValue() == PlaceMode.POST && !mode.getValue().equals(Mode.WATCHDOG)) {
-            if(keepY.getValue() && !mc.thePlayer.movementInput.jump) info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-            else info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-            if(info.pos != null) this.placeBlock();
-        } else if(mode.getValue().equals(Mode.WATCHDOG)) {
-            if(mc.gameSettings.keyBindJump.isKeyDown()) {
-                if(keepY.getValue() && !mc.thePlayer.movementInput.jump) info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-                else info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                if(info.pos != null) this.placeBlock();
+        if (placeMode.getValue() == PlaceMode.POST && !mode.getValue().equals(Mode.WATCHDOG)) {
+            if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+            else
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+            if (info.pos != null) this.placeBlock();
+        } else if (mode.getValue().equals(Mode.WATCHDOG)) {
+            if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+                else
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                if (info.pos != null) this.placeBlock();
             }
         }
     };
@@ -186,7 +202,7 @@ public class Scaffold extends AbstractModule {
     @EventHandler
     private final Listener<MoveEvent> moveEventListener = e -> {
         this.moveTowerMotion(e);
-        if(mode.getValue() == Mode.WATCHDOG && mc.thePlayer.isMoving()) {
+        if (mode.getValue() == Mode.WATCHDOG && mc.thePlayer.isMoving()) {
             /*if(mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                 mc.thePlayer.setSprinting(true);
                 e.setX(mc.thePlayer.motionX / 1.7);
@@ -213,30 +229,30 @@ public class Scaffold extends AbstractModule {
     @EventHandler
     public final Listener<PacketEvent> packetEventListener = e -> {
         if (e.getEventState() == PacketEvent.EventState.RECEIVING) {
-            if(itemMode.getValue() == ItemMode.SPOOF) {
+            if (itemMode.getValue() == ItemMode.SPOOF) {
                 if (e.getPacket() instanceof S2FPacketSetSlot) {
                     e.setCancelled(true);
                 }
             }
         } else {
-            if(itemMode.getValue() == ItemMode.SPOOF) {
+            if (itemMode.getValue() == ItemMode.SPOOF) {
                 if (e.getPacket() instanceof C09PacketHeldItemChange) {
                     C09PacketHeldItemChange packet = e.getPacket();
                     packet.setSlotId(lastSlot);
                 }
             }
-            if(mode.getValue() == Mode.WATCHDOG) {
-                if(e.getPacket() instanceof C0BPacketEntityAction) {
+            if (mode.getValue() == Mode.WATCHDOG) {
+                if (e.getPacket() instanceof C0BPacketEntityAction) {
                     C0BPacketEntityAction packet = e.getPacket();
 
-                    if(packet.getAction() == C0BPacketEntityAction.Action.START_SPRINTING ||
+                    if (packet.getAction() == C0BPacketEntityAction.Action.START_SPRINTING ||
                             packet.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING) {
                         e.setCancelled(true);
                     }
                 }
             }
 
-            if(mode.getValue() == Mode.VERUS) {
+            if (mode.getValue() == Mode.VERUS) {
                 if (e.getPacket() instanceof C08PacketPlayerBlockPlacement) {
                     C08PacketPlayerBlockPlacement packet = e.getPacket();
                     //packet.setFacingX(0);
@@ -249,10 +265,14 @@ public class Scaffold extends AbstractModule {
 
     private void placeBlock() {
         boolean placed = false;
-        if(sprintFix.getValue() && mc.thePlayer.isSprinting()) mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
-        if(canPlace()) placed = sendPlace();
+        if (sprintFix.getValue() && mc.thePlayer.isSprinting())
+            mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
+        if (canPlace()) placed = sendPlace();
 
-        if(placed) {
+        if (placed) {
+            if (swing.getValue()) {
+                mc.thePlayer.swingItem();
+            }
             mc.getNetHandler().addToSendQueueNoEvent(new C0APacketAnimation());
             new Thread(this::stopPlacing).start();
         }
@@ -261,12 +281,12 @@ public class Scaffold extends AbstractModule {
 
     private boolean sendPlace() {
         boolean placed = mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, getPlacingItem(), info.getPos(), info.getFacing(), getVec3(info));
-        if(placed) {
-            if(mode.getValue() == Mode.VULCAN) {
-                if(!this.sneaking && !this.snuckThisTick) {
+        if (placed) {
+            if (mode.getValue() == Mode.VULCAN) {
+                if (!this.sneaking && !this.snuckThisTick) {
                     mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING));
                     this.sneaking = true;
-                } else if(this.sneaking) {
+                } else if (this.sneaking) {
                     mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING));
                     this.sneaking = false;
                 }
@@ -323,14 +343,14 @@ public class Scaffold extends AbstractModule {
                 return new Vec3(x1, y1, z1);
             case ZERO:
                 Vec3i directionVec = info.getFacing().getDirectionVec();
-                x = (double)directionVec.getX() * 0.5D;
-                z = (double)directionVec.getZ() * 0.5D;
+                x = (double) directionVec.getX() * 0.5D;
+                z = (double) directionVec.getZ() * 0.5D;
                 if (info.getFacing().getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE) {
                     x = -x;
                     z = -z;
                 }
 
-                Vec3 hitVec = (new Vec3(info.getPos())).addVector(x + z, (double)directionVec.getY() * 0.5D, x + z);
+                Vec3 hitVec = (new Vec3(info.getPos())).addVector(x + z, (double) directionVec.getY() * 0.5D, x + z);
                 Vec3 src = mc.thePlayer.getPositionEyes(1.0F);
                 MovingObjectPosition obj = mc.theWorld.rayTraceBlocks(src, hitVec, false, false, true);
                 if (obj != null && obj.hitVec != null && obj.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
@@ -418,7 +438,7 @@ public class Scaffold extends AbstractModule {
     private void setRotations(PreMotionEvent e) {
         float[] rots;
         float yaw, pitch;
-        switch(rotations.getValue()) {
+        switch (rotations.getValue()) {
             case NORMAL:
                 rots = getRotations(info);
                 yaw = processRotation(rots[0]);
@@ -441,7 +461,7 @@ public class Scaffold extends AbstractModule {
                 e.setPitch(mc.thePlayer.rotationPitchHead = finalRotationPitch = pitch);
                 break;
             case SNAP:
-                if(isPlacing) {
+                if (isPlacing) {
                     rots = getRotations(info);
                     yaw = processRotation(rots[0]);
                     pitch = processRotation(rots[1]);
@@ -470,21 +490,35 @@ public class Scaffold extends AbstractModule {
     }
 
     private float[] getRotations(BlockInfo info) {
-        if(mc.thePlayer == null || mc.theWorld == null) this.toggle();
+        if (mc.thePlayer == null || mc.theWorld == null) this.toggle();
         float yaw = 0, pitch = 90;
 
         final Vec3 eyes = mc.thePlayer.getPositionEyes(RandomUtils.nextFloat(2.997f, 3.997f));
-        final Vec3 position = new Vec3(info.getPos().getX() + 0.49,info.getPos().getY() + 0.49,info.getPos().getZ() + 0.49).add(new Vec3(info.getFacing().getDirectionVec()));
+        final Vec3 position = new Vec3(info.getPos().getX() + 0.49, info.getPos().getY() + 0.49, info.getPos().getZ() + 0.49).add(new Vec3(info.getFacing().getDirectionVec()));
         final Vec3 resultPosition = position.subtract(eyes);
         yaw = (float) Math.toDegrees(Math.atan2(resultPosition.zCoord, resultPosition.xCoord)) - 90.0F;
         pitch = (float) -Math.toDegrees(Math.atan2(resultPosition.yCoord, Math.hypot(resultPosition.xCoord, resultPosition.zCoord)));
 
         //pitch = 83;
-        return new float[]  { yaw, pitch };
+        return new float[]{yaw, pitch};
+    }
+
+    private float[] getAngles(EntityLivingBase entity) {
+        if (entity == null) {
+            return null;
+        }
+        EntityPlayerSP player = mc.thePlayer;
+        double diffX = entity.posX - player.posX;
+        double diffY = entity.posY + (double) entity.getEyeHeight() * 0.9 - (player.posY + (double) player.getEyeHeight());
+        double diffZ = entity.posZ - player.posZ;
+        double dist = MathHelper.sqrt_double((double) (diffX * diffX + diffZ * diffZ));
+        float yaw = (float) (Math.atan2(diffZ, diffX) * 180.0 / Math.PI) - 90.0f;
+        float pitch = (float) (-(Math.atan2(diffY, dist) * 180.0 / Math.PI));
+        return new float[]{player.rotationYaw + MathHelper.wrapAngleTo180_float((float) (yaw - player.rotationYaw)), player.rotationPitch + MathHelper.wrapAngleTo180_float((float) (pitch - player.rotationPitch))};
     }
 
     private float[] getAACRotations() {
-        if(mc.thePlayer == null || mc.theWorld == null) this.toggle();
+        if (mc.thePlayer == null || mc.theWorld == null) this.toggle();
         float clientYaw = MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw);
         float diff = (int) ((blockYaw - clientYaw) / 45.0F);
 
@@ -492,14 +526,14 @@ public class Scaffold extends AbstractModule {
 
         float pitch;
 
-        if(!mc.thePlayer.onGround || mc.gameSettings.keyBindJump.isKeyDown()) {
+        if (!mc.thePlayer.onGround || mc.gameSettings.keyBindJump.isKeyDown()) {
             pitch = 90;
-        } else if(isGoingDiagonally()) {
+        } else if (isGoingDiagonally()) {
             pitch = 83;
         } else {
             pitch = 81.5F;
         }
-        return new float[] {yaw, pitch};
+        return new float[]{yaw, pitch};
     }
 
     private boolean isGoingDiagonally() {
@@ -507,7 +541,7 @@ public class Scaffold extends AbstractModule {
     }
 
     private float[] getBruteForceRotations(BlockInfo info) {
-        if(mc.thePlayer == null || mc.theWorld == null) this.toggle();
+        if (mc.thePlayer == null || mc.theWorld == null) this.toggle();
 
         float yaw = mc.thePlayer.rotationYaw - 180, pitch = getRotations(info)[1];
 
@@ -527,7 +561,7 @@ public class Scaffold extends AbstractModule {
             }
         }
 
-        return new float[] { yaw, pitch };
+        return new float[]{yaw, pitch};
     }
 
     public BlockInfo getDiagonalBlockInfo(BlockPos pos) {
@@ -538,7 +572,7 @@ public class Scaffold extends AbstractModule {
                 south = new BlockPos(0, 0, -1);
 
         if (canPlaceAt(pos.add(up))) {
-            return new BlockInfo(pos.add(up),  EnumFacing.UP);
+            return new BlockInfo(pos.add(up), EnumFacing.UP);
         }
 
         if (canPlaceAt(pos.add(east))) {
@@ -567,7 +601,7 @@ public class Scaffold extends AbstractModule {
 
         for (BlockPos offset : positions) {
             if ((data = getBlockInfo(pos.add(offset))) != null) {
-                return  data;
+                return data;
             }
         }
 
@@ -577,10 +611,10 @@ public class Scaffold extends AbstractModule {
                     return data;
                 }
 
-        for(BlockPos offset1 : positions)
-            for(BlockPos offset2 : positions)
-                for(BlockPos offset3 : positions)
-                    if((data = getBlockInfo(pos.add(offset1).add(offset2).add(offset3))) != null) {
+        for (BlockPos offset1 : positions)
+            for (BlockPos offset2 : positions)
+                for (BlockPos offset3 : positions)
+                    if ((data = getBlockInfo(pos.add(offset1).add(offset2).add(offset3))) != null) {
                         return data;
                     }
 
@@ -624,7 +658,7 @@ public class Scaffold extends AbstractModule {
                     && (block == null)) {
 
                 //mc.thePlayer.inventory.currentItem = g;
-                if(mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack().stackSize <= 0) continue;
+                if (mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack().stackSize <= 0) continue;
                 slot = g;
                 block = mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack();
             }
@@ -632,7 +666,7 @@ public class Scaffold extends AbstractModule {
 
         if (lastSlot != slot) {
             slot = slot;
-            if(itemMode.getValue() == ItemMode.SWITCH) mc.thePlayer.inventory.currentItem = slot;
+            if (itemMode.getValue() == ItemMode.SWITCH) mc.thePlayer.inventory.currentItem = slot;
             else mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(slot));
 
             lastSlot = slot;
@@ -665,7 +699,7 @@ public class Scaffold extends AbstractModule {
             ItemStack stack = slot.getStack();
             Item item = stack.getItem();
 
-            if(!isValidBlock(stack)) continue;
+            if (!isValidBlock(stack)) continue;
 
             blockCount += stack.stackSize;
         }
@@ -676,12 +710,13 @@ public class Scaffold extends AbstractModule {
         try {
             Thread.sleep(100);
             isPlacing = false;
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     private float processRotation(float value) {
         float toReturn = value;
-        if(gcdFix.getValue()) {
+        if (gcdFix.getValue()) {
             double m = 0.005 * mc.gameSettings.mouseSensitivity;
             double gcd = m * m * m * 1.2;
             toReturn -= toReturn % gcd;
@@ -715,7 +750,7 @@ public class Scaffold extends AbstractModule {
         mc.gameSettings.keyBindSneak.pressed = false;
         mc.timer.timerSpeed = 1F;
 
-        if(itemMode.getValue() == ItemMode.SPOOF) {
+        if (itemMode.getValue() == ItemMode.SPOOF) {
             mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
         } else {
             mc.thePlayer.inventory.currentItem = oldSlot;
@@ -758,7 +793,7 @@ public class Scaffold extends AbstractModule {
         }
 
         public BlockPos getPos() {
-            if(pos == null) {
+            if (pos == null) {
                 return new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ);
             } else return pos;
         }

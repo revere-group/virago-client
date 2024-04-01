@@ -6,6 +6,7 @@ import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
+import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.update.PostMotionEvent;
 import net.minecraft.network.Packet;
@@ -21,6 +22,19 @@ import org.lwjgl.input.Keyboard;
  */
 @ModuleData(name = "Velocity", type = EnumModuleType.COMBAT, description = "Avoid taking knockback from other players")
 public class Velocity extends AbstractModule {
+    
+    private final Setting<Float> horizontal = new Setting<>("Horizontal", 0.0f)
+            .minimum(0.0f)
+            .maximum(100.0f)
+            .incrementation(1.0f)
+            .describedBy("The amount of horizontal knockback to take");
+    
+    private final Setting<Float> vertical = new Setting<>("Vertical", 100.0f)
+            .minimum(0.0f)
+            .maximum(100.0f)
+            .incrementation(1.0f)
+            .describedBy("The amount of vertical knockback to take");
+    
     public Velocity() {
         setKey(Keyboard.KEY_H);
     }
@@ -33,11 +47,11 @@ public class Velocity extends AbstractModule {
     @EventHandler
     private final Listener<PacketEvent> packetEventListener = event -> {
         if (event.getEventState() == PacketEvent.EventState.RECEIVING) {
-            Packet<INetHandlerPlayClient> packet = (Packet<INetHandlerPlayClient>) event.getPacket();
+            Packet<INetHandlerPlayClient> packet = event.getPacket();
             if (packet instanceof S12PacketEntityVelocity) {
-                handleEntityVelocityPacket((S12PacketEntityVelocity) packet);
+                handleEntityVelocityPacket((S12PacketEntityVelocity) packet, event);
             } else if (packet instanceof S27PacketExplosion) {
-                handleExplosionPacket((S27PacketExplosion) packet);
+                handleExplosionPacket((S27PacketExplosion) packet, event);
             }
         }
     };
@@ -47,11 +61,15 @@ public class Velocity extends AbstractModule {
      *
      * @param packet The packet to handle
      */
-    private void handleEntityVelocityPacket(S12PacketEntityVelocity packet) {
+    private void handleEntityVelocityPacket(S12PacketEntityVelocity packet, PacketEvent event) {
         if (packet.getEntityID() == mc.thePlayer.getEntityId()) {
-            packet.setMotionX(0);
-            packet.setMotionY(0);
-            packet.setMotionZ(0);
+            if (horizontal.getValue() == 0.0f && vertical.getValue() == 0.0f) {
+                event.setCancelled(true);
+            } else {
+                packet.setMotionX((int)((double)((float)packet.getMotionX() * horizontal.getValue()) / 100.0));
+                packet.setMotionY((int)((double)((float)packet.getMotionY() * vertical.getValue()) / 100.0));
+                packet.setMotionZ((int)((double)((float)packet.getMotionZ() * horizontal.getValue()) / 100.0));
+            }
         }
     }
 
@@ -60,10 +78,14 @@ public class Velocity extends AbstractModule {
      *
      * @param packet The packet to handle
      */
-    private void handleExplosionPacket(S27PacketExplosion packet) {
-        packet.setField_149152_f(0);
-        packet.setField_149153_g(0);
-        packet.setField_149159_h(0);
+    private void handleExplosionPacket(S27PacketExplosion packet, PacketEvent event) {
+        if (horizontal.getValue() == 0.0f && vertical.getValue() == 0.0f) {
+            event.setCancelled(true);
+        } else {
+            packet.setField_149152_f((float)((int)((double)(packet.func_149149_c() * horizontal.getValue()) / 100.0)));
+            packet.setField_149153_g((float)((int)((double)(packet.func_149144_d() * vertical.getValue()) / 100.0)));
+            packet.setField_149159_h((float)((int)((double)(packet.func_149147_e() * horizontal.getValue()) / 100.0)));
+        }
     }
 
     @Override

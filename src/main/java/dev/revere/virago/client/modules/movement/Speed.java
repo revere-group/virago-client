@@ -102,9 +102,9 @@ public class Speed extends AbstractModule {
                         speed = lastDist - lastDist / 159D;
                     }
 
-                    if (mc.thePlayer.hurtTime > 0) {
+                    /*if (mc.thePlayer.hurtTime > 0) {
                         speed = Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ) + 0.0245F;
-                    }
+                    }*/
 
                     if (safeStrafe.getValue() && !mc.thePlayer.onGround) {
                         mc.thePlayer.setSpeedWithCorrection(event, Math.max(mc.thePlayer.getSpeed(), speed), lastMotionX, lastMotionZ, strafeModifier.getValue());
@@ -133,9 +133,9 @@ public class Speed extends AbstractModule {
                         speed = lastDist - lastDist / 159D;
                     }
 
-                    if (mc.thePlayer.hurtTime > 0)
+                    /*if (mc.thePlayer.hurtTime > 0) {
                         speed = Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ) + 0.0245F;
-
+                    }*/
                     if(mc.thePlayer.onGround || prevOnGround)
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
                     else
@@ -169,7 +169,7 @@ public class Speed extends AbstractModule {
                         speed += 0.025 +  (mc.thePlayer.getBaseMoveSpeed() - 0.2873) * 0.08;
                     }
 
-                    if (mc.thePlayer.hurtTime == 9) speed += 0.1;
+                    //if (mc.thePlayer.hurtTime == 9) speed += 0.1;
 
                     if (mc.thePlayer.fallDistance < 1) {
                         mc.thePlayer.setSpeedWithCorrection(event, speed, lastMotionX, lastMotionZ, strafeModifier.getValue());

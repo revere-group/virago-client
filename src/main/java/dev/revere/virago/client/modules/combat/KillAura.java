@@ -108,7 +108,7 @@ public class KillAura extends AbstractModule {
         event.setYaw(mc.thePlayer.renderYawOffset);
         event.setPitch(mc.thePlayer.rotationPitchHead);
 
-        //this.preAutoblock();
+        this.preAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.PRE) && this.hitTimerDone()) {
             this.attack(this.target);
         }
@@ -128,7 +128,7 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
-        //this.postAutoblock();
+        this.postAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.POST) && this.hitTimerDone()) {
             this.attack(this.target);
         }
@@ -144,8 +144,8 @@ public class KillAura extends AbstractModule {
             return;
         }
 
-        mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
         mc.thePlayer.swingItem();
+        mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
     }
 
     private boolean hitTimerDone() {
