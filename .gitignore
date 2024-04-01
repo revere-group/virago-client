@@ -25,11 +25,19 @@ replay_pid*
 
 logs/
 workspace/saves/*
+workspace/assets/*
+workspace/virago/*
+workspace/crash-reports/*
+workspace/options.txt
+workspace/optionsof.txt
+workspace/optionsshaders.txt
+workspace/logs/*
+workspace/screenshots/*
+workspace/usercache.json
 
 install.cmd
 install.sh
 pom.xml
-workspace/options.txt
 
 ### Maven template
 target/
