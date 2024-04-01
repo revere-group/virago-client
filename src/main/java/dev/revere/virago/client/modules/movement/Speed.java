@@ -191,6 +191,7 @@ public class Speed extends AbstractModule {
 
     @Override
     public void onDisable() {
+        mc.timer.timerSpeed = 1.0F;
         super.onDisable();
     }
 

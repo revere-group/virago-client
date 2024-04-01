@@ -61,8 +61,6 @@ public class Draggable {
             x = (mouseX - startX);
             y = (mouseY - startY);
         }
-
-        RenderUtils.rect(x, y, 20, 20, Color.WHITE);
     }
 
     /**

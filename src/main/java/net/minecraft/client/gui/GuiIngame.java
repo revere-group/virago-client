@@ -9,6 +9,7 @@ import java.util.Random;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.render.Render2DEvent;
+import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -308,7 +309,7 @@ public class GuiIngame extends Gui
 
         if (scoreobjective1 != null)
         {
-            //this.renderScoreboard(scoreobjective1, scaledresolution);
+            this.renderScoreboard(scoreobjective1, scaledresolution);
         }
 
         GlStateManager.enableBlend();
@@ -568,6 +569,7 @@ public class GuiIngame extends Gui
         for (Score score1 : collection)
         {
             ++j;
+            dev.revere.virago.client.modules.render.Scoreboard scoreboardModule = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(dev.revere.virago.client.modules.render.Scoreboard.class);
             ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
             String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
             String s2 = EnumChatFormatting.RED + "" + score1.getScorePoints();
@@ -575,8 +577,9 @@ public class GuiIngame extends Gui
             int l = scaledRes.getScaledWidth() - k1 + 2;
             drawRect(l1 - 2, k, l, k + this.getFontRenderer().FONT_HEIGHT, 1342177280);
             this.getFontRenderer().drawString(s1, l1, k, 553648127);
-            this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
-
+            if (scoreboardModule.numbers.getValue()) {
+                this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
+            }
             if (j == collection.size())
             {
                 String s3 = objective.getDisplayName();
