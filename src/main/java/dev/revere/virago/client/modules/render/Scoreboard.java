@@ -2,6 +2,7 @@ package dev.revere.virago.client.modules.render;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import dev.revere.virago.api.draggable.Draggable;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
@@ -12,6 +13,7 @@ import dev.revere.virago.client.events.TickEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.util.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -35,6 +37,10 @@ public class Scoreboard extends AbstractModule {
             .describedBy("The amount of rounding on the scoreboard")
             .visibleWhen(rounded::getValue);
 
+    ScaledResolution sr = new ScaledResolution(mc);
+
+    private Draggable draggable = new Draggable(this, "Scoreboard", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2);
+
     private Collection<Score> scores;
     private ScoreObjective objective;
     private int maxWidth;
@@ -42,7 +48,7 @@ public class Scoreboard extends AbstractModule {
     @EventHandler
     public Listener<Render2DEvent> onRender2D = event -> {
         if (this.objective != null) {
-            renderScoreboard(600, 200);
+            renderScoreboard((int) draggable.getX(), (int) draggable.getY());
         }
     };
 
@@ -94,10 +100,11 @@ public class Scoreboard extends AbstractModule {
         int padding = 2;
         int width = this.maxWidth;
 
-        // Calculate the total height of the scoreboard
         int scoreboardHeight = (this.scores.size() + 1) * (fontHeight + padding);
 
-        // Draw the background
+        draggable.setWidth(width);
+        draggable.setHeight(scoreboardHeight);
+
         if(rounded.getValue()) {
             RenderUtils.drawRoundedRect(x, y, width + padding * 4, scoreboardHeight + padding, roundingRadius.getValue(), 0x4F000000);
         } else {
@@ -107,24 +114,19 @@ public class Scoreboard extends AbstractModule {
 
         int fontColor = 553648127;
 
-        // Adjust the starting position for rendering the objective name
         x += padding * 2;
         y += padding;
 
-        // Render the objective name
         String objective = this.objective.getDisplayName();
         fontRenderer.drawString(objective, x + maxWidth / 2.0F - fontRenderer.getStringWidth(objective) / 2.0F, y, fontColor, shadow.getValue());
 
-        // Increment the y-coordinate for rendering the score entries
         y += fontHeight + padding;
-
-        // Render each score entry
 
         for (Score score : this.scores) {
             ScorePlayerTeam scorePlayerTeam = this.objective.getScoreboard().getPlayersTeam(score.getPlayerName());
             String formattedName = ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.getPlayerName());
             fontRenderer.drawString(formattedName, x, y, fontColor, shadow.getValue());
-            y += fontHeight + padding; // Increment y-coordinate for the next entry
+            y += fontHeight + padding;
         }
     }
 

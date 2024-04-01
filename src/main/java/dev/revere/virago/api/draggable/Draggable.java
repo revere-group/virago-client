@@ -1,8 +1,11 @@
 package dev.revere.virago.api.draggable;
 
 import dev.revere.virago.api.module.AbstractModule;
+import dev.revere.virago.util.render.RenderUtils;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.awt.*;
 
 /**
  * @author Remi
@@ -53,10 +56,13 @@ public class Draggable {
      */
     public final void draw(float mouseX, float mouseY) {
         if(!this.module.isEnabled()) return;
+
         if (dragging) {
             x = (mouseX - startX);
             y = (mouseY - startY);
         }
+
+        RenderUtils.rect(x, y, 20, 20, Color.WHITE);
     }
 
     /**
