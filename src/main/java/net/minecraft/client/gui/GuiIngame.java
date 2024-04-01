@@ -308,7 +308,7 @@ public class GuiIngame extends Gui
 
         if (scoreobjective1 != null)
         {
-            this.renderScoreboard(scoreobjective1, scaledresolution);
+            //this.renderScoreboard(scoreobjective1, scaledresolution);
         }
 
         GlStateManager.enableBlend();

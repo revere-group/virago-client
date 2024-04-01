@@ -5,7 +5,7 @@ ofOcclusionFancy:false
 ofSmoothFps:false
 ofSmoothWorld:true
 ofAoLevel:1.0
-ofClouds:3
+ofClouds:0
 ofCloudsHeight:0.0
 ofTrees:0
 ofDroppedItems:0
@@ -33,7 +33,7 @@ ofAutoSaveTicks:4000
 ofBetterGrass:3
 ofConnectedTextures:2
 ofWeather:true
-ofSky:false
+ofSky:true
 ofStars:true
 ofSunMoon:true
 ofVignette:0
@@ -58,7 +58,7 @@ ofEmissiveTextures:true
 ofLazyChunkLoading:true
 ofRenderRegions:false
 ofSmartAnimations:false
-ofDynamicFov:false
+ofDynamicFov:true
 ofAlternateBlocks:true
 ofDynamicLights:3
 ofScreenshotSize:1

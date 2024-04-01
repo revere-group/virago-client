@@ -40,7 +40,7 @@
                     <args>
                         <arg>-Xexplicit-api=warning</arg>
                         <arg>-Xuse-ir</arg>
-                        <arg>-Xplugin=C:\Users\remig\.m2\repository\org\jetbrains\compose\compiler\compiler-hosted\1.5.7\compiler-hosted-1.5.7.jar</arg>
+                        <arg>-Xplugin=C:\Users\Alex\.m2\repository\org\jetbrains\compose\compiler\compiler-hosted\1.5.7\compiler-hosted-1.5.7.jar</arg>
                     </args>
                     <jvmTarget>${maven.compiler.target}</jvmTarget>
                 </configuration>
