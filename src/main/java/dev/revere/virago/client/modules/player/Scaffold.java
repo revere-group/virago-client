@@ -16,6 +16,7 @@ import dev.revere.virago.client.events.update.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.TimerUtil;
 import lombok.Getter;
 import net.minecraft.block.BlockAir;
@@ -83,7 +84,7 @@ public class Scaffold extends AbstractModule {
 
     private final Setting<Boolean> autoJump = new Setting<>("AutoJump", false)
             .describedBy("Automatically jumps while Keep Y is enabled.")
-            .childOf(keepY);
+            .visibleWhen(keepY::getValue);
 
     private final Setting<Boolean> swing = new Setting<>("Swing", false)
             .describedBy("Swings the item while placing.");
@@ -321,7 +322,7 @@ public class Scaffold extends AbstractModule {
         boolean timerReady =
                 placeTimer.hasTimeElapsed(placeDelay.getValue(), true);
 
-        return correctMotion && correctBlockStuff && timerReady;
+        return correctMotion && correctBlockStuff;
     }
 
     private ItemStack getPlacingItem() {
