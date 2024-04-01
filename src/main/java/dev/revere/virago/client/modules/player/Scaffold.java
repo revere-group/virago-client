@@ -14,12 +14,14 @@ import dev.revere.virago.client.events.update.PostMotionEvent;
 import dev.revere.virago.client.events.update.PreMotionEvent;
 import dev.revere.virago.client.events.update.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
+import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.TimerUtil;
 import lombok.Getter;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
@@ -34,6 +36,8 @@ import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraft.util.*;
 import org.apache.commons.lang3.RandomUtils;
+
+import java.awt.*;
 
 /**
  * @author Remi
@@ -81,11 +85,10 @@ public class Scaffold extends AbstractModule {
             .describedBy("Automatically jumps while Keep Y is enabled.")
             .childOf(keepY);
 
-    private final Setting<Boolean> swing = new Setting<>("Swing", true)
-            .describedBy("Swings the item while placing.")
-            .childOf(keepY);
+    private final Setting<Boolean> swing = new Setting<>("Swing", false)
+            .describedBy("Swings the item while placing.");
 
-    private final Setting<TowerMode> towerMode = new Setting<>("Tower Mode", TowerMode.MOTION)
+    private final Setting<TowerMode> towerMode = new Setting<>("Tower Mode", TowerMode.NONE)
             .describedBy("The mode of the tower.");
 
     private final Setting<Boolean> towerMove = new Setting<>("Tower Move", false)
@@ -112,7 +115,20 @@ public class Scaffold extends AbstractModule {
 
     @EventHandler
     private final Listener<Render2DEvent> render2DEventListener = event -> {
+        FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
+        blockCount = getBlockCount();
+        ScaledResolution sr = new ScaledResolution(mc);
+        String s = String.valueOf(blockCount);
 
+        float percentage = (Math.min(blockCount, 256) / 256f) / 3f;
+
+        int l1 = sr.getScaledWidth() / 2 - (font.getProductSans().getStringWidth(s) / 2);
+        int i1 = sr.getScaledHeight() / 2 - font.getProductSans().getHeight() - 10;
+        font.getProductSans().drawString(s, l1 + 1, i1, 0);
+        font.getProductSans().drawString(s, l1 - 1, i1, 0);
+        font.getProductSans().drawString(s, l1, i1 + 1, 0);
+        font.getProductSans().drawString(s, l1, i1 - 1, 0);
+        font.getProductSans().drawString(s, l1, i1, new Color(Color.HSBtoRGB(percentage, 1.0F, 1.0F)).getRGB());
     };
 
     @EventHandler
@@ -272,8 +288,9 @@ public class Scaffold extends AbstractModule {
         if (placed) {
             if (swing.getValue()) {
                 mc.thePlayer.swingItem();
+            } else {
+                mc.getNetHandler().addToSendQueueNoEvent(new C0APacketAnimation());
             }
-            mc.getNetHandler().addToSendQueueNoEvent(new C0APacketAnimation());
             new Thread(this::stopPlacing).start();
         }
 
