@@ -1,5 +1,8 @@
 package dev.revere.virago.util.render;
 
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.modules.render.HUD;
+import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -30,6 +33,56 @@ import java.nio.IntBuffer;
 public class RenderUtils {
     public static Minecraft mc = Minecraft.getMinecraft();
     private static final Frustum frustrum = new Frustum();
+
+    public static int getColor(int index) {
+        HUD hud = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class);
+        switch (hud.colorMode.getValue()) {
+            case CUSTOM:
+                return ColorUtil.interpolateColorsBackAndForth(hud.fadeSpeed.getValue().intValue(), index, hud.customColor1.getValue(), hud.customColor2.getValue(), false).getRGB();
+            case STATIC:
+                return hud.customColor1.getValue().getRGB();
+            case CLIENT:
+                return ColorUtil.interpolateColorsBackAndForth(hud.fadeSpeed.getValue().intValue(), index, new Color(255, 11, 82), new Color(-1), false).getRGB();
+            case RAINBOW:
+                return ColorUtil.rainbow(hud.rainbowSpeed.getValue().intValue() * hud.y);
+        }
+        return -1;
+    }
+
+    public static long drawGradientRect(int left, int top, int right, int bottom, int size) {
+        int size2 = 1;
+        long topCol = renderGradientRect(left, top - size2, right, top, 2.0, 10L, 0L, Direction.RIGHT);
+        long downCol = renderGradientRect(left - size2, top - size, left, bottom + size2, 2.0, 10L, 0L, Direction.DOWN);
+        renderGradientRect(right, top - size2, right + size2, bottom + size2, 2.0, 10L, topCol, Direction.DOWN);
+        return topCol;
+    }
+
+    public static long renderGradientRect(int left, int top, int right, int bottom, double time, long difference, long delay, Direction direction) {
+        int i;
+        long endDelay = 0L;
+        if (direction == Direction.RIGHT) {
+            for (i = 0; i < right - left; ++i) {
+                Gui.drawRect(left + i, top, right, bottom, getColor(i));
+            }
+        }
+        if (direction == Direction.LEFT) {
+            for (i = 0; i < right - left; ++i) {
+                Gui.drawRect(left + i, top, right, bottom, getColor(i));
+            }
+        }
+        if (direction == null) {
+            for (i = 0; i < bottom - top; ++i) {
+                Gui.drawRect(left, top + i, right, bottom, getColor(i));
+            }
+        }
+        if (direction == Direction.UP) {
+            for (i = 0; i < bottom - top; ++i) {
+                Gui.drawRect(left, top + i, right, bottom, getColor(i));
+            }
+        }
+        return endDelay;
+    }
+
 
     public static void drawMicrosoftLogo(float x, float y, float size, float spacing) {
         drawMicrosoftLogo(x, y, size, spacing, 1f);
@@ -422,5 +475,12 @@ public class RenderUtils {
             GL11.glDisable(3042);
         }
         GL11.glDisable(2848);
+    }
+
+    public static enum Direction {
+        LEFT,
+        UP,
+        RIGHT,
+        DOWN;
     }
 }
