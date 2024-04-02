@@ -1,24 +1,34 @@
 package dev.revere.virago.client.modules.combat;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
+import dev.revere.virago.api.font.FontRenderer;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
 import dev.revere.virago.client.events.update.PostMotionEvent;
 import dev.revere.virago.client.events.update.PreMotionEvent;
 import dev.revere.virago.client.events.update.StrafeEvent;
-import dev.revere.virago.client.events.update.UpdateEvent;
 import dev.revere.virago.client.modules.player.Scaffold;
+import dev.revere.virago.client.modules.render.HUD;
+import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.TimerUtil;
+import dev.revere.virago.util.animation.util.AnimationUtils;
 import dev.revere.virago.util.render.ColorUtil;
+import dev.revere.virago.util.render.RenderUtils;
+import net.minecraft.client.gui.GuiPlayerTabOverlay;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -26,7 +36,11 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EnumPlayerModelParts;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.item.ItemTool;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -40,6 +54,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +106,8 @@ public class KillAura extends AbstractModule {
             return;
         }
 
-        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled()) return;
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
 
         blocking = true;
 
@@ -101,7 +117,7 @@ public class KillAura extends AbstractModule {
             finalPitch = processRotation((rots[1]));
         }
 
-        if(smoothRotations.getValue()) {
+        if (smoothRotations.getValue()) {
             float sens = (float) ((Math.pow(mc.gameSettings.mouseSensitivity * 0.6F + 0.2F, 3) * 8.0F) * 0.15F);
             finalYaw = interpolateRotation(mc.thePlayer.rotationYaw, finalYaw, 360);
             finalPitch = interpolateRotation(mc.thePlayer.rotationPitch, finalPitch, 90);
@@ -133,8 +149,29 @@ public class KillAura extends AbstractModule {
     };
 
     @EventHandler
+    private final Listener<Render2DEvent> render2DEventListener = event -> {
+        ScaledResolution sr = new ScaledResolution(mc);
+        Iterator<Entity> iterator = mc.theWorld.loadedEntityList.iterator();
+        int renderIndex = 0;
+        while (iterator.hasNext()) {
+            Entity entity = iterator.next();
+            if (!(entity instanceof EntityPlayer)) continue;
+            EntityPlayer player = (EntityPlayer) entity;
+            if (target == entity) {
+                if (player.targetHUD == null) {
+                    player.targetHUD = new TargetHUD(player);
+                }
+                int size = 33;
+                player.targetHUD.render((float) sr.getScaledWidth() / 2.0f + 14.0f, (float) sr.getScaledHeight() / 2.0f - 14.0f + (float) (renderIndex * size));
+                ++renderIndex;
+            }
+        }
+    };
+
+    @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
-        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled()) return;
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
         this.postAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.POST) && this.hitTimerDone()) {
             this.attack(this.target);
@@ -143,7 +180,7 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<Render3DEvent> render3DEventListener = event -> {
-        if(target != null) this.targetAnimation(this.target);
+        if (target != null) this.targetAnimation(this.target);
     };
 
     private void attack(EntityLivingBase e) {
@@ -263,7 +300,7 @@ public class KillAura extends AbstractModule {
 
     private void targetAnimation(EntityLivingBase target) {
         final float partialTicks = mc.timer.renderPartialTicks;
-        if(target == null) return;
+        if (target == null) return;
 
         Color color = new Color(ColorUtil.getColor(true));
 
@@ -425,5 +462,188 @@ public class KillAura extends AbstractModule {
     public enum AttackStage {
         PRE,
         POST;
+    }
+
+    public class TargetHUD {
+        public final EntityPlayer ent;
+        public float animation = 0.0f;
+
+        public FontRenderer fontRenderer;
+
+        public TargetHUD(EntityPlayer player) {
+            this.ent = player;
+        }
+
+        private void getFont(FontService font) {
+            HUD hud = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class);
+            switch (hud.fontType.getValue()) {
+                case PRODUCT_SANS:
+                    fontRenderer = font.getProductSans();
+                    break;
+                case POPPINS:
+                    fontRenderer = font.getPoppinsMedium();
+                    break;
+                case SF_PRO:
+                    fontRenderer = font.getSfProTextRegular();
+                    break;
+                case JETBRAINS:
+                    fontRenderer = font.getJetbrainsMonoBold();
+                    break;
+            }
+        }
+
+        private void renderArmor(EntityPlayer player) {
+            ItemStack stack;
+            int index;
+            int xOffset = 60;
+            for (index = 3; index >= 0; --index) {
+                stack = player.inventory.armorInventory[index];
+                if (stack == null) continue;
+                xOffset -= 8;
+            }
+            for (index = 3; index >= 0; --index) {
+                stack = player.inventory.armorInventory[index];
+                if (stack == null) continue;
+                ItemStack armourStack = stack.copy();
+                if (armourStack.hasEffect() && (armourStack.getItem() instanceof ItemTool || armourStack.getItem() instanceof ItemArmor)) {
+                    armourStack.stackSize = 1;
+                }
+                this.renderItemStack(armourStack, xOffset, 12);
+                xOffset += 16;
+            }
+        }
+
+        private void renderItemStack(ItemStack stack, int x, int y) {
+            GlStateManager.pushMatrix();
+            GlStateManager.disableAlpha();
+            mc.getRenderItem().zLevel = -150.0f;
+            GlStateManager.disableCull();
+            mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
+            mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, stack, x, y);
+            GlStateManager.enableCull();
+            mc.getRenderItem().zLevel = 0.0f;
+            GlStateManager.disableBlend();
+            GlStateManager.scale(0.5f, 0.5f, 0.5f);
+            GlStateManager.disableDepth();
+            GlStateManager.disableLighting();
+            GlStateManager.enableLighting();
+            GlStateManager.enableDepth();
+            GlStateManager.scale(2.0f, 2.0f, 2.0f);
+            GlStateManager.enableAlpha();
+            GlStateManager.popMatrix();
+        }
+
+        public void render(float x, float y) {
+            GL11.glPushMatrix();
+            FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
+            getFont(font);
+
+            String playerName = this.ent.getName();
+            String healthStr = (double) Math.round(this.ent.getHealth() * 10.0f) / 10.0 + " hp";
+
+            float width = Math.max(75.0f, fontRenderer.getStringWidth(playerName) + 45.0f);
+            float health = target.getHealth();
+            double hpPercentage = health / target.getMaxHealth();
+            hpPercentage = MathHelper.clamp_double(hpPercentage, 0.0, 1.0);
+
+            GL11.glTranslatef(x, y, 0.0f);
+            RenderUtils.drawRoundedRect(0.0f, 0.0f, 28.0f + width, 28.0f, 2.0f, ColorUtil.reAlpha(-16777216, 0.5f));
+
+            fontRenderer.drawString(playerName, 30.0f, 3.0f, -1);
+            fontRenderer.drawString(healthStr, 26.0f + width - fontRenderer.getStringWidth(healthStr) - 2.0f, 4.0f, -3355444);
+
+            RenderUtils.drawRect(37.0f, 14.5f, 26.0f + width - 2.0f, 17.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
+
+            float barWidth = 26.0f + width - 2.0f - 37.0f;
+            float drawPercent = (float) (37.0 + (double) (barWidth / 100.0f) * (hpPercentage * 100.0));
+            if (this.animation <= 0.0f) {
+                this.animation = drawPercent;
+            }
+            if (this.ent.hurtTime <= 6) {
+                this.animation = AnimationUtils.getAnimationState(this.animation, drawPercent, (float) Math.max(10.0, (double) (Math.abs(this.animation - drawPercent) * 30.0f) * 0.4));
+            }
+
+            RenderUtils.renderGradientRect(37, 14, (int) this.animation, 17, 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+            RenderUtils.renderGradientRect(37, 14, (int) drawPercent, 17, 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+
+            font.getIcon10().drawString("s", 30.0f, 16.0f, -1);
+            font.getIcon10().drawString("r", 30.0f, 23.0f, -1);
+
+            float f3 = 37.0f + barWidth / 100.0f * (float) (this.ent.getTotalArmorValue() * 5);
+            RenderUtils.drawRect(37.0f, 21.5f, 26.0f + width - 2.0f, 24.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
+            RenderUtils.drawRect(37.0f, 21.5f, f3, 24.5f, -12417291);
+            GlStateManager.resetColor();
+            for (NetworkPlayerInfo info : GuiPlayerTabOverlay.field_175252_a.sortedCopy(mc.getNetHandler().getPlayerInfoMap())) {
+                if (mc.theWorld.getPlayerEntityByUUID(info.getGameProfile().getId()) != this.ent) continue;
+                mc.getTextureManager().bindTexture(info.getLocationSkin());
+                this.drawScaledCustomSizeModalRect(2.0f, 2.0f, 8.0f, 8.0f, 8.0f, 8.0f, 24.0f, 24.0f, 64.0f, 64.0f);
+                if (this.ent.isWearing(EnumPlayerModelParts.HAT)) {
+                    this.drawScaledCustomSizeModalRect(2.0f, 2.0f, 40.0f, 8.0f, 8.0f, 8.0f, 24.0f, 24.0f, 64.0f, 64.0f);
+                }
+                GlStateManager.bindTexture(0);
+                break;
+            }
+            GL11.glPopMatrix();
+            GlStateManager.resetColor();
+        }
+
+        public void rectangleBordered(double x, double y, double x1, double y1, double width, int internalColor, int borderColor) {
+            this.rectangle(x + width, y + width, x1 - width, y1 - width, internalColor);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            this.rectangle(x + width, y, x1 - width, y + width, borderColor);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            this.rectangle(x, y, x + width, y1, borderColor);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            this.rectangle(x1 - width, y, x1, y1, borderColor);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            this.rectangle(x + width, y1 - width, x1 - width, y1, borderColor);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        public void rectangle(double left, double top, double right, double bottom, int color) {
+            double var5;
+            if (left < right) {
+                var5 = left;
+                left = right;
+                right = var5;
+            }
+            if (top < bottom) {
+                var5 = top;
+                top = bottom;
+                bottom = var5;
+            }
+            float var11 = (float) (color >> 24 & 0xFF) / 255.0f;
+            float var6 = (float) (color >> 16 & 0xFF) / 255.0f;
+            float var7 = (float) (color >> 8 & 0xFF) / 255.0f;
+            float var8 = (float) (color & 0xFF) / 255.0f;
+            WorldRenderer worldRenderer = Tessellator.getInstance().getWorldRenderer();
+            GlStateManager.enableBlend();
+            GlStateManager.disableTexture2D();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            GlStateManager.color(var6, var7, var8, var11);
+            worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+            worldRenderer.pos(left, bottom, 0.0).endVertex();
+            worldRenderer.pos(right, bottom, 0.0).endVertex();
+            worldRenderer.pos(right, top, 0.0).endVertex();
+            worldRenderer.pos(left, top, 0.0).endVertex();
+            Tessellator.getInstance().draw();
+            GlStateManager.enableTexture2D();
+            GlStateManager.disableBlend();
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        public void drawScaledCustomSizeModalRect(float x, float y, float u, float v, float uWidth, float vHeight, float width, float height, float tileWidth, float tileHeight) {
+            float f = 1.0f / tileWidth;
+            float f1 = 1.0f / tileHeight;
+            GL11.glColor4f((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
+            Tessellator tessellator = Tessellator.getInstance();
+            WorldRenderer bufferbuilder = tessellator.getWorldRenderer();
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+            bufferbuilder.pos(x, y + height, 0.0).tex(u * f, (v + vHeight) * f1).endVertex();
+            bufferbuilder.pos(x + width, y + height, 0.0).tex((u + uWidth) * f, (v + vHeight) * f1).endVertex();
+            bufferbuilder.pos(x + width, y, 0.0).tex((u + uWidth) * f, v * f1).endVertex();
+            bufferbuilder.pos(x, y, 0.0).tex(u * f, v * f1).endVertex();
+            tessellator.draw();
+        }
     }
 }

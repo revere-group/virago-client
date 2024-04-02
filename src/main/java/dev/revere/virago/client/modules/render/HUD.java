@@ -161,7 +161,8 @@ public class HUD extends AbstractModule {
                 break;
             case CSGO:
                 RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, new Color(0,0, 0, 150));
-                RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, 1, new Color(ColorUtil.getColor(false)));
+                RenderUtils.renderGradientRect((int) watermarkDraggable.getX(), (int) watermarkDraggable.getY(), (int) (fontRenderer.getStringWidth(finalText) + 2 + watermarkDraggable.getX()), (int) (watermarkDraggable.getY() + 2), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+                //RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, 1, new Color(ColorUtil.getColor(false)));
                 fontRenderer.drawStringWithShadow(finalText, watermarkDraggable.getX() + 1, watermarkDraggable.getY() + 4, ColorUtil.getColor(false));
                 watermarkDraggable.setWidth(fontRenderer.getStringWidth(finalText));
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 6);

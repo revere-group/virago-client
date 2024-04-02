@@ -30,6 +30,18 @@ public class ColorUtil {
         GL11.glColor4f((float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, (float)a / 255.0f);
     }
 
+    public static int reAlpha(int color, float alpha) {
+        try {
+            Color c = new Color(color);
+            float r = 0.003921569f * (float)c.getRed();
+            float g = 0.003921569f * (float)c.getGreen();
+            float b = 0.003921569f * (float)c.getBlue();
+            return new Color(r, g, b, alpha).getRGB();
+        }
+        catch (Throwable e) {
+            return color;
+        }
+    }
 
     /**
      * Sets the color
@@ -256,10 +268,43 @@ public class ColorUtil {
         return -1;
     }
 
-    private static int rainbow(int delay) {
+    public static int rainbow(int delay) {
         double rainbowState = Math.ceil((System.currentTimeMillis() + delay / 2) / 10.0);
         rainbowState %= 360;
         return Color.getHSBColor((float) (rainbowState / 360.0f), 0.5f, 1f).getRGB();
+    }
+
+    // thanks tena
+
+    public static Color interpolateColorsBackAndForth(int speed, int index, Color start, Color end, boolean trueColor) {
+        int angle = (int)((System.currentTimeMillis() / (long)speed + (long)index) % 360L);
+        angle = (angle >= 180 ? 360 - angle : angle) * 2;
+        return trueColor ? interpolateColorHue(start, end, (float)angle / 360.0f) : interpolateColorC(start, end, (float)angle / 360.0f);
+    }
+
+    public static Color interpolateColorC(Color color1, Color color2, float amount) {
+        amount = Math.min(1.0f, Math.max(0.0f, amount));
+        return new Color(interpolateInt(color1.getRed(), color2.getRed(), amount), interpolateInt(color1.getGreen(), color2.getGreen(), amount), interpolateInt(color1.getBlue(), color2.getBlue(), amount), interpolateInt(color1.getAlpha(), color2.getAlpha(), amount));
+    }
+
+    public static Color interpolateColorHue(Color color1, Color color2, float amount) {
+        amount = Math.min(1.0f, Math.max(0.0f, amount));
+        float[] color1HSB = Color.RGBtoHSB(color1.getRed(), color1.getGreen(), color1.getBlue(), null);
+        float[] color2HSB = Color.RGBtoHSB(color2.getRed(), color2.getGreen(), color2.getBlue(), null);
+        Color resultColor = Color.getHSBColor(interpolateFloat(color1HSB[0], color2HSB[0], amount), interpolateFloat(color1HSB[1], color2HSB[1], amount), interpolateFloat(color1HSB[2], color2HSB[2], amount));
+        return new Color(resultColor.getRed(), resultColor.getGreen(), resultColor.getBlue(), interpolateInt(color1.getAlpha(), color2.getAlpha(), amount));
+    }
+
+    public static Double interpolate(double oldValue, double newValue, double interpolationValue) {
+        return oldValue + (newValue - oldValue) * interpolationValue;
+    }
+
+    public static float interpolateFloat(float oldValue, float newValue, double interpolationValue) {
+        return interpolate(oldValue, newValue, (float)interpolationValue).floatValue();
+    }
+
+    public static int interpolateInt(int oldValue, int newValue, double interpolationValue) {
+        return interpolate(oldValue, newValue, (float)interpolationValue).intValue();
     }
 
 }

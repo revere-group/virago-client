@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.util.render.Circle;
 import lombok.Getter;
 import net.minecraft.block.Block;
@@ -123,6 +124,8 @@ public abstract class EntityPlayer extends EntityLivingBase
 
     @Getter
     public List<Circle> circles = new ArrayList<>();
+    @Getter
+    public KillAura.TargetHUD targetHUD;
     public boolean raycastGround;
 
     public EntityPlayer(World worldIn, GameProfile gameProfileIn)
