@@ -19,7 +19,6 @@ import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.TimerUtil;
-import dev.revere.virago.util.animation.util.AnimationUtils;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -65,6 +64,7 @@ import java.util.stream.Collectors;
  */
 @ModuleData(name = "KillAura", description = "Automatically attacks entities around you", type = EnumModuleType.COMBAT)
 public class KillAura extends AbstractModule {
+
     private final Setting<AttackStage> attackStage = new Setting<>("Attack Stage", AttackStage.PRE).describedBy("The attack stage.");
     private final Setting<BlockMode> blockMode = new Setting<>("Block Mode", BlockMode.FAKE)
             .describedBy("The autoblock mode.");
@@ -76,6 +76,7 @@ public class KillAura extends AbstractModule {
     private final Setting<Boolean> moveFix = new Setting<>("Move Fix", false).describedBy("Fix the move speed when attacking");
     private final Setting<Boolean> gcdFix = new Setting<>("GCD Fix", false).describedBy("Whether to enable a GCD fix.");
 
+    private final Setting<Boolean> targetHud = new Setting<>("TargetHud", true).describedBy("Display a target hud.");
     private final Setting<Boolean> targetPlayers = new Setting<>("Players", true).describedBy("Target players.");
     private final Setting<Boolean> targetAnimals = new Setting<>("Animals", false).describedBy("Target animals.");
     private final Setting<Boolean> targetMonsters = new Setting<>("Monsters", false).describedBy("Target monsters.");
@@ -150,6 +151,7 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<Render2DEvent> render2DEventListener = event -> {
+        if (!targetHud.getValue()) return;
         ScaledResolution sr = new ScaledResolution(mc);
         Iterator<Entity> iterator = mc.theWorld.loadedEntityList.iterator();
         int renderIndex = 0;
@@ -542,9 +544,6 @@ public class KillAura extends AbstractModule {
             String healthStr = (double) Math.round(this.ent.getHealth() * 10.0f) / 10.0 + " hp";
 
             float width = Math.max(75.0f, fontRenderer.getStringWidth(playerName) + 45.0f);
-            float health = target.getHealth();
-            double hpPercentage = health / target.getMaxHealth();
-            hpPercentage = MathHelper.clamp_double(hpPercentage, 0.0, 1.0);
 
             GL11.glTranslatef(x, y, 0.0f);
             RenderUtils.drawRoundedRect(0.0f, 0.0f, 28.0f + width, 28.0f, 2.0f, ColorUtil.reAlpha(-16777216, 0.5f));
@@ -554,16 +553,11 @@ public class KillAura extends AbstractModule {
 
             RenderUtils.drawRect(37.0f, 14.5f, 26.0f + width - 2.0f, 17.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
 
+            float health = target.getHealth();
+            double hpPercentage = health / target.getMaxHealth();
+            hpPercentage = MathHelper.clamp_double(hpPercentage, 0.0, 1.0);
             float barWidth = 26.0f + width - 2.0f - 37.0f;
             float drawPercent = (float) (37.0 + (double) (barWidth / 100.0f) * (hpPercentage * 100.0));
-            if (this.animation <= 0.0f) {
-                this.animation = drawPercent;
-            }
-            if (this.ent.hurtTime <= 6) {
-                this.animation = AnimationUtils.getAnimationState(this.animation, drawPercent, (float) Math.max(10.0, (double) (Math.abs(this.animation - drawPercent) * 30.0f) * 0.4));
-            }
-
-            RenderUtils.renderGradientRect(37, 14, (int) this.animation, 17, 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
             RenderUtils.renderGradientRect(37, 14, (int) drawPercent, 17, 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
 
             font.getIcon10().drawString("s", 30.0f, 16.0f, -1);
