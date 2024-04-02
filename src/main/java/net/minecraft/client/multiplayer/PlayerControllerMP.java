@@ -2,6 +2,7 @@ package net.minecraft.client.multiplayer;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.attack.AttackEvent;
+import dev.revere.virago.client.events.player.window.WindowClickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -468,6 +469,8 @@ public class PlayerControllerMP
 
     public ItemStack windowClick(int windowId, int slotId, int mouseButtonClicked, int mode, EntityPlayer playerIn)
     {
+        if (playerIn.equals(mc.thePlayer))
+            Virago.getInstance().getEventBus().call(new WindowClickEvent(windowId, slotId, mouseButtonClicked, mode));
         short short1 = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
         ItemStack itemstack = playerIn.openContainer.slotClick(slotId, mouseButtonClicked, mode, playerIn);
         this.netClientHandler.addToSendQueue(new C0EPacketClickWindow(windowId, slotId, mouseButtonClicked, mode, itemstack, short1));

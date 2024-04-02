@@ -3,6 +3,7 @@ package dev.revere.virago.util.render;
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.modules.render.HUD;
 import dev.revere.virago.client.services.ModuleService;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.optifine.util.MathUtils;
 import org.lwjgl.opengl.GL11;
@@ -53,8 +54,32 @@ public class ColorUtil {
         color(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
     }
 
+
+    public static void color(int color) {
+        float[] rgba = convertRGB(color);
+        GL11.glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
+    }
+
+
+    public static void color(Color color, float alpha) {
+        GlStateManager.color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f);
+    }
+
     public static Color withAlpha(final Color color, final int alpha) {
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) MathUtils.clamp(0, 255, alpha));
+    }
+
+    public static Color toColorRGB(int rgb, float alpha) {
+        float[] rgba = convertRGB(rgb);
+        return new Color(rgba[0], rgba[1], rgba[2], alpha / 255f);
+    }
+
+    public static float[] convertRGB(int rgb) {
+        float a = (rgb >> 24 & 0xFF) / 255.0f;
+        float r = (rgb >> 16 & 0xFF) / 255.0f;
+        float g = (rgb >> 8 & 0xFF) / 255.0f;
+        float b = (rgb & 0xFF) / 255.0f;
+        return new float[]{r, g, b, a};
     }
 
     /**

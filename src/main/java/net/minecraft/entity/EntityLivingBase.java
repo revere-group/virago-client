@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.update.StrafeEvent;
+import dev.revere.virago.client.modules.render.BlockAnimations;
+import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -1141,7 +1143,11 @@ public abstract class EntityLivingBase extends Entity
 
     private int getArmSwingAnimationEnd()
     {
-        return this.isPotionActive(Potion.digSpeed) ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1 : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
+        final BlockAnimations animations = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(BlockAnimations.class);
+        return this.isPotionActive(Potion.digSpeed) ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1 :
+                (int) ((this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6) *
+                        (animations.isEnabled() ? Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(BlockAnimations.class).speed.getValue() : 1));
+        //return this.isPotionActive(Potion.digSpeed) ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1 : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
     }
 
     public void swingItem()

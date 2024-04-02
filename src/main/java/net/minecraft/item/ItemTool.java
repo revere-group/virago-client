@@ -2,6 +2,8 @@ package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
 import java.util.Set;
+
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -13,7 +15,7 @@ import net.minecraft.world.World;
 public class ItemTool extends Item
 {
     private Set<Block> effectiveBlocks;
-    protected float efficiencyOnProperMaterial = 4.0F;
+    @Getter protected float efficiencyOnProperMaterial = 4.0F;
     private float damageVsEntity;
     protected Item.ToolMaterial toolMaterial;
 

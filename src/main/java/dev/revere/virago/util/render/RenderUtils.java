@@ -3,10 +3,14 @@ package dev.revere.virago.util.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
@@ -25,7 +29,7 @@ import java.nio.IntBuffer;
  */
 public class RenderUtils {
     public static Minecraft mc = Minecraft.getMinecraft();
-
+    private static final Frustum frustrum = new Frustum();
 
     public static void drawMicrosoftLogo(float x, float y, float size, float spacing) {
         drawMicrosoftLogo(x, y, size, spacing, 1f);
@@ -44,6 +48,45 @@ public class RenderUtils {
         GlStateManager.translate(x, y, 0);
         GlStateManager.scale(scale[0], scale[1], 1);
         GlStateManager.translate(-x, -y, 0);
+    }
+
+    public static boolean isInViewFrustrum(Entity entity) {
+        return isInViewFrustrum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck;
+    }
+
+    private static boolean isInViewFrustrum(AxisAlignedBB bb) {
+        Entity current = Minecraft.getMinecraft().getRenderViewEntity();
+        frustrum.setPosition(current.posX, current.posY, current.posZ);
+        return frustrum.isBoundingBoxInFrustum(bb);
+    }
+
+    public static void pre3D() {
+        GL11.glPushMatrix();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+    }
+
+    public static void post3D() {
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glShadeModel(GL11.GL_FLAT);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glPopMatrix();
+        GL11.glColor4f(1, 1, 1, 1);
+    }
+
+    public static double[] project2D(final double x, final double y, final double z) {
+        FloatBuffer objectPosition = ActiveRenderInfo.objectCoords();
+        ScaledResolution sc = new ScaledResolution(mc);
+        if (GLU.gluProject((float)x, (float)y, (float)z, ActiveRenderInfo.modelview(), ActiveRenderInfo.projection(), ActiveRenderInfo.viewport(), objectPosition))
+            return new double[]{ objectPosition.get(0) / sc.getScaleFactor(), objectPosition.get(1) / sc.getScaleFactor(),
+                    objectPosition.get(2) };
+        return null;
     }
 
     /**

@@ -113,4 +113,19 @@ public class ActiveRenderInfo
     {
         return rotationXY;
     }
+
+    public static FloatBuffer modelview() {
+        return MODELVIEW;
+    }
+    public static FloatBuffer projection() {
+        return PROJECTION;
+    }
+
+    public static IntBuffer viewport() {
+        return VIEWPORT;
+    }
+
+    public static FloatBuffer objectCoords() {
+        return OBJECTCOORDS;
+    }
 }

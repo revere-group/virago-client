@@ -49,7 +49,7 @@ public class FontService implements IService {
 
     public void createFonts() {
         this.jetbrainsMonoBold = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/JetBrainsMono-Bold.ttf"), 20, Font.TRUETYPE_FONT), true, true);
-        this.visionBlack = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/Vision-Black.otf"), 24, Font.PLAIN), true, true);
+        this.visionBlack = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/Vision-Black.otf"), 20, Font.TRUETYPE_FONT), true, true);
         this.sfProTextRegular = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/SF-Pro-Text-Regular.ttf"), 20, Font.TRUETYPE_FONT), true, true);
         this.productSans28 = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/product_sans.ttf"), 28, Font.TRUETYPE_FONT), true, true);
         this.productSans = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/product_sans.ttf"), 20, Font.TRUETYPE_FONT), true, true);

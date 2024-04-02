@@ -11,6 +11,7 @@ import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.update.PostMotionEvent;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
+import net.minecraft.network.play.server.S03PacketTimeUpdate;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.play.server.S27PacketExplosion;
 import org.lwjgl.input.Keyboard;
@@ -52,6 +53,8 @@ public class Velocity extends AbstractModule {
                 handleEntityVelocityPacket((S12PacketEntityVelocity) packet, event);
             } else if (packet instanceof S27PacketExplosion) {
                 handleExplosionPacket((S27PacketExplosion) packet, event);
+            } else if (packet instanceof S03PacketTimeUpdate) {
+                event.setCancelled(true);
             }
         }
     };

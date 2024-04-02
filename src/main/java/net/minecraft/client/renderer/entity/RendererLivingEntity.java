@@ -3,6 +3,9 @@ package net.minecraft.client.renderer.entity;
 import com.google.common.collect.Lists;
 import java.nio.FloatBuffer;
 import java.util.List;
+
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.events.render.RenderNametagEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -610,7 +613,9 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
     {
         if (!Reflector.RenderLivingEvent_Specials_Pre_Constructor.exists() || !Reflector.postForgeBusEvent(Reflector.RenderLivingEvent_Specials_Pre_Constructor, new Object[] {entity, this, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z)}))
         {
-            if (this.canRenderName(entity))
+            RenderNametagEvent renderNametagEvent = new RenderNametagEvent(entity);
+            Virago.getInstance().getEventBus().call(renderNametagEvent);
+            if (this.canRenderName(entity) && !renderNametagEvent.isCancelled())
             {
                 double d0 = entity.getDistanceSqToEntity(this.renderManager.livingPlayer);
                 float f = entity.isSneaking() ? NAME_TAG_RANGE_SNEAK : NAME_TAG_RANGE;

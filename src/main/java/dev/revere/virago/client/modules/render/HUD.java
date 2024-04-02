@@ -145,21 +145,21 @@ public class HUD extends AbstractModule {
     }
 
     private void renderWatermark() {
+        String clientText = Virago.getInstance().getName().toLowerCase() + "\u00A77client v";
+        String versionText = Virago.getInstance().getVersion() + " | ";
+        String usernameText = Virago.getInstance().getViragoUser().getUsername().toLowerCase() + "\u00A77 | ";
+        String serverText = mc.getCurrentServerData() != null ? mc.getCurrentServerData().serverIP : "singleplayer";
+
+        String finalText = clientText + versionText + usernameText + serverText;
         switch (watermarkMode.getValue()) {
             case TEXT:
                 FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
-                RoundedUtils.round(watermarkDraggable.getX(), watermarkDraggable.getY(), font.getVisionBlack().getStringWidth("VIRAGO") + 5, watermarkDraggable.getHeight(), 4, new Color(10,10,10));
-                font.getVisionBlack().drawString("VIRAGO", watermarkDraggable.getX() + 2, watermarkDraggable.getY() + 5, ColorUtil.getColor(false), false);
-                watermarkDraggable.setWidth(font.getVisionBlack().getStringWidth("VIRAGO"));
-                watermarkDraggable.setHeight(font.getVisionBlack().getHeight() + 7);
+                RoundedUtils.round(watermarkDraggable.getX(), watermarkDraggable.getY(), font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()) + 5, watermarkDraggable.getHeight(), 4, new Color(10,10,10));
+                font.getRalewayExtraBold().drawString(finalText.toUpperCase(), watermarkDraggable.getX() + 2, watermarkDraggable.getY() + 5, ColorUtil.getColor(false), false);
+                watermarkDraggable.setWidth(font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()));
+                watermarkDraggable.setHeight(font.getRalewayExtraBold().getHeight() + 7);
                 break;
             case CSGO:
-                String clientText = Virago.getInstance().getName().toLowerCase() + "\u00A77client v";
-                String versionText = Virago.getInstance().getVersion() + " | ";
-                String usernameText = Virago.getInstance().getViragoUser().getUsername().toLowerCase() + "\u00A77 | ";
-                String serverText = mc.getCurrentServerData() != null ? mc.getCurrentServerData().serverIP : "singleplayer";
-
-                String finalText = clientText + versionText + usernameText + serverText;
                 RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, new Color(0,0, 0, 150));
                 RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, 1, new Color(ColorUtil.getColor(false)));
                 fontRenderer.drawStringWithShadow(finalText, watermarkDraggable.getX() + 1, watermarkDraggable.getY() + 4, ColorUtil.getColor(false));
