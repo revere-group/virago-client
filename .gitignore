@@ -34,6 +34,7 @@ workspace/optionsshaders.txt
 workspace/logs/*
 workspace/screenshots/*
 workspace/usercache.json
+workspace/resourcepacks/*
 
 install.cmd
 install.sh
