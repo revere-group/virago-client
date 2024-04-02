@@ -1,6 +1,7 @@
 package dev.revere.virago.client.modules.combat;
 
 import com.google.common.eventbus.Subscribe;
+import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
@@ -12,6 +13,9 @@ import dev.revere.virago.client.events.update.PostMotionEvent;
 import dev.revere.virago.client.events.update.PreMotionEvent;
 import dev.revere.virago.client.events.update.StrafeEvent;
 import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.client.modules.player.Scaffold;
+import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.TimerUtil;
 import dev.revere.virago.util.render.ColorUtil;
 import net.minecraft.client.renderer.GlStateManager;
@@ -87,6 +91,8 @@ public class KillAura extends AbstractModule {
             return;
         }
 
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled()) return;
+
         blocking = true;
 
         if (!moveFix.getValue()) {
@@ -128,6 +134,7 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled()) return;
         this.postAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.POST) && this.hitTimerDone()) {
             this.attack(this.target);
@@ -214,6 +221,7 @@ public class KillAura extends AbstractModule {
             packet = new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem());
         }
 
+        Logger.addChatMessage("Sending block packet");
         if (callEvent) {
             mc.getNetHandler().addToSendQueue(packet);
         } else {
