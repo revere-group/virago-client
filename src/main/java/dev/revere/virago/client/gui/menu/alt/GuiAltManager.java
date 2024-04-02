@@ -66,7 +66,7 @@ public class GuiAltManager extends GuiScreen {
         int CENTER_X = width / 2;
         int CENTER_Y = height / 2;
 
-        list = new AltList(mc, CENTER_X - 50, 290, 42, width, height, 90, height);
+        list = new AltList(mc, CENTER_X - 50, 290, 42, width, height + 35, 90, height - 35);
 
         buttonList.clear();
         buttonList.add(new GuiButton(7, 4, 4, 60, 22, "Back"));
@@ -374,7 +374,7 @@ public class GuiAltManager extends GuiScreen {
         public void drawScreen(int mouseXIn, int mouseYIn, float partialTicks) {
             ScaledResolution resolution = new ScaledResolution(mc);
             int topScissor = top + 3;
-            int bottomScissor = height - 35;
+            int bottomScissor = height - 66;
             GL11.glScissor(x * resolution.getScaleFactor(), (resolution.getScaledHeight() - bottomScissor) * resolution.getScaleFactor(), width * resolution.getScaleFactor(), (bottomScissor - topScissor) * resolution.getScaleFactor());
             GL11.glEnable(GL11.GL_SCISSOR_TEST);
             super.drawScreen(mouseXIn, mouseYIn, partialTicks);
