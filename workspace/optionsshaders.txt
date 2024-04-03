@@ -1,19 +1,19 @@
-#Thu Mar 28 14:57:47 CET 2024
-shaderPack=OFF
-antialiasingLevel=0
-normalMapEnabled=true
-specularMapEnabled=true
-renderResMul=1.0
-shadowResMul=1.0
+#Wed Apr 03 19:58:06 BST 2024
 handDepthMul=0.125
-cloudShadow=false
-oldHandLight=default
-oldLighting=default
-tweakBlockDamage=false
-shadowClipFrustrum=true
 TexMinFilB=0
-TexMinFilN=0
-TexMinFilS=0
-TexMagFilB=0
+oldLighting=default
 TexMagFilN=0
+tweakBlockDamage=false
+cloudShadow=false
 TexMagFilS=0
+shaderPack=Chocapic13_V6_NoShadows_Lite_Beta2.zip
+TexMinFilN=0
+specularMapEnabled=true
+normalMapEnabled=true
+renderResMul=1.0
+oldHandLight=default
+TexMinFilS=0
+shadowResMul=1.0
+shadowClipFrustrum=true
+TexMagFilB=0
+antialiasingLevel=0

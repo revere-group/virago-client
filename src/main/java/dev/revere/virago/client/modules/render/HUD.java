@@ -1,6 +1,5 @@
 package dev.revere.virago.client.modules.render;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.draggable.Draggable;
 import dev.revere.virago.api.event.handler.EventHandler;
@@ -10,7 +9,6 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.services.DraggableService;
 import dev.revere.virago.client.services.FontService;
@@ -43,6 +41,8 @@ public class HUD extends AbstractModule {
 
     private final Draggable watermarkDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "Watermark", 3, 3));
     private final Draggable fpsDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "FPS", 6, 20));
+    private final Draggable bpsDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "BPS", 20, 40));
+
 
     public Setting<Boolean> arraylist = new Setting<>("ArrayList", true).describedBy("Should the arraylist be rendered?");
     public Setting<Boolean> lowercase = new Setting<>("Lowercase", true)
@@ -51,6 +51,7 @@ public class HUD extends AbstractModule {
     public Setting<Boolean> watermark = new Setting<>("Watermark", true).describedBy("Should the watermark be rendered?");
     public Setting<Boolean> background = new Setting<>("Background", true).describedBy("Should the background be rendered?");
     public Setting<Boolean> fps = new Setting<>("FPS", false).describedBy("Should the fps be rendered?");
+    public Setting<Boolean> bps = new Setting<>("BPS", false).describedBy("Should the bps be rendered?");
 
     public Setting<WatermarkMode> watermarkMode = new Setting<>("Watermark", WatermarkMode.CSGO).describedBy("The watermark mode to use for the HUD");
     public Setting<ColorMode> colorMode = new Setting<>("Color", ColorMode.CLIENT).describedBy("The color mode to use for the HUD");
@@ -127,13 +128,15 @@ public class HUD extends AbstractModule {
         ScaledResolution sr = new ScaledResolution(mc);
         getFont(font);
 
-        if (watermark.getValue()) {
+        if (watermark.getValue())
             renderWatermark();
-        }
 
-        if (fps.getValue()) {
+        if (fps.getValue())
             renderFPS();
-        }
+
+
+        if(bps.getValue())
+            renderBPS();
 
         String username = Virago.getInstance().getViragoUser().getUsername().toLowerCase();
         if (!(mc.currentScreen instanceof GuiChat)) {
@@ -149,6 +152,20 @@ public class HUD extends AbstractModule {
         fontRenderer.drawString(fps, fpsDraggable.getX(), fpsDraggable.getY(), 0xFFFFFFFF);
         fpsDraggable.setWidth(fontRenderer.getStringWidth(fps));
         fpsDraggable.setHeight(fontRenderer.getHeight());
+    }
+
+    private void renderBPS() {
+        String bps = "BPS: " + getSpeed();
+        fontRenderer.drawString(bps, bpsDraggable.getX(), bpsDraggable.getY(), 0xFFFFFFFF);
+        bpsDraggable.setWidth(fontRenderer.getStringWidth(bps));
+        bpsDraggable.setHeight(fontRenderer.getHeight());
+    }
+
+    /**
+     * Used to get the players speed
+     */
+    public double getSpeed() {
+        return Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ);
     }
 
     private void renderWatermark() {
