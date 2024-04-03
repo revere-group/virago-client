@@ -19,7 +19,7 @@ public class AutoHypixel extends AbstractModule {
 
 
     private final Setting<Boolean> rejoin = new Setting<>("Rejoin", true);
-    private final Setting<Boolean> autoGG = new Setting<>("AutoGG", true);
+    private final Setting<Boolean> autoGG = new Setting<>("AutoGG", false);
 
     @EventHandler
     private final Listener<PacketEvent> onPacketReceiveEvent = event -> {
@@ -27,9 +27,14 @@ public class AutoHypixel extends AbstractModule {
             S45PacketTitle s45 = event.getPacket();
             if (s45.getMessage() == null) return;
 
-            if (StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("VICTORY!") || StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("YOU DIED!") ) {
+            if (StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("VICTORY!") ) {
                 if(autoGG.getValue())
                     mc.thePlayer.sendChatMessage("GG");
+
+                if(rejoin.getValue())
+                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
+
+            } else if(StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("YOU DIED!")) {
 
                 if(rejoin.getValue())
                     mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));

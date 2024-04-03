@@ -148,24 +148,39 @@ public class HUD extends AbstractModule {
     };
 
     private void renderFPS() {
-        String fps = "FPS: " + Minecraft.getDebugFPS();
-        fontRenderer.drawString(fps, fpsDraggable.getX(), fpsDraggable.getY(), 0xFFFFFFFF);
-        fpsDraggable.setWidth(fontRenderer.getStringWidth(fps));
-        fpsDraggable.setHeight(fontRenderer.getHeight());
+        String fps = Minecraft.getDebugFPS() + " FPS";
+        int width = fontRenderer.getStringWidth(fps) + 4;
+        int height = fontRenderer.getHeight() + 4;
+
+        RenderUtils.rect(fpsDraggable.getX(), fpsDraggable.getY() - 1, width, height, new Color(0,0,0, 120));
+        RoundedUtils.shadowGradient(fpsDraggable.getX(), fpsDraggable.getY() - 1, width, height, 1, 5, 5, new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), false);
+        RenderUtils.renderGradientRect((int) fpsDraggable.getX(), (int) fpsDraggable.getY() - 1, (int) (width + fpsDraggable.getX()), (int) (fpsDraggable.getY()), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+
+        fontRenderer.drawString(fps, fpsDraggable.getX() + 2, fpsDraggable.getY() + 2, 0xFFFFFFFF);
+        fpsDraggable.setWidth(width);
+        fpsDraggable.setHeight(height);
     }
 
     private void renderBPS() {
-        String bps = "BPS: " + getSpeed();
-        fontRenderer.drawString(bps, bpsDraggable.getX(), bpsDraggable.getY(), 0xFFFFFFFF);
-        bpsDraggable.setWidth(fontRenderer.getStringWidth(bps));
-        bpsDraggable.setHeight(fontRenderer.getHeight());
+        String bps = getSpeed() + " BPS";
+        int width = fontRenderer.getStringWidth(bps) + 4;
+        int height = fontRenderer.getHeight() + 4;
+
+        RenderUtils.rect(bpsDraggable.getX(), bpsDraggable.getY() - 1, width, height, new Color(0,0,0, 120));
+        RoundedUtils.shadowGradient(bpsDraggable.getX(), bpsDraggable.getY() - 1, width, height, 1, 5, 5, new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), false);
+        RenderUtils.renderGradientRect((int) bpsDraggable.getX(), (int) bpsDraggable.getY() - 1, (int) (width + bpsDraggable.getX()), (int) (bpsDraggable.getY()), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+
+        fontRenderer.drawString(bps, bpsDraggable.getX() + 2, bpsDraggable.getY() + 2, 0xFFFFFFFF);
+        bpsDraggable.setWidth(width);
+        bpsDraggable.setHeight(height);
     }
 
     /**
      * Used to get the players speed
      */
     public double getSpeed() {
-        return Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ);
+        double bps = (Math.hypot(mc.thePlayer.posX - mc.thePlayer.prevPosX, mc.thePlayer.posZ - mc.thePlayer.prevPosZ) * mc.timer.timerSpeed) * 20;
+        return Math.round(bps * 100.0) / 100.0;
     }
 
     private void renderWatermark() {
