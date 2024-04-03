@@ -28,7 +28,7 @@ public class AntiBot extends AbstractModule {
     @EventHandler
     private final Listener<UpdateEvent> playerUpdateEvent = event -> {
         List<EntityPlayer> playerEntities = mc.theWorld.playerEntities;
-        mc.theWorld.setWorldTime(17000L);
+
         int i = 0;
         int playerEntitiesSize = playerEntities.size();
         while (i < playerEntitiesSize) {

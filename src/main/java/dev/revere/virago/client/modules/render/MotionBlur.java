@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 @ModuleData(name = "MotionBlur", description = "Adds motion blur to the game", type = EnumModuleType.RENDER)
 public class MotionBlur extends AbstractModule {
 
-    public static Setting<Integer> amount = new Setting<>("Amount", 4)
+    public static Setting<Integer> amount = new Setting<>("Amount", 6)
             .minimum(1)
             .maximum(10)
             .incrementation(1)

@@ -35,9 +35,9 @@ public class ESP extends AbstractModule {
 
     private final Setting<Boolean> nameTagsProperty = new Setting<>("NameTags", true);
     private final Setting<Boolean> healthProperty = new Setting<>("Health", true);
-    private final Setting<Boolean> handProperty = new Setting<>("Hand", true);
+    private final Setting<Boolean> handProperty = new Setting<>("Hand", false);
 
-    private final Setting<BoxMode> boxModeProperty = new Setting<>("Box Mode", BoxMode.BOX);
+    private final Setting<BoxMode> boxModeProperty = new Setting<>("Box Mode", BoxMode.NONE);
     private final Setting<Boolean> oppositeCornersProperty = new Setting<>("Opposite Corners", false).visibleWhen(() -> boxModeProperty.getValue() == BoxMode.HALF_CORNERS);
     private final Setting<Integer> boxThicknessProperty = new Setting<>("Box Thickness", 1)
             .minimum(1)

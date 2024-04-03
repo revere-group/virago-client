@@ -45,16 +45,16 @@ public class HUD extends AbstractModule {
     private final Draggable fpsDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "FPS", 6, 20));
 
     public Setting<Boolean> arraylist = new Setting<>("ArrayList", true).describedBy("Should the arraylist be rendered?");
-    public Setting<Boolean> lowercase = new Setting<>("Lowercase", false)
+    public Setting<Boolean> lowercase = new Setting<>("Lowercase", true)
             .visibleWhen(arraylist::getValue)
             .describedBy("Make the text forced lowercase");
     public Setting<Boolean> watermark = new Setting<>("Watermark", true).describedBy("Should the watermark be rendered?");
     public Setting<Boolean> background = new Setting<>("Background", true).describedBy("Should the background be rendered?");
     public Setting<Boolean> fps = new Setting<>("FPS", false).describedBy("Should the fps be rendered?");
 
-    public Setting<WatermarkMode> watermarkMode = new Setting<>("Watermark", WatermarkMode.TEXT).describedBy("The watermark mode to use for the HUD");
+    public Setting<WatermarkMode> watermarkMode = new Setting<>("Watermark", WatermarkMode.CSGO).describedBy("The watermark mode to use for the HUD");
     public Setting<ColorMode> colorMode = new Setting<>("Color", ColorMode.CLIENT).describedBy("The color mode to use for the HUD");
-    public Setting<FontType> fontType = new Setting<>("Font", FontType.PRODUCT_SANS).describedBy("The font type to use for the HUD");
+    public Setting<FontType> fontType = new Setting<>("Font", FontType.SF_PRO).describedBy("The font type to use for the HUD");
     public Setting<Outline> arrayListOutline = new Setting<>("Outline", Outline.TOP_RIGHT)
             .visibleWhen(arraylist::getValue)
             .describedBy("How to outline the arraylist");
@@ -79,7 +79,7 @@ public class HUD extends AbstractModule {
             .describedBy("The opacity for background")
             .visibleWhen(() -> background.getValue());
 
-    public Setting<Float> rainbowSpeed = new Setting<>("Rainbow Speed", 0.5F)
+    public Setting<Float> rainbowSpeed = new Setting<>("Rainbow Speed", 12F)
             .minimum(1F)
             .maximum(20F)
             .incrementation(1F)
@@ -93,14 +93,14 @@ public class HUD extends AbstractModule {
             .visibleWhen(() -> colorMode.getValue() == ColorMode.CUSTOM)
             .describedBy("The speed at which the fade occurs");
 
-    public Setting<Float> colorSpacing = new Setting<>("Color Spacing", 2.0F)
+    public Setting<Float> colorSpacing = new Setting<>("Color Spacing", 4.0F)
             .minimum(1F)
             .maximum(10F)
             .incrementation(0.1F)
             .visibleWhen(() -> colorMode.getValue() == ColorMode.CUSTOM)
             .describedBy("The spacing between the colors");
 
-    public Setting<Float> elementHeight = new Setting<>("Height", 12f)
+    public Setting<Float> elementHeight = new Setting<>("Height", 13f)
             .minimum(11f)
             .maximum(15f)
             .incrementation(1f)

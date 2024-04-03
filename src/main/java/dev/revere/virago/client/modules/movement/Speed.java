@@ -28,7 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @ModuleData(name = "Speed", description = "Increases your movement speed", type = EnumModuleType.MOVEMENT)
 public class Speed extends AbstractModule {
 
-    public final Setting<WatchdogMode> watchdogMode = new Setting<>("Watchdog Mode", WatchdogMode.HOP)
+    public final Setting<WatchdogMode> watchdogMode = new Setting<>("Watchdog Mode", WatchdogMode.NO_STRAFE)
             .describedBy("How to control speed on Hypixel");
 
     private final Setting<Double> speedWatchdog = new Setting<>("Speed",0.8)
@@ -49,7 +49,7 @@ public class Speed extends AbstractModule {
             .describedBy("The amount to modify strafe.")
             .visibleWhen(() -> (watchdogMode.getValue() == WatchdogMode.HOP && safeStrafe.getValue()) || watchdogMode.getValue() == WatchdogMode.HOP_SMOOTH);
 
-    private final Setting<Double> speedNoStrafe = new Setting<>("Speed (nostrafe)", 1.95)
+    private final Setting<Double> speedNoStrafe = new Setting<>("Speed (nostrafe)", 2.1)
             .minimum(1.5D)
             .maximum(2.25D)
             .incrementation(0.05D)

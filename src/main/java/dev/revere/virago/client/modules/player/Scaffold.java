@@ -60,7 +60,7 @@ public class Scaffold extends AbstractModule {
     private final Setting<VecMode> vecMode = new Setting<>("Vec3 Mode", VecMode.LEGIT)
             .describedBy("The mode of the Vec3s.");
 
-    private final Setting<ItemMode> itemMode = new Setting<>("ItemMode", ItemMode.SPOOF)
+    private final Setting<ItemMode> itemMode = new Setting<>("ItemMode", ItemMode.SWITCH)
             .describedBy("The item mode of the scaffold.");
 
     private final Setting<Long> placeDelay = new Setting<>("Place Delay", 50L)
@@ -69,7 +69,7 @@ public class Scaffold extends AbstractModule {
             .incrementation(1L)
             .describedBy("The amount of times to attack per second");
 
-    private final Setting<Boolean> sprint = new Setting<>("Allow Sprinting", true)
+    private final Setting<Boolean> sprint = new Setting<>("Allow Sprinting", false)
             .describedBy("Whether or not to allow sprinting.");
 
 
@@ -79,10 +79,10 @@ public class Scaffold extends AbstractModule {
             .incrementation(0.1)
             .describedBy("The timer boost of the scaffold.");
 
-    private final Setting<Boolean> keepY = new Setting<>("KeepY", false)
+    private final Setting<Boolean> keepY = new Setting<>("KeepY", true)
             .describedBy("The blocks will stay at the same Y coordinate. Useful for using speed while scaffolding.");
 
-    private final Setting<Boolean> autoJump = new Setting<>("AutoJump", false)
+    private final Setting<Boolean> autoJump = new Setting<>("AutoJump", true)
             .describedBy("Automatically jumps while Keep Y is enabled.")
             .visibleWhen(keepY::getValue);
 

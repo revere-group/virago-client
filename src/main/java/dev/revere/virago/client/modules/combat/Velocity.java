@@ -30,7 +30,7 @@ public class Velocity extends AbstractModule {
             .incrementation(1.0f)
             .describedBy("The amount of horizontal knockback to take");
     
-    private final Setting<Float> vertical = new Setting<>("Vertical", 100.0f)
+    private final Setting<Float> vertical = new Setting<>("Vertical", 0.0f)
             .minimum(0.0f)
             .maximum(100.0f)
             .incrementation(1.0f)
@@ -53,8 +53,6 @@ public class Velocity extends AbstractModule {
                 handleEntityVelocityPacket((S12PacketEntityVelocity) packet, event);
             } else if (packet instanceof S27PacketExplosion) {
                 handleExplosionPacket((S27PacketExplosion) packet, event);
-            } else if (packet instanceof S03PacketTimeUpdate) {
-                event.setCancelled(true);
             }
         }
     };

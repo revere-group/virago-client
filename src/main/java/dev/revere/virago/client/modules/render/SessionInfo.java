@@ -120,7 +120,7 @@ public class SessionInfo extends AbstractModule {
         if(this.sessionTime == 0)
             return "Invalid Time";
 
-        return DurationFormatUtils.formatDuration(System.currentTimeMillis() - sessionTime, "H's,' m'm,' s's'");
+        return DurationFormatUtils.formatDuration(System.currentTimeMillis() - sessionTime, "H'h,' m'm,' s's'");
     }
 
     public enum FontType {

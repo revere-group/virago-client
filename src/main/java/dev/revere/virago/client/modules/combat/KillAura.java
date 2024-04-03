@@ -69,12 +69,12 @@ public class KillAura extends AbstractModule {
     private final Setting<BlockMode> blockMode = new Setting<>("Block Mode", BlockMode.FAKE)
             .describedBy("The autoblock mode.");
 
-    private final Setting<Double> aps = new Setting<>("APS", 10.0).minimum(1.0).maximum(20.0).incrementation(0.5).describedBy("The amount of times to attack per second");
-    private final Setting<Double> range = new Setting<>("Range", 4.0).minimum(2.0).maximum(6.0).incrementation(0.1).describedBy("The range to attack");
+    private final Setting<Double> aps = new Setting<>("APS", 10.5).minimum(1.0).maximum(20.0).incrementation(0.5).describedBy("The amount of times to attack per second");
+    private final Setting<Double> range = new Setting<>("Range", 3.0).minimum(2.0).maximum(6.0).incrementation(0.1).describedBy("The range to attack");
 
     private final Setting<Boolean> smoothRotations = new Setting<>("Smooth Rotations", true).describedBy("Rotate smoothly.");
-    private final Setting<Boolean> moveFix = new Setting<>("Move Fix", false).describedBy("Fix the move speed when attacking");
-    private final Setting<Boolean> gcdFix = new Setting<>("GCD Fix", false).describedBy("Whether to enable a GCD fix.");
+    private final Setting<Boolean> moveFix = new Setting<>("Move Fix", true).describedBy("Fix the move speed when attacking");
+    private final Setting<Boolean> gcdFix = new Setting<>("GCD Fix", true).describedBy("Whether to enable a GCD fix.");
 
     private final Setting<Boolean> targetHud = new Setting<>("TargetHud", true).describedBy("Display a target hud.");
     private final Setting<Boolean> targetPlayers = new Setting<>("Players", true).describedBy("Target players.");

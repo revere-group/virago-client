@@ -13,7 +13,7 @@ import dev.revere.virago.api.setting.Setting;
 @ModuleData(name = "Scoreboard", description = "Renders a scoreboard", type = EnumModuleType.RENDER)
 public class Scoreboard extends AbstractModule {
 
-    public final Setting<Boolean> numbers = new Setting<>("Numbers", true)
+    public final Setting<Boolean> numbers = new Setting<>("Numbers", false)
             .describedBy("Whether to render numbers on the scoreboard");
 
     @Override

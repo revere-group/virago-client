@@ -13,7 +13,7 @@ import dev.revere.virago.api.setting.Setting;
 @ModuleData(name = "BlockAnimations", description = "Allows you to animate blocks", type = EnumModuleType.RENDER)
 public class BlockAnimations extends AbstractModule {
 
-    public final Setting<Animation> animation = new Setting<>("Animation", Animation.OLD)
+    public final Setting<Animation> animation = new Setting<>("Animation", Animation.EXHI_TAP)
             .describedBy("The block animation");
 
     public final Setting<SwingAnimation> swing = new Setting<>("Swing", SwingAnimation.NORMAL)

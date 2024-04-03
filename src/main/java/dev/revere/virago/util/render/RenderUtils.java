@@ -477,6 +477,13 @@ public class RenderUtils {
         GL11.glDisable(2848);
     }
 
+    public static void drawHollowRectDefineWidth(float x, float y, float w, float h, float width, int color) {
+        Gui.drawHorizontalLineDefineWidth(x, w, y, width, color);
+        Gui.drawHorizontalLineDefineWidth(x, w, h, width, color);
+        Gui.drawVerticalLineDefineWidth(x, h, y, width, color);
+        Gui.drawVerticalLineDefineWidth(w, h, y, width, color);
+    }
+
     public static enum Direction {
         LEFT,
         UP,
