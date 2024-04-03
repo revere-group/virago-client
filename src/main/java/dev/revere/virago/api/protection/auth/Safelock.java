@@ -226,6 +226,9 @@ public class Safelock {
             GuiLicenceKey.isAuthorized = valid;
             Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
             if (valid) {
+                Virago.getInstance().getDiscordRPC().getActivity().setDetails(Virago.getInstance().getName() + " v" + Virago.getInstance().getVersion() + " | " + clientName);
+                Virago.getInstance().getDiscordRPC().getCore().activityManager().updateActivity(Virago.getInstance().getDiscordRPC().getActivity());
+
                 Minecraft.getMinecraft().displayGuiScreen(new CustomGuiMainMenu());
             }
             return new String[]{valid ? "2" : "1", neekeri, statusCode, String.valueOf(valid)};

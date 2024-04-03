@@ -190,7 +190,7 @@ public class Scaffold extends AbstractModule {
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
             }
             if (info.pos != null) {
-                if (up && placeTimer.hasTimeElapsed(230, true) && towerMode.getValue() == TowerMode.NONE) {
+                if (up && placeTimer.hasTimeElapsed(240, true) && towerMode.getValue() == TowerMode.NONE) {
                     this.placeBlock();
                 } else if (!up) {
                     this.placeBlock();

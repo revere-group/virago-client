@@ -8,6 +8,7 @@ import dev.revere.virago.api.skia.Renderer;
 import dev.revere.virago.client.gui.panel.PanelGUI;
 import dev.revere.virago.client.services.*;
 import dev.revere.virago.util.Logger;
+import dev.revere.virago.util.discord.DiscordRPC;
 import dev.revere.virago.util.input.KeybindManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,7 @@ public class Virago {
 
     private ServiceManager serviceManager;
     private ViragoUser viragoUser;
+    private DiscordRPC discordRPC;
     private PanelGUI panelGUI;
     private EventBus eventBus;
 
@@ -44,6 +46,7 @@ public class Virago {
      */
     public void startVirago() {
         System.out.println("Starting Virago...");
+        this.discordRPC = new DiscordRPC();
 
         if (!clientDir.exists() && clientDir.mkdir())
             Logger.info("Created client directory.", getClass());

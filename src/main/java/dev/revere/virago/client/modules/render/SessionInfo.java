@@ -18,6 +18,7 @@ import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
+import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -73,11 +74,18 @@ public class SessionInfo extends AbstractModule {
     @EventHandler
     public final Listener<PacketEvent> onPacketReceiveEvent = event -> {
         if (event.getPacket() instanceof S45PacketTitle) {
-            S45PacketTitle s45 = (S45PacketTitle) event.getPacket();
+            S45PacketTitle s45 = event.getPacket();
             if (s45.getMessage() == null) return;
 
             if (StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("VICTORY!")) {
                 this.wins++;
+            }
+        } else if (event.getPacket() instanceof S02PacketChat) {
+            S02PacketChat s02 = event.getPacket();
+            String message = s02.getChatComponent().getUnformattedText();
+
+            if (message.contains("killed by " + mc.thePlayer.getName())) {
+                this.kills++;
             }
         }
     };
