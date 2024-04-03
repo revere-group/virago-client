@@ -45,7 +45,7 @@ public class ESP extends AbstractModule {
             .incrementation(1);
 
     public int getBoxColor() {
-        return ColorUtil.getColor(false);
+        return ColorUtil.getColor(true);
     }
 
     @EventHandler
@@ -323,7 +323,9 @@ public class ESP extends AbstractModule {
                     maxY *= leftoverScale;
                     GL11.glScalef(scale, scale, 1);
                     String text = entity.getHeldItem().getDisplayName();
-                    mc.fontRendererObj.drawStringWithShadow(text, minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(text) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? maxY + mc.fontRendererObj.FONT_HEIGHT - 3 : maxY - mc.fontRendererObj.FONT_HEIGHT / 2f, new Color(255, 255, 255, MathHelper.floor_float(opacity)).getRGB());
+                    if (entity != mc.thePlayer) {
+                        mc.fontRendererObj.drawStringWithShadow(text, minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(text) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? maxY + mc.fontRendererObj.FONT_HEIGHT - 3 : maxY - mc.fontRendererObj.FONT_HEIGHT / 2f, new Color(255, 255, 255, MathHelper.floor_float(opacity)).getRGB());
+                    }
                     GL11.glScalef(leftoverScale, leftoverScale, 1);
                     minX *= scale;
                     minY *= scale;

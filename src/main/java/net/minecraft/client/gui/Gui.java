@@ -39,6 +39,33 @@ public class Gui
         drawRect(x, startY + 1, x + 1, endY, color);
     }
 
+    public static void drawHorizontalLineDefineWidth(double startX, double endX, double y, double width, int color)
+    {
+        if (endX < startX)
+        {
+            double i = startX;
+            startX = endX;
+            endX = i;
+        }
+
+        drawRect(startX, y, endX + width, y + width, color);
+    }
+
+    /**
+     * Draw a 1 pixel wide vertical line. Args : x, y1, y2, color
+     */
+    public static void drawVerticalLineDefineWidth(double x, double startY, double endY, double width, int color)
+    {
+        if (endY < startY)
+        {
+            double i = startY;
+            startY = endY;
+            endY = i;
+        }
+
+        drawRect(x, startY + width, x + width, endY, color);
+    }
+
     public static void drawRect(int left, int top, int right, int bottom, int color)
     {
         if (left < right)
@@ -74,6 +101,43 @@ public class Gui
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
+
+    public static void drawRect(double left, double top, double right, double bottom, int color)
+    {
+        if (left < right)
+        {
+            double i = left;
+            left = right;
+            right = i;
+        }
+
+        if (top < bottom)
+        {
+            double j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(f, f1, f2, f3);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldrenderer.pos((double)left, (double)bottom, 0.0D).endVertex();
+        worldrenderer.pos((double)right, (double)bottom, 0.0D).endVertex();
+        worldrenderer.pos((double)right, (double)top, 0.0D).endVertex();
+        worldrenderer.pos((double)left, (double)top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
 
     public static void drawRect2(double x, double y, double width, double height, int color) {
         GlStateManager.color(1,1,1,1);

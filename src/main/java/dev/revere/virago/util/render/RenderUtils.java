@@ -19,6 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.glu.GLU;
 
 import java.awt.*;
@@ -83,6 +84,36 @@ public class RenderUtils {
         return endDelay;
     }
 
+    public static double interpolate(double current, double old, double scale) {
+        return old + (current - old) * scale;
+    }
+
+    public static boolean glEnableBlend() {
+        final boolean wasEnabled = GL11.glIsEnabled(GL11.GL_BLEND);
+
+        if (!wasEnabled) {
+            GL11.glEnable(GL11.GL_BLEND);
+            GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        }
+
+        return wasEnabled;
+    }
+
+
+    public static void glRestoreBlend(final boolean wasEnabled) {
+        if (!wasEnabled) {
+            GL11.glDisable(GL11.GL_BLEND);
+        }
+    }
+
+
+    public static void drawHollowRectDefineWidth(float x, float y, float w, float h, float width, int color) {
+        Gui.drawHorizontalLineDefineWidth(x, w, y, width, color);
+        Gui.drawHorizontalLineDefineWidth(x, w, h, width, color);
+
+        Gui.drawVerticalLineDefineWidth(x, h, y, width, color);
+        Gui.drawVerticalLineDefineWidth(w, h, y, width, color);
+    }
 
     public static void drawMicrosoftLogo(float x, float y, float size, float spacing) {
         drawMicrosoftLogo(x, y, size, spacing, 1f);

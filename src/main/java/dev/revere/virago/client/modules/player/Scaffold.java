@@ -178,19 +178,33 @@ public class Scaffold extends AbstractModule {
 
         stackToPlace = setStackToPlace();
 
+        // wtf is this fix
+        boolean up = false;
         if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG)) {
-            if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
+            if (keepY.getValue() && !mc.thePlayer.movementInput.jump) {
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-            else
+            } else if (keepY.getValue() && towerMode.getValue() == TowerMode.NONE) {
+                up = true;
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-            if (info.pos != null) this.placeBlock();
+            } else {
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+            }
+            if (info.pos != null) {
+                if (up && placeTimer.hasTimeElapsed(230, true) && towerMode.getValue() == TowerMode.NONE) {
+                    this.placeBlock();
+                } else if (!up) {
+                    this.placeBlock();
+                }
+            }
         } else if (mode.getValue().equals(Mode.WATCHDOG)) {
             if (!mc.gameSettings.keyBindJump.isKeyDown()) {
                 if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
                 else
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                if (info.pos != null) this.placeBlock();
+                if (info.pos != null) {
+                    this.placeBlock();
+                }
             }
         }
 

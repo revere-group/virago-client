@@ -22,6 +22,26 @@ public class MathUtils
         return ((float)Math.PI / 2F) - ASIN_TABLE[(int)((double)(value + 1.0F) * 32767.5D) & 65535];
     }
 
+    public static double min(final double a, final double b) {
+        if (a > b) {
+            return b;
+        }
+        if (a < b) {
+            return a;
+        }
+        /* if either arg is NaN, return NaN */
+        if (a != b) {
+            return Double.NaN;
+        }
+        /* min(+0.0,-0.0) == -0.0 */
+        /* 0x8000000000000000L == Double.doubleToRawLongBits(-0.0d) */
+        long bits = Double.doubleToRawLongBits(a);
+        if (bits == 0x8000000000000000L) {
+            return a;
+        }
+        return b;
+    }
+
     public static int getAverage(int[] vals)
     {
         if (vals.length <= 0)
@@ -60,6 +80,12 @@ public class MathUtils
     {
         int i = MathHelper.roundUpToPowerOfTwo(val);
         return val == i ? i : i / 2;
+    }
+
+    public static double getDistance(double srcX, double srcZ, double dstX, double dstZ) {
+        double xDiff = dstX - srcX;
+        double zDiff = dstZ - srcZ;
+        return MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
     }
 
     public static boolean equalsDelta(float f1, float f2, float delta)

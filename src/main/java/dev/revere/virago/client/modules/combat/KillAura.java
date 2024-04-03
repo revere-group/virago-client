@@ -70,7 +70,7 @@ public class KillAura extends AbstractModule {
             .describedBy("The autoblock mode.");
 
     private final Setting<Double> aps = new Setting<>("APS", 10.5).minimum(1.0).maximum(20.0).incrementation(0.5).describedBy("The amount of times to attack per second");
-    private final Setting<Double> range = new Setting<>("Range", 3.0).minimum(2.0).maximum(6.0).incrementation(0.1).describedBy("The range to attack");
+    public final Setting<Double> range = new Setting<>("Range", 3.0).minimum(2.0).maximum(6.0).incrementation(0.1).describedBy("The range to attack");
 
     private final Setting<Boolean> smoothRotations = new Setting<>("Smooth Rotations", true).describedBy("Rotate smoothly.");
     private final Setting<Boolean> moveFix = new Setting<>("Move Fix", true).describedBy("Fix the move speed when attacking");

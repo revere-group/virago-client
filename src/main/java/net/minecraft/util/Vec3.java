@@ -1,5 +1,7 @@
 package net.minecraft.util;
 
+import lombok.Getter;
+
 public class Vec3
 {
     public final double xCoord;
