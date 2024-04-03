@@ -15,7 +15,9 @@ import dev.revere.virago.client.events.update.JoinEvent;
 import dev.revere.virago.client.events.update.LeaveEvent;
 import dev.revere.virago.client.services.DraggableService;
 import dev.revere.virago.client.services.FontService;
+import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
+import dev.revere.virago.util.render.RoundedUtils;
 import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -29,13 +31,11 @@ public class SessionInfo extends AbstractModule {
 
     private final Setting<Boolean> shadow = new Setting<>("Text Shadow", true);
     public Setting<FontType> fontType = new Setting<>("Font", FontType.PRODUCT_SANS).describedBy("The font type to use.");
-    private final Setting<Boolean> rounded = new Setting<>("Rounded", true);
-    private final Setting<Long> roundingRadius = new Setting<>("Rounding Radius", 7L)
-            .minimum(1L)
-            .maximum(30L)
-            .incrementation(1L)
-            .describedBy("The amount of rounding on the scoreboard")
-            .visibleWhen(rounded::getValue);
+    private final Setting<Integer> opacity = new Setting<>("Opacity", 180)
+            .minimum(0)
+            .maximum(255)
+            .incrementation(1)
+            .describedBy("The opacity for background");
 
     private Draggable draggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "Session Info", 200, 200));
 
@@ -49,19 +49,22 @@ public class SessionInfo extends AbstractModule {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
         getFont(font);
 
-        if(rounded.getValue()) {
-            RenderUtils.drawRoundedRect(draggable.getX(), draggable.getY(), 110, 55, roundingRadius.getValue(), 0x4F000000);
-        } else {
-            Color color = new Color(0x4F000000, true);
-            RenderUtils.rect(draggable.getX(), draggable.getY(), 100, 100, color);
-        }
+        RenderUtils.rect(draggable.getX(), draggable.getY() - 1, 115, 15, new Color(0,0,0, 120));
+        RenderUtils.rect(draggable.getX(), draggable.getY() - 1, 115, 50, new Color(0,0,0, opacity.getValue()));
+        RoundedUtils.shadowGradient(draggable.getX(), draggable.getY() - 1, 115, 50, 1, 5, 5, new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), false);
+        RenderUtils.renderGradientRect((int) draggable.getX(), (int) draggable.getY() + 14, (int) (115 + draggable.getX()), (int) (draggable.getY() + 15), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+        //RoundedUtils.round(draggable.getX(), draggable.getY() - 1, 113, 52, 4, new Color(20,20,20, 200));
 
-        fontRenderer.drawStringWithShadow("Session Stats", draggable.getX() + 2, draggable.getY() + 2, -1);
+        fontRenderer.drawStringWithShadow("Session Stats", draggable.getX() + 25, draggable.getY() + 2, -1);
 
-        fontRenderer.drawStringWithShadow("Duration: " + getSessionTime(), draggable.getX() + 2, draggable.getY() + 17, -1);
+        font.getIcon10().drawString("b", draggable.getX() + 2, draggable.getY() + 22, -1);
+        fontRenderer.drawStringWithShadow("Duration: " + getSessionTime(), draggable.getX() + 8, draggable.getY() + 18, -1);
 
-        fontRenderer.drawStringWithShadow("Kills: " + this.kills, draggable.getX() + 2, draggable.getY() + 32, -1);
-        fontRenderer.drawStringWithShadow("Wins: " + this.wins, draggable.getX() + 2, draggable.getY() + 42, -1);
+        font.getIcon10().drawString("a", draggable.getX() + 2, draggable.getY() + 31, -1);
+        fontRenderer.drawStringWithShadow("Kills: " + this.kills, draggable.getX() + 8, draggable.getY() + 27, -1);
+
+        font.getIcon10().drawString("v", draggable.getX() + 2, draggable.getY() + 40, -1);
+        fontRenderer.drawStringWithShadow("Wins: " + this.wins, draggable.getX() + 8, draggable.getY() + 36, -1);
 
         draggable.setWidth(100);
         draggable.setHeight(100);

@@ -72,6 +72,13 @@ public class HUD extends AbstractModule {
             .childOf(colorMode)
             .describedBy("Custom color either for static or fade accent");
 
+    private final Setting<Integer> opacity = new Setting<>("Opacity", 100)
+            .minimum(0)
+            .maximum(255)
+            .incrementation(1)
+            .describedBy("The opacity for background")
+            .visibleWhen(() -> background.getValue());
+
     public Setting<Float> rainbowSpeed = new Setting<>("Rainbow Speed", 0.5F)
             .minimum(1F)
             .maximum(20F)
@@ -161,8 +168,9 @@ public class HUD extends AbstractModule {
                 break;
             case CSGO:
                 RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, new Color(0,0, 0, 150));
-                RenderUtils.renderGradientRect((int) watermarkDraggable.getX(), (int) watermarkDraggable.getY(), (int) (fontRenderer.getStringWidth(finalText) + 2 + watermarkDraggable.getX()), (int) (watermarkDraggable.getY() + 2), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
-                //RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, 1, new Color(ColorUtil.getColor(false)));
+                RoundedUtils.shadowGradient(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, 1, 5, 5, new Color(0,0,0, 150), new Color(0,0,0, 150), new Color(0,0,0, 150), new Color(0,0,0, 150), false);
+                RenderUtils.renderGradientRect((int) watermarkDraggable.getX(), (int) watermarkDraggable.getY(), (int) (fontRenderer.getStringWidth(finalText) + 2 + watermarkDraggable.getX()), (int) (watermarkDraggable.getY() + 1), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+
                 fontRenderer.drawStringWithShadow(finalText, watermarkDraggable.getX() + 1, watermarkDraggable.getY() + 4, ColorUtil.getColor(false));
                 watermarkDraggable.setWidth(fontRenderer.getStringWidth(finalText));
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 6);
@@ -245,7 +253,7 @@ public class HUD extends AbstractModule {
         String moduleData = generateModuleData(module);
         int moduleWidth = fontRenderer.getStringWidth(moduleData);
 
-        if (background.getValue()) Gui.drawRect(sr.getScaledWidth() - moduleWidth - 6, y, sr.getScaledWidth() - 2, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, 100).getRGB());
+        if (background.getValue()) Gui.drawRect(sr.getScaledWidth() - moduleWidth - 6, y, sr.getScaledWidth() - 2, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
         renderBar(module, sr, y, index);
 
         fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 4) - moduleWidth, y + 2, ColorUtil.getColor(true));
