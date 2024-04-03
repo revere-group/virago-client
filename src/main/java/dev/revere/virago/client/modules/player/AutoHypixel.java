@@ -1,0 +1,39 @@
+package dev.revere.virago.client.modules.player;
+
+import dev.revere.virago.api.event.handler.EventHandler;
+import dev.revere.virago.api.event.handler.Listener;
+import dev.revere.virago.api.module.AbstractModule;
+import dev.revere.virago.api.module.EnumModuleType;
+import dev.revere.virago.api.module.ModuleData;
+import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.client.events.packet.PacketEvent;
+import net.minecraft.network.play.server.S45PacketTitle;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.StringUtils;
+
+
+@ModuleData(name = "AutoHypixel", description = "All your hypixel needs", type = EnumModuleType.PLAYER)
+public class AutoHypixel extends AbstractModule {
+
+
+    private final Setting<Boolean> rejoin = new Setting<>("Rejoin", true);
+    private final Setting<Boolean> autoGG = new Setting<>("AutoGG", true);
+
+    @EventHandler
+    private final Listener<PacketEvent> onPacketReceiveEvent = event -> {
+        if (event.getPacket() instanceof S45PacketTitle) {
+            S45PacketTitle s45 = event.getPacket();
+            if (s45.getMessage() == null) return;
+
+            if (StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("VICTORY!")) {
+                if(autoGG.getValue())
+                    mc.thePlayer.addChatMessage(new ChatComponentText("GG"));
+
+                if(rejoin.getValue())
+                    MinecraftServer.getServer().getCommandManager().executeCommand(mc.thePlayer, "/play solo_normal");
+            }
+        }
+    };
+}
