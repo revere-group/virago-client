@@ -39,24 +39,6 @@ public class Gui
         drawRect(x, startY + 1, x + 1, endY, color);
     }
 
-    public static void drawHorizontalLineDefineWidth(double startX, double endX, double y, double width, int color) {
-        if (endX < startX) {
-            double i = startX;
-            startX = endX;
-            endX = i;
-        }
-        Gui.drawRect2(startX, y, endX + width, y + width, color);
-    }
-
-    public static void drawVerticalLineDefineWidth(double x, double startY, double endY, double width, int color) {
-        if (endY < startY) {
-            double i = startY;
-            startY = endY;
-            endY = i;
-        }
-        Gui.drawRect2(x, startY + width, x + width, endY, color);
-    }
-
     public static void drawRect(int left, int top, int right, int bottom, int color)
     {
         if (left < right)
