@@ -40,7 +40,7 @@
                     <args>
                         <arg>-Xexplicit-api=warning</arg>
                         <arg>-Xuse-ir</arg>
-                        <arg>-Xplugin=C:\Users\Alex\.m2\repository\org\jetbrains\compose\compiler\compiler-hosted\1.5.7\compiler-hosted-1.5.7.jar</arg>
+                        <arg>-Xplugin=C:\Users\remig\.m2\repository\org\jetbrains\compose\compiler\compiler-hosted\1.5.7\compiler-hosted-1.5.7.jar</arg>
                     </args>
                     <jvmTarget>${maven.compiler.target}</jvmTarget>
                 </configuration>
@@ -273,7 +273,7 @@
             <version>1.5.21</version>
         </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>tv.twitch</groupId>
             <artifactId>twitch</artifactId>
             <version>6.5</version>
@@ -324,6 +324,14 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.jncrmx</groupId>
+            <artifactId>discord-game-sdk4j</artifactId>
+            <version>0.5.5</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/discord-game-sdk4j-0.5.5.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
 
