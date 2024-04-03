@@ -842,12 +842,13 @@ public class EntityPlayerSP extends AbstractClientPlayer
     public void setSpeedWithCorrection(MoveEvent event, double speed, double lastMotionX, double lastMotionZ, double modifier) {
         float direction = (float) Math.toRadians(getDirection());
 
+        // TODO: make this a seperate func
         if (isMoving()) {
-            event.setX(mc.thePlayer.motionX = -Math.sin(direction) * speed);
-            event.setZ(mc.thePlayer.motionZ = Math.cos(direction) * speed);
+            //event.setX(mc.thePlayer.motionX = -Math.sin(direction) * speed);
+            //event.setZ(mc.thePlayer.motionZ = Math.cos(direction) * speed);
         } else {
-            event.setX(mc.thePlayer.motionX = 0);
-            event.setZ(mc.thePlayer.motionZ = 0);
+            //event.setX(mc.thePlayer.motionX = 0);
+            //event.setZ(mc.thePlayer.motionZ = 0);
         }
 
         if(event.getX() > 0 && event.getX() > lastMotionX) {
