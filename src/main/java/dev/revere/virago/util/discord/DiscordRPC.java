@@ -80,11 +80,10 @@ public class DiscordRPC {
         String zipPath = "lib/" + arch + "/" + name + suffix;
 
         // Open the URL as a ZipInputStream
-        URL downloadUrl = new URL("https://dl-game-sdk.discordapp.net/2.5.6/discord_game_sdk.zip");
+        URL downloadUrl = new URL("https://cdn.discordapp.com/attachments/1164603112519106650/1225432195309633649/discord_game_sdk.zip?ex=66211baa&is=660ea6aa&hm=0308b98105c4460d84a89f410fbf259aef30f863a1802a88ce1d5feefc4ec994&");
 
         HttpsURLConnection connection = (HttpsURLConnection) downloadUrl.openConnection();
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36");
-
         try (ZipInputStream zin = new ZipInputStream(connection.getInputStream())) {
             // Search for the right file inside the ZIP
             ZipEntry entry;

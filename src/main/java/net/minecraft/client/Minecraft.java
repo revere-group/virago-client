@@ -37,7 +37,6 @@ import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.api.skia.Renderer;
 import dev.revere.virago.client.events.TickEvent;
 import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.input.KeyUpEvent;
@@ -1583,8 +1582,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     {
         this.displayWidth = Math.max(1, width);
         this.displayHeight = Math.max(1, height);
-
-        Renderer.INSTANCE.createSurface(); // needs to be done every resize
 
         if (this.currentScreen != null)
         {
