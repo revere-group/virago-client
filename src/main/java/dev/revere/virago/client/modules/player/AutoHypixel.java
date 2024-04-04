@@ -8,6 +8,7 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
@@ -33,6 +34,15 @@ public class AutoHypixel extends AbstractModule {
                     mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
 
             } else if(StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("YOU DIED!")) {
+                if(rejoin.getValue())
+                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
+            }
+        } else if (event.getPacket() instanceof S02PacketChat) {
+            S02PacketChat s02 = event.getPacket();
+            if (s02.getChatComponent() == null) return;
+
+            String message = StringUtils.stripControlCodes(s02.getChatComponent().getUnformattedText());
+            if (message.contains("Want to play again?")) {
                 if(rejoin.getValue())
                     mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
             }

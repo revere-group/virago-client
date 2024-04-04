@@ -31,24 +31,6 @@ public class Speed extends AbstractModule {
     public final Setting<WatchdogMode> watchdogMode = new Setting<>("Watchdog Mode", WatchdogMode.NO_STRAFE)
             .describedBy("How to control speed on Hypixel");
 
-    private final Setting<Double> speedWatchdog = new Setting<>("Speed",0.8)
-            .minimum(0.3D)
-            .maximum(2D)
-            .incrementation(0.05D)
-            .describedBy("The speed you will go.")
-            .visibleWhen(() -> watchdogMode.getValue() == WatchdogMode.HOP);
-
-    private final Setting<Boolean> safeStrafe = new Setting<>("Safe Strafe", false)
-            .describedBy("Whether to enable safe strafe.")
-            .visibleWhen(() -> watchdogMode.getValue() == WatchdogMode.HOP);
-
-    private final Setting<Double> strafeModifier = new Setting<>("Strafe Modifier", 0.5)
-            .minimum(0.1D)
-            .maximum(1.0D)
-            .incrementation(0.05D)
-            .describedBy("The amount to modify strafe.")
-            .visibleWhen(() -> (watchdogMode.getValue() == WatchdogMode.HOP && safeStrafe.getValue()) || watchdogMode.getValue() == WatchdogMode.HOP_SMOOTH);
-
     private final Setting<Double> speedNoStrafe = new Setting<>("Speed (nostrafe)", 2.1)
             .minimum(1.5D)
             .maximum(2.25D)
@@ -56,16 +38,12 @@ public class Speed extends AbstractModule {
             .describedBy("The speed you will go.")
             .visibleWhen(() -> watchdogMode.getValue() == WatchdogMode.NO_STRAFE);
 
-    private double speed, lastDist, baseSpeed, boostSpeed;
-    private int strafeTicks, stage;
+    private double speed, lastDist;
 
-    private boolean prevOnGround, canStrafe;
+    private boolean prevOnGround;
     private double lastMotionX, lastMotionZ;
 
     private final LinkedBlockingQueue<Packet<?>> packets = new LinkedBlockingQueue<>();
-
-    private boolean isGrounded = false;
-    private int increment = 0;
 
     public Speed() {
         setKey(Keyboard.KEY_V);
@@ -86,37 +64,6 @@ public class Speed extends AbstractModule {
     @EventHandler
     private final Listener<MoveEvent> moveEventListener = event -> {
         switch (watchdogMode.getValue()) {
-            case HOP:
-                if (mc.thePlayer.isMoving()) {
-                    speed = mc.thePlayer.getBaseMoveSpeed();
-                    if (mc.thePlayer.onGround && !prevOnGround) {
-                        prevOnGround = true;
-                        event.setY(0.41999998688698);
-                        mc.thePlayer.motionY = 0.42;
-                        speed *= speedWatchdog.getValue();
-                    } else if (prevOnGround) {
-                        double difference = (0.76D * (lastDist - mc.thePlayer.getBaseMoveSpeed()));
-                        speed = lastDist - difference;
-                        prevOnGround = false;
-                    } else {
-                        speed = lastDist - lastDist / 159D;
-                    }
-
-                    /*if (mc.thePlayer.hurtTime > 0) {
-                        speed = Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ) + 0.0245F;
-                    }*/
-
-                    if (safeStrafe.getValue() && !mc.thePlayer.onGround) {
-                        mc.thePlayer.setSpeedWithCorrection(event, Math.max(mc.thePlayer.getSpeed(), speed), lastMotionX, lastMotionZ, strafeModifier.getValue());
-                    } else {
-                        mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
-                    }
-
-                    lastMotionX = event.getX();
-                    lastMotionZ = event.getZ();
-                }
-                break;
-
             case NO_STRAFE:
                 if (mc.thePlayer.isMoving()) {
                     if (mc.thePlayer.onGround && !prevOnGround) {
@@ -150,36 +97,38 @@ public class Speed extends AbstractModule {
                     mc.thePlayer.setSpeed(event, 0);
                 }
                 break;
-            case HOP_SMOOTH:
+            case TEST:
                 if (mc.thePlayer.isMoving()) {
-                    if  (mc.thePlayer.onGround) {
+                    if (mc.thePlayer.onGround && !prevOnGround) {
+                        speed = mc.thePlayer.getBaseMoveSpeed();
                         prevOnGround = true;
-                        if  (mc.thePlayer.isMoving()) {
-                            event.setY(0.41999998688698);
-                            mc.thePlayer.motionY = 0.42;
-                            speed *= 0.91;
-                            speed += 0.2 + mc.thePlayer.getAIMoveSpeed();
-                        }
+                        event.setY(0.41999998688698);
+                        mc.thePlayer.motionY = 0.42;
+                        if(mc.thePlayer.isPotionActive(Potion.moveSpeed)) speed *= (speedNoStrafe.getValue() * 0.85);
+                        else speed *= speedNoStrafe.getValue();
                     } else if (prevOnGround) {
-                        speed *= 0.54;
-                        speed += 0.026;
+                        double lowerBound = 1.22;
+                        double upperBound = 1.28;
+
+                        double randomFactor = lowerBound + Math.random() * (upperBound - lowerBound);
+                        double difference = (randomFactor * (lastDist - mc.thePlayer.getBaseMoveSpeed()));
+                        speed = lastDist - difference;
+                    } else {
+                        speed = lastDist - lastDist / 159D;
+                    }
+
+                    if(mc.thePlayer.onGround || prevOnGround)
+                        mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
+                    else
+                        mc.thePlayer.setSpeedWithCorrection(event, Math.max(mc.thePlayer.getSpeed(), speed), lastMotionX, lastMotionZ, 0.1);
+
+                    lastMotionX = event.getX();
+                    lastMotionZ = event.getZ();
+                    if(this.prevOnGround && !mc.thePlayer.onGround)
                         prevOnGround = false;
-                    } else {
-                        speed *= 0.91;
-                        speed += 0.025 +  (mc.thePlayer.getBaseMoveSpeed() - 0.2873) * 0.08;
-                    }
-
-                    //if (mc.thePlayer.hurtTime == 9) speed += 0.1;
-
-                    if (mc.thePlayer.fallDistance < 1) {
-                        mc.thePlayer.setSpeedWithCorrection(event, speed, lastMotionX, lastMotionZ, strafeModifier.getValue());
-                    } else {
-                        speed = mc.thePlayer.getSpeed();
-                    }
+                } else {
+                    mc.thePlayer.setSpeed(event, 0);
                 }
-
-                lastMotionX = event.getX();
-                lastMotionZ = event.getZ();
                 break;
         }
     };
@@ -195,40 +144,7 @@ public class Speed extends AbstractModule {
         super.onDisable();
     }
 
-    public void setSpeed2(double moveSpeed) {
-        setSpeed(moveSpeed, mc.thePlayer.rotationYaw, mc.thePlayer.movementInput.moveStrafe, mc.thePlayer.movementInput.moveForward);
-    }
-
-    public void setSpeed(double moveSpeed, float yaw, double strafe, double forward) {
-        if (forward != 0.0D) {
-            if (strafe > 0.0D) {
-                yaw += ((forward > 0.0D) ? -45 : 45);
-            } else if (strafe < 0.0D) {
-                yaw += ((forward > 0.0D) ? 45 : -45);
-            }
-            strafe = 0.0D;
-            if (forward > 0.0D) {
-                forward = 1.0D;
-            } else if (forward < 0.0D) {
-                forward = -1.0D;
-            }
-        }
-        if (strafe > 0.0D) {
-            strafe = 1.0D;
-        } else if (strafe < 0.0D) {
-            strafe = -1.0D;
-        }
-
-        // Calculate the player's motion.
-        double mx = Math.cos(Math.toRadians((yaw + 90.0F)));
-        double mz = Math.sin(Math.toRadians((yaw + 90.0F)));
-
-        // Set the player's motion.
-        mc.thePlayer.motionX = forward * moveSpeed * mx + strafe * moveSpeed * mz;
-        mc.thePlayer.motionZ = forward * moveSpeed * mz - strafe * moveSpeed * mx;
-    }
-
     private enum WatchdogMode {
-        HOP, HOP_SMOOTH, GROUND, NO_STRAFE
+        TEST, GROUND, NO_STRAFE
     }
 }

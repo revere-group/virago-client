@@ -288,7 +288,9 @@ public class HUD extends AbstractModule {
         if (background.getValue()) Gui.drawRect(sr.getScaledWidth() - moduleWidth - 6, y, sr.getScaledWidth() - 2, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
         renderBar(module, sr, y, index);
 
-        fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 4) - moduleWidth, y + 2, ColorUtil.getColor(true));
+        int padding = 2;
+        if (fontType.getValue() == FontType.SF_PRO) padding += 1;
+        fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 4) - moduleWidth, y + padding, ColorUtil.getColor(true));
     }
 
     /**
