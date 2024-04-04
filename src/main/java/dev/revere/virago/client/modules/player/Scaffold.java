@@ -14,6 +14,7 @@ import dev.revere.virago.client.events.update.PostMotionEvent;
 import dev.revere.virago.client.events.update.PreMotionEvent;
 import dev.revere.virago.client.events.update.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
+import dev.revere.virago.client.modules.movement.Sprint;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
@@ -113,6 +114,8 @@ public class Scaffold extends AbstractModule {
     private TimerUtil placeTimer = new TimerUtil();
 
     private int blockCount = 0;
+
+    private boolean sprintModule;
 
     @EventHandler
     private final Listener<Render2DEvent> render2DEventListener = event -> {
@@ -772,6 +775,13 @@ public class Scaffold extends AbstractModule {
         yCoordinate = mc.thePlayer.posY;
         placeTimer.reset();
         blockCount = getBlockCount();
+
+        ModuleService service = Virago.getInstance().getServiceManager().getService(ModuleService.class);
+        sprintModule = service.getModule(Sprint.class).isEnabled();
+        service.getModule(Sprint.class).setEnabled(false);
+
+        //send notification through notification manager: sprint module disabled due to scaffold
+
         mc.thePlayer.setSprinting(false);
     }
 
@@ -781,6 +791,12 @@ public class Scaffold extends AbstractModule {
         lastSlot = mc.thePlayer.inventory.currentItem;
         mc.gameSettings.keyBindSneak.pressed = false;
         mc.timer.timerSpeed = 1F;
+
+        if(sprintModule) {
+            Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Sprint.class).setEnabled(true);
+            //send notification through notification manager: sprint module re-enabled
+
+        }
 
         if (itemMode.getValue() == ItemMode.SPOOF) {
             mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
