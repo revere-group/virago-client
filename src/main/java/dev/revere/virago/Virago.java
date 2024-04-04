@@ -43,7 +43,7 @@ public class Virago {
      * Starts all services and registers all events
      */
     public void startVirago() {
-        System.out.println("Starting Virago...");
+        Logger.info("Starting Virago...", getClass());
         this.discordRPC = new DiscordRPC();
 
         if (!clientDir.exists() && clientDir.mkdir())
@@ -58,7 +58,7 @@ public class Virago {
      * Stops all services
      */
     public void stopVirago() {
-        System.out.println("Stopping Virago...");
+        Logger.info("Stopping Virago...", getClass());
         this.serviceManager.getServices().values().forEach(IService::stopService);
         this.serviceManager.getServices().values().forEach(IService::destroyService);
     }
