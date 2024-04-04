@@ -159,13 +159,16 @@ public class ItemUtil
     }
 
     public static float getItemDamage(final ItemStack itemStack) {
-        if (itemStack == null) {
-            return 0.0f;
+        float damage = 0;
+        Item item = itemStack.getItem();
+        if (item instanceof ItemTool) {
+            ItemTool tool = (ItemTool) item;
+            damage += tool.getDamageVsEntity();
         }
-        if (!(itemStack.getItem() instanceof ItemSword)) {
-            return 0.0f;
+        if (item instanceof ItemSword) {
+            ItemSword sword = (ItemSword) item;
+            damage += sword.getAttackDamage();
         }
-        float damage = ((ItemSword)itemStack.getItem()).getDamageVsEntity();
         damage += EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId, itemStack) * 1.25f;
         damage += EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, itemStack) * 0.01f;
         return damage;

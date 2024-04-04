@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -14,7 +15,7 @@ import net.minecraft.world.World;
 
 public class ItemSword extends Item
 {
-    public float attackDamage;
+    @Getter public float attackDamage;
     private final Item.ToolMaterial material;
 
     public ItemSword(Item.ToolMaterial material)

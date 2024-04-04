@@ -16,7 +16,7 @@ public class ItemTool extends Item
 {
     private Set<Block> effectiveBlocks;
     @Getter protected float efficiencyOnProperMaterial = 4.0F;
-    private float damageVsEntity;
+    @Getter private float damageVsEntity;
     protected Item.ToolMaterial toolMaterial;
 
     protected ItemTool(float attackDamage, Item.ToolMaterial material, Set<Block> effectiveBlocks)
