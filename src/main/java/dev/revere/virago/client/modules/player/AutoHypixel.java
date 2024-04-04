@@ -10,10 +10,7 @@ import dev.revere.virago.client.events.packet.PacketEvent;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
-
 
 @ModuleData(name = "AutoHypixel", description = "All your hypixel needs", type = EnumModuleType.PLAYER)
 public class AutoHypixel extends AbstractModule {
