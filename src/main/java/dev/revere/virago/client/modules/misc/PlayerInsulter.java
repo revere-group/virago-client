@@ -12,14 +12,9 @@ import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.update.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
-import dev.revere.virago.util.TimerUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.server.S02PacketChat;
-import net.minecraft.network.play.server.S45PacketTitle;
-import net.minecraft.util.StringUtils;
 import org.apache.commons.lang3.RandomUtils;
 
 @ModuleData(name = "Insults", description = "Insult players that you kill", type = EnumModuleType.MISC)
