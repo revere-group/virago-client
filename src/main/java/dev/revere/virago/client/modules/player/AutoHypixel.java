@@ -16,8 +16,6 @@ import net.minecraft.util.StringUtils;
 
 @ModuleData(name = "AutoHypixel", description = "All your hypixel needs", type = EnumModuleType.PLAYER)
 public class AutoHypixel extends AbstractModule {
-
-
     private final Setting<Boolean> rejoin = new Setting<>("Rejoin", true);
     private final Setting<Boolean> autoGG = new Setting<>("AutoGG", false);
 

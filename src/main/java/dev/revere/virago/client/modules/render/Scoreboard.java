@@ -16,6 +16,8 @@ public class Scoreboard extends AbstractModule {
     public final Setting<Boolean> numbers = new Setting<>("Numbers", false)
             .describedBy("Whether to render numbers on the scoreboard");
 
+    public final Setting<Boolean> shadow = new Setting<>("Text Shadow", true).describedBy("Whether to render shadow on the scoreboard");
+
     @Override
     public void onEnable() {
         super.onEnable();
