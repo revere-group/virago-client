@@ -37,6 +37,15 @@ public class AutoHypixel extends AbstractModule {
                 if(rejoin.getValue())
                     mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
             }
+        } else if (event.getPacket() instanceof S02PacketChat) {
+            S02PacketChat s02 = event.getPacket();
+            if (s02.getChatComponent() == null) return;
+
+            String message = StringUtils.stripControlCodes(s02.getChatComponent().getUnformattedText());
+            if (message.contains("Want to play again?")) {
+                if (rejoin.getValue())
+                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
+            }
         }
     };
 }
