@@ -35,7 +35,6 @@ public class AutoHypixel extends AbstractModule {
                     mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
 
             } else if(StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("YOU DIED!")) {
-
                 if(rejoin.getValue())
                     mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
             }

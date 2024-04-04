@@ -56,27 +56,6 @@ public class Ambience extends AbstractModule {
                 mc.theWorld.getWorldInfo().setThundering(false);
                 break;
             }
-
-            case STORM: {
-                mc.theWorld.setRainStrength(1);
-                mc.theWorld.setThunderStrength(1);
-                mc.theWorld.getWorldInfo().setCleanWeatherTime(0);
-                mc.theWorld.getWorldInfo().setRainTime(Integer.MAX_VALUE);
-                mc.theWorld.getWorldInfo().setThunderTime(Integer.MAX_VALUE);
-                mc.theWorld.getWorldInfo().setRaining(true);
-                mc.theWorld.getWorldInfo().setThundering(true);
-                break;
-            }
-
-            case SNOW: {
-                mc.theWorld.setRainStrength(0);
-                mc.theWorld.getWorldInfo().setCleanWeatherTime(0);
-                mc.theWorld.getWorldInfo().setRainTime(Integer.MAX_VALUE);
-                mc.theWorld.getWorldInfo().setThunderTime(0);
-                mc.theWorld.getWorldInfo().setRaining(true);
-                mc.theWorld.getWorldInfo().setThundering(false);
-                break;
-            }
         }
     };
 
@@ -100,7 +79,7 @@ public class Ambience extends AbstractModule {
     }
 
     private enum WeatherMode {
-        UNCHANGED, CLEAR, RAIN, STORM, SNOW
+        UNCHANGED, CLEAR, RAIN
     }
 
 }
