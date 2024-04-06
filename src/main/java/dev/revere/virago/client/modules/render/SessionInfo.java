@@ -68,7 +68,7 @@ public class SessionInfo extends AbstractModule {
         fontRenderer.drawStringWithShadow("Wins: " + this.wins, draggable.getX() + 8, draggable.getY() + 36, -1);
 
         draggable.setWidth(100);
-        draggable.setHeight(100);
+        draggable.setHeight(50);
     };
 
     @EventHandler

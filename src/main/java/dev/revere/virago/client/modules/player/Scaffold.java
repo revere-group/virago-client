@@ -184,7 +184,7 @@ public class Scaffold extends AbstractModule {
             }
         }
 
-        if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump) {
+        if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump && mc.thePlayer.isMoving()) {
             airTicks++;
 
             if (mc.thePlayer.onGround) {
@@ -228,10 +228,19 @@ public class Scaffold extends AbstractModule {
             if (info.pos != null) this.placeBlock();
         } else if (mode.getValue().equals(Mode.WATCHDOG)) {
             if (mc.gameSettings.keyBindJump.isKeyDown()) {
-                if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
+                if (keepY.getValue() && !mc.thePlayer.movementInput.jump) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-                else
+                } else {
+                    //if (mc.thePlayer.isMoving()) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                    /*} else {
+                        info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                        if (mc.thePlayer.ticksExisted % 6 == 0) {
+                            info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX - 1, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                        }
+
+                    }*/
+                }
                 if (info.pos != null) this.placeBlock();
             }
         }
