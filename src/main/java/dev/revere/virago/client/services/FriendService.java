@@ -2,11 +2,14 @@ package dev.revere.virago.client.services;
 
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.util.Logger;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Getter
+@Setter
 public class FriendService implements IService {
     private List<String> friends;
 
