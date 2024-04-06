@@ -775,11 +775,14 @@ public class Scaffold extends AbstractModule {
 
         }
 
+        /*
         if(!sprint.getValue()) {
             ModuleService service = Virago.getInstance().getServiceManager().getService(ModuleService.class);
             service.getModule(Sprint.class).setEnabled(false);
             mc.thePlayer.setSprinting(false);
         }
+
+        */
     }
 
 
@@ -789,9 +792,11 @@ public class Scaffold extends AbstractModule {
         mc.gameSettings.keyBindSneak.pressed = false;
         mc.timer.timerSpeed = 1F;
 
-        if(!sprint.getValue()) {
+        /*
+        if(sprint.getValue()) {
             Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Sprint.class).setEnabled(true);
         }
+         */
 
         if (itemMode.getValue() == ItemMode.SPOOF) {
             mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
