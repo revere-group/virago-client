@@ -16,6 +16,7 @@ import dev.revere.virago.client.events.update.StrafeEvent;
 import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.modules.render.HUD;
 import dev.revere.virago.client.services.FontService;
+import dev.revere.virago.client.services.FriendService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.TimerUtil;
@@ -403,17 +404,24 @@ public class KillAura extends AbstractModule {
 
     private boolean validTargetLayer3(EntityLivingBase entity) {
         if (entity instanceof EntityPlayer) {
+            if(Virago.getInstance().getServiceManager().getService(FriendService.class).isFriend(entity.getName()))
+                return false;
+
             return this.targetPlayers.getValue();
         }
+
         if (entity instanceof EntityAnimal) {
             return this.targetAnimals.getValue();
         }
+
         if (entity instanceof EntityMob) {
             return this.targetMonsters.getValue();
         }
+
         if (entity instanceof EntityVillager || entity instanceof EntityArmorStand) {
             return false;
         }
+
         return false;
     }
 

@@ -89,6 +89,7 @@ public class Virago {
         this.serviceManager.addService(new DraggableService());
         this.serviceManager.addService(new FontService());
         this.serviceManager.addService(new AltService());
+        this.serviceManager.addService(new FriendService());
         this.serviceManager.getServices().values().forEach(IService::initService);
         this.serviceManager.getServices().values().forEach(IService::startService);
     }
