@@ -20,7 +20,7 @@ import java.util.List;
  * @project Virago
  * @date 3/28/2024
  */
-@ModuleData(name = "AntiBot", description = "Removes all bots", type = EnumModuleType.COMBAT)
+@ModuleData(name = "Anti Bot", description = "Removes all bots", type = EnumModuleType.COMBAT)
 public class AntiBot extends AbstractModule {
 
     public static ArrayList<EntityPlayer> bots = new ArrayList<>();

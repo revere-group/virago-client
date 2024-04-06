@@ -32,7 +32,7 @@ import java.awt.*;
 
 @Setter
 @Getter
-@ModuleData(name = "JumpCircles", type = EnumModuleType.RENDER, description = "Draws circles around jumpable blocks")
+@ModuleData(name = "Jump Circles", type = EnumModuleType.RENDER, description = "Draws circles around jumpable blocks")
 public class JumpCircles extends AbstractModule {
     public Setting<Boolean> customColor = new Setting<>("Fading color", false).describedBy("Whether the color should fade between 2 colors on jump");
     public Setting<Color> singleColor = new Setting<>("Static Color", new Color(-1)).visibleWhen(() -> !customColor.getValue()).describedBy("Color 1");

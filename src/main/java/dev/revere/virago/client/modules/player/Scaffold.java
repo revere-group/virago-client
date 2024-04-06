@@ -20,6 +20,7 @@ import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.TimerUtil;
 import lombok.Getter;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -31,11 +32,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.client.C09PacketHeldItemChange;
-import net.minecraft.network.play.client.C0APacketAnimation;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
+import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -114,6 +113,7 @@ public class Scaffold extends AbstractModule {
     private TimerUtil placeTimer = new TimerUtil();
 
     private int blockCount = 0;
+    private int airTicks;
 
     private boolean sprintModule;
 
@@ -146,9 +146,9 @@ public class Scaffold extends AbstractModule {
         else info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
 
         if (mode.getValue() == Mode.WATCHDOG) {
-            if (mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 3 == 0))
+            if (mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 3 == 0)) {
                 mc.timer.timerSpeed = timer.getValue().floatValue();
-            else mc.timer.timerSpeed = 1.0f;
+            } else mc.timer.timerSpeed = 1.0f;
         } else mc.timer.timerSpeed = timer.getValue().floatValue();
 
         if (info == null || info.pos == null) return;
@@ -160,9 +160,8 @@ public class Scaffold extends AbstractModule {
     private final Listener<PreMotionEvent> preMotionEventListener = e -> {
         if (info == null || info.pos == null || Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null)
             return;
-
+        
         if (!isReplaceable(info)) return;
-
         this.setRotations(e);
 
         if (sneaking)
@@ -173,38 +172,43 @@ public class Scaffold extends AbstractModule {
             if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
 
-        if (mode.getValue() == Mode.WATCHDOG) {
-
-        } else {
+        if (mode.getValue() != Mode.WATCHDOG) {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
         }
 
         stackToPlace = setStackToPlace();
 
-        // wtf is this fix
-        boolean up = false;
-        if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG)) {
-            if (keepY.getValue() && !mc.thePlayer.movementInput.jump) {
-                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-            } else if (keepY.getValue() && towerMode.getValue() == TowerMode.NONE) {
-                up = true;
-                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-            } else {
-                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+        if (mode.getValue() == Mode.WATCHDOG_SPRINT) { // bps: 5.4
+            if (mc.thePlayer.ticksExisted % 2 == 0 && mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
+                e.setY(mc.thePlayer.posY + 0.000001);
             }
+        }
+
+        if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump) {
+            airTicks++;
+
+            if (mc.thePlayer.onGround) {
+                airTicks = 0;
+            }
+
+            if (airTicks == 0) {
+                mc.thePlayer.motionY = 0.42f;
+            }
+            if (airTicks == 1) {
+                mc.thePlayer.motionY = 0.33;
+            }
+            if (airTicks == 2) {
+                mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1;
+                airTicks = -1;
+            }
+        }
+
+        if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG)) {
             if (info.pos != null) {
-                if (up && placeTimer.hasTimeElapsed(240, true) && towerMode.getValue() == TowerMode.NONE) {
-                    this.placeBlock();
-                } else if (!up) {
-                    this.placeBlock();
-                }
+                this.placeBlock();
             }
         } else if (mode.getValue().equals(Mode.WATCHDOG)) {
             if (!mc.gameSettings.keyBindJump.isKeyDown()) {
-                if (keepY.getValue() && !mc.thePlayer.movementInput.jump)
-                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-                else
-                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                 if (info.pos != null) {
                     this.placeBlock();
                 }
@@ -236,27 +240,12 @@ public class Scaffold extends AbstractModule {
     @EventHandler
     private final Listener<MoveEvent> moveEventListener = e -> {
         this.moveTowerMotion(e);
-        if (mode.getValue() == Mode.WATCHDOG && mc.thePlayer.isMoving()) {
-            /*if(mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                mc.thePlayer.setSprinting(true);
-                e.setX(mc.thePlayer.motionX / 1.7);
-                e.setZ(mc.thePlayer.motionZ / 1.7);
-            } else {
-                mc.thePlayer.setSprinting(true);
-                e.setX(mc.thePlayer.motionX / 1.3);
-                e.setZ(mc.thePlayer.motionZ / 1.3);
-            }*/
-            // mc.thePlayer.setSprinting(true);
-            /*if(sprint.getValue()) {
-                if(mc.thePlayer.ticksExisted % 7 == 0) {
-                    mc.thePlayer.motionY = 0.00112;
-                     mc.thePlayer.setSpeed(e, 0.35);
-                } else {
-                    mc.thePlayer.setSpeed(e, 0.205);
-                }
-            } else {
-                mc.thePlayer.setSpeed(e, 0.2);
-            }*/
+        if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG) {
+            mc.thePlayer.setSpeed(e, mc.gameSettings.keyBindJump.isKeyDown() ? mc.thePlayer.getBaseMoveSpeed() - 0.025 : mc.thePlayer.getBaseMoveSpeed() - 0.079);
+        }
+
+        if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.onGround) {
+            mc.thePlayer.setSpeed(e, mc.thePlayer.getBaseMoveSpeed() - 0.032);
         }
     };
 
@@ -273,16 +262,6 @@ public class Scaffold extends AbstractModule {
                 if (e.getPacket() instanceof C09PacketHeldItemChange) {
                     C09PacketHeldItemChange packet = e.getPacket();
                     packet.setSlotId(lastSlot);
-                }
-            }
-            if (mode.getValue() == Mode.WATCHDOG) {
-                if (e.getPacket() instanceof C0BPacketEntityAction) {
-                    C0BPacketEntityAction packet = e.getPacket();
-
-                    if (packet.getAction() == C0BPacketEntityAction.Action.START_SPRINTING ||
-                            packet.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING) {
-                        e.setCancelled(true);
-                    }
                 }
             }
 
@@ -456,7 +435,9 @@ public class Scaffold extends AbstractModule {
                 }
                 break;
             case WATCHDOG:
-                if (canTower(1.5)) e.setY(mc.thePlayer.motionY = 0.42f);
+                if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                    mc.thePlayer.setSpeed(e, mc.thePlayer.getBaseMoveSpeed() - 0.02);
+                }
                 break;
             case NONE:
                 break;
@@ -749,6 +730,10 @@ public class Scaffold extends AbstractModule {
         }
     }
 
+    private Block blockRelativeToPlayer(final double offsetX, final double offsetY, final double offsetZ) {
+        return mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(offsetX, offsetY, offsetZ)).getBlock();
+    }
+
     private float processRotation(float value) {
         float toReturn = value;
         if (gcdFix.getValue()) {
@@ -776,13 +761,20 @@ public class Scaffold extends AbstractModule {
         placeTimer.reset();
         blockCount = getBlockCount();
 
+        if (mode.getValue() == Mode.WATCHDOG_SPRINT) {
+            mc.thePlayer.motionX = 0.0f;
+            mc.thePlayer.motionY = 0.42f;
+            mc.thePlayer.motionZ= 0.0f;
+
+        }
+
         ModuleService service = Virago.getInstance().getServiceManager().getService(ModuleService.class);
         sprintModule = service.getModule(Sprint.class).isEnabled();
-        service.getModule(Sprint.class).setEnabled(false);
+        //service.getModule(Sprint.class).setEnabled(false);
 
         //send notification through notification manager: sprint module disabled due to scaffold
 
-        mc.thePlayer.setSprinting(false);
+        //mc.thePlayer.setSprinting(false);
     }
 
 
@@ -806,7 +798,7 @@ public class Scaffold extends AbstractModule {
     }
 
     enum Mode {
-        NORMAL, WATCHDOG, VERUS, VULCAN
+        NORMAL, WATCHDOG, VERUS, VULCAN, WATCHDOG_SPRINT
     }
 
     enum Rotations {

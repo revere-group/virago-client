@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.BlockPos;
 
-@ModuleData(name = "AutoTool", description = "Automatically switch to most useful tool", type = EnumModuleType.PLAYER)
+@ModuleData(name = "Auto Tool", description = "Automatically switch to most useful tool", type = EnumModuleType.PLAYER)
 public class AutoTool extends AbstractModule {
 
     private final Setting<Boolean> autoSword = new Setting<>("Auto Sword", true);
