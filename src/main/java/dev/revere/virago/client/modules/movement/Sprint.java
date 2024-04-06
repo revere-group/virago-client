@@ -14,7 +14,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 
 @ModuleData(name = "Sprint", description = "Keep you sprinting", type = EnumModuleType.MOVEMENT)
 public class Sprint extends AbstractModule {
-    private final Setting<Boolean> omniDirectional = new Setting<>("Omni", true);
+    private final Setting<Boolean> omniDirectional = new Setting<>("Omni", false);
 
     @EventHandler
     private final Listener<UpdateEvent> onUpdate = event -> {

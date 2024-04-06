@@ -779,11 +779,12 @@ public class Scaffold extends AbstractModule {
 
         ModuleService service = Virago.getInstance().getServiceManager().getService(ModuleService.class);
         sprintModule = service.getModule(Sprint.class).isEnabled();
-        //service.getModule(Sprint.class).setEnabled(false);
 
-        //send notification through notification manager: sprint module disabled due to scaffold
 
-        //mc.thePlayer.setSprinting(false);
+        if(!(mode.getValue() == Mode.WATCHDOG_SPRINT)) {
+            service.getModule(Sprint.class).setEnabled(false);
+            mc.thePlayer.setSprinting(false);
+        }
     }
 
 
@@ -796,7 +797,6 @@ public class Scaffold extends AbstractModule {
         if(sprintModule) {
             Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Sprint.class).setEnabled(true);
             //send notification through notification manager: sprint module re-enabled
-
         }
 
         if (itemMode.getValue() == ItemMode.SPOOF) {
