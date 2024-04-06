@@ -115,8 +115,6 @@ public class Scaffold extends AbstractModule {
     private int blockCount = 0;
     private int airTicks;
 
-    private boolean sprintModule;
-
     @EventHandler
     private final Listener<Render2DEvent> render2DEventListener = event -> {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
@@ -777,11 +775,8 @@ public class Scaffold extends AbstractModule {
 
         }
 
-        ModuleService service = Virago.getInstance().getServiceManager().getService(ModuleService.class);
-        sprintModule = service.getModule(Sprint.class).isEnabled();
-
-
-        if(!(mode.getValue() == Mode.WATCHDOG_SPRINT)) {
+        if(!sprint.getValue()) {
+            ModuleService service = Virago.getInstance().getServiceManager().getService(ModuleService.class);
             service.getModule(Sprint.class).setEnabled(false);
             mc.thePlayer.setSprinting(false);
         }
@@ -794,9 +789,8 @@ public class Scaffold extends AbstractModule {
         mc.gameSettings.keyBindSneak.pressed = false;
         mc.timer.timerSpeed = 1F;
 
-        if(sprintModule) {
+        if(sprint.getValue()) {
             Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Sprint.class).setEnabled(true);
-            //send notification through notification manager: sprint module re-enabled
         }
 
         if (itemMode.getValue() == ItemMode.SPOOF) {
