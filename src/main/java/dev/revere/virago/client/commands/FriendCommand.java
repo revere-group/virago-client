@@ -24,11 +24,6 @@ public class FriendCommand extends AbstractCommand {
 
         switch(option) {
             case "remove": {
-                if(args[2] == null) {
-                    Logger.addChatMessage("Please provide a valid player.");
-                    break;
-                }
-
                 String player = args[2];
 
                 if(!service.isFriend(player)) {
@@ -42,11 +37,6 @@ public class FriendCommand extends AbstractCommand {
             }
 
             case "add": {
-                if(args[2] == null) {
-                    Logger.addChatMessage("Please provide a valid player.");
-                    break;
-                }
-
                 String player = args[2];
 
                 if(service.isFriend(player)) {
