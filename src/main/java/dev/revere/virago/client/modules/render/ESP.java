@@ -10,6 +10,7 @@ import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.RenderNametagEvent;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
+import dev.revere.virago.util.render.RoundedUtils;
 import lombok.AllArgsConstructor;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -36,6 +37,19 @@ public class ESP extends AbstractModule {
     private final Setting<Boolean> nameTagsProperty = new Setting<>("NameTags", true);
     private final Setting<Boolean> healthProperty = new Setting<>("Health", true);
     private final Setting<Boolean> handProperty = new Setting<>("Hand", false);
+    private final Setting<Boolean> glow = new Setting<>("Glow", true);
+    private final Setting<Boolean> innerGlow = new Setting<>("Inner Glow", false).visibleWhen(glow::getValue);
+    private final Setting<Float> glowIntensity = new Setting<>("Intensity", 10f)
+            .minimum(1f)
+            .maximum(100f)
+            .incrementation(1f)
+            .visibleWhen(() -> glow.getValue() && !innerGlow.getValue());
+
+    private final Setting<Float> innerGlowIntensity = new Setting<>("Inner Intensity", 1f)
+            .minimum(1f)
+            .maximum(10f)
+            .incrementation(1f)
+            .visibleWhen(innerGlow::getValue);
 
     private final Setting<BoxMode> boxModeProperty = new Setting<>("Box Mode", BoxMode.NONE);
     private final Setting<Boolean> oppositeCornersProperty = new Setting<>("Opposite Corners", false).visibleWhen(() -> boxModeProperty.getValue() == BoxMode.HALF_CORNERS);
@@ -85,6 +99,14 @@ public class ESP extends AbstractModule {
             float minX = coords[0], minY = coords[1], maxX = coords[2], maxY = coords[3];
             float opacity = 255 - MathHelper.clamp_float(MathHelper.sqrt_double(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 4, 0, 255);
             Color color = new Color(getBoxColor());
+
+            float width = maxX - minX;
+            float height = maxY - minY;
+            if (glow.getValue() && !innerGlow.getValue()) {
+                RoundedUtils.shadow(minX, minY, width, height, 0, glowIntensity.getValue(), new Color(ColorUtil.getColor(true)));
+            } else if (glow.getValue()) {
+                RoundedUtils.shadowGradient(minX, minY, width, height, 1, innerGlowIntensity.getValue(), 0.5f, new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), true);
+            }
             switch (boxModeProperty.getValue()) {
                 case BOX: {
                     RenderUtils.pre3D();

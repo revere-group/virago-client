@@ -4,6 +4,7 @@ package dev.revere.virago.client.gui.menu;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.protection.auth.Safelock;
 import dev.revere.virago.client.notification.NotificationType;
+import dev.revere.virago.client.services.ConfigService;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.NotificationService;
 import dev.revere.virago.util.render.RenderUtils;
@@ -37,7 +38,8 @@ public class GuiLicenceKey extends GuiScreen {
 
         // Create text field
         this.licenceKey = new CustomGuiTextField(0, centerX - 85, centerY + 37, 170, 18, "enter your license key...");
-        this.licenceKey.setText("");
+        String keyFromConfig = Virago.getInstance().getServiceManager().getService(ConfigService.class).loadLicenseKey();
+        this.licenceKey.setText(keyFromConfig != null ? keyFromConfig : "");
         this.licenceKey.setCanLoseFocus(true);
         this.licenceKey.setMaxStringLength(29);
 
@@ -116,7 +118,9 @@ public class GuiLicenceKey extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button == this.button) {
-            new Safelock(this.licenceKey.getText(), "http://89.168.45.104:8080/api/client", "ba05042d0880ef940054eec4ad14177e3561414a").unlock();
+            if(new Safelock(this.licenceKey.getText(), "http://89.168.45.104:8080/api/client", "ba05042d0880ef940054eec4ad14177e3561414a").unlock()) {
+                Virago.getInstance().getServiceManager().getService(ConfigService.class).saveLicenseKey(this.licenceKey.getText());
+            }
         }
     }
 

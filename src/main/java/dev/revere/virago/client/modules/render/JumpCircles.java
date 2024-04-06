@@ -1,17 +1,14 @@
 package dev.revere.virago.client.modules.render;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
-import dev.revere.virago.client.events.update.EventEntityOptionalForce;
-import dev.revere.virago.client.events.update.PreMotionEvent;
-import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.client.events.player.EventEntityOptionalForce;
+import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.util.render.Circle;
 import dev.revere.virago.util.render.ColorUtil;
 import lombok.Getter;
@@ -46,7 +43,7 @@ public class JumpCircles extends AbstractModule {
     /**
      * Updates the circles around the player
      *
-     * @param event The event to update the circles for
+     * @param event The event to game the circles for
      */
     @EventHandler
     private final Listener<UpdateEvent> updateEventListener = event -> {

@@ -1,10 +1,10 @@
 package net.minecraft.client.entity;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.MoveEvent;
-import dev.revere.virago.client.events.update.PostMotionEvent;
-import dev.revere.virago.client.events.update.PreMotionEvent;
-import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.client.events.player.MoveEvent;
+import dev.revere.virago.client.events.player.PostMotionEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
+import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.services.CommandService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;

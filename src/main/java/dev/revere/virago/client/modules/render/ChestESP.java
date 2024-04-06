@@ -41,11 +41,15 @@ import java.util.Map;
  */
 @ModuleData(name = "Chest ESP", description = "Highlights chests", type = EnumModuleType.RENDER)
 public class ChestESP extends AbstractModule {
-    public Setting<Mode> mode = new Setting<>("Mode", Mode.HOLLOW)
+    public Setting<Mode> mode = new Setting<>("Box Mode", Mode.HOLLOW)
             .describedBy("The mode of ESP");
 
-    public Setting<Boolean> glow = new Setting<>("Glow", true)
-            .describedBy("Whether to render the glow.");
+    private final Setting<Boolean> glow = new Setting<>("Glow", true);
+    private final Setting<Float> glowIntensity = new Setting<>("Glow Intensity", 10f)
+            .minimum(1f)
+            .maximum(100f)
+            .incrementation(1f)
+            .visibleWhen(glow::getValue);
 
     public Setting<Boolean> outline = new Setting<>("Outlines", true)
             .describedBy("Whether to draw the outlines");
@@ -60,7 +64,7 @@ public class ChestESP extends AbstractModule {
 
     @EventHandler
     public final Listener<Render3DEvent> render3DEventListener = e -> {
-        if (mode.getValue() == Mode.FILLED || mode.getValue() == Mode.HOLLOW || mode.getValue() == Mode.BOTH) {
+        if (mode.getValue() == Mode.FILLED || mode.getValue() == Mode.HOLLOW || mode.getValue() == Mode.BOTH || mode.getValue() == Mode.NONE) {
             ScaledResolution sr = new ScaledResolution(mc);
             entities.keySet().removeIf(player -> !mc.theWorld.loadedTileEntityList.contains(player));
             if (!entityPosMap.isEmpty()) {
@@ -130,7 +134,7 @@ public class ChestESP extends AbstractModule {
 
     @EventHandler
     public final Listener<Render2DEvent> render2DEventListener = e -> {
-        if(mode.getValue() == Mode.FILLED || mode.getValue() == Mode.HOLLOW || mode.getValue() == Mode.BOTH) {
+        if(mode.getValue() == Mode.FILLED || mode.getValue() == Mode.HOLLOW || mode.getValue() == Mode.BOTH || mode.getValue() == Mode.NONE) {
             for (TileEntity player : entityPosMap.keySet()) {
                 GL11.glPushMatrix();
 
@@ -177,7 +181,7 @@ public class ChestESP extends AbstractModule {
                 float width = x2-x;
                 float height = y2-y;
 
-                if(glow.getValue()) RoundedUtils.shadow(x, y, width, height, 0,10, new Color(ColorUtil.getColor(true)));
+                if(glow.getValue()) RoundedUtils.shadow(x, y, width, height, 0, glowIntensity.getValue(), new Color(ColorUtil.getColor(true)));
                 GL11.glPopMatrix();
             }
         }
@@ -225,6 +229,7 @@ public class ChestESP extends AbstractModule {
     public enum Mode {
         HOLLOW,
         FILLED,
-        BOTH
+        BOTH,
+        NONE
     }
 }

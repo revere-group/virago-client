@@ -28,7 +28,6 @@ public class Virago {
 
     private final String name = "Virago";
     private final String version = "1.0.0";
-    private final String gitCommit = "ffe0b5d";
     private final String author = "Revere";
 
     private final File clientDir = new File(Minecraft.getMinecraft().mcDataDir, getName().toLowerCase());
@@ -88,6 +87,7 @@ public class Virago {
         this.serviceManager.addService(new ModuleService());
         this.serviceManager.addService(new DraggableService());
         this.serviceManager.addService(new FontService());
+        this.serviceManager.addService(new ConfigService());
         this.serviceManager.addService(new AltService());
         this.serviceManager.addService(new FriendService());
         this.serviceManager.getServices().values().forEach(IService::initService);

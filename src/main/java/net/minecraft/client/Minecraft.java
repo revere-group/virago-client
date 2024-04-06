@@ -37,7 +37,7 @@ import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.TickEvent;
+import dev.revere.virago.client.events.game.TickEvent;
 import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.input.KeyUpEvent;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
@@ -55,7 +55,6 @@ import net.minecraft.client.gui.GuiControls;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiMemoryErrorScreen;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
@@ -1080,7 +1079,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.updateDisplay();
         Thread.yield();
         this.mcProfiler.startSection("stream");
-        this.mcProfiler.startSection("update");
+        this.mcProfiler.startSection("game");
         this.stream.func_152935_j();
         this.mcProfiler.endStartSection("submit");
         this.stream.func_152922_k();
@@ -1096,7 +1095,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         while (getSystemTime() >= this.debugUpdateTime + 1000L)
         {
             debugFPS = this.fpsCounter;
-            this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", new Object[] {Integer.valueOf(debugFPS), Integer.valueOf(RenderChunk.renderChunksUpdated), RenderChunk.renderChunksUpdated != 1 ? "s" : "", (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : Integer.valueOf(this.gameSettings.limitFramerate), this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : ""});
+            this.debug = String.format("%d fps (%d chunk game%s) T: %s%s%s%s%s", new Object[] {Integer.valueOf(debugFPS), Integer.valueOf(RenderChunk.renderChunksUpdated), RenderChunk.renderChunksUpdated != 1 ? "s" : "", (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : Integer.valueOf(this.gameSettings.limitFramerate), this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : ""});
             RenderChunk.renderChunksUpdated = 0;
             this.debugUpdateTime += 1000L;
             this.fpsCounter = 0;

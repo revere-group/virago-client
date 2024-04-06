@@ -1,5 +1,7 @@
 package dev.revere.virago.util.render;
 
+import dev.revere.virago.Virago;
+import dev.revere.virago.api.font.FontRenderer;
 import dev.revere.virago.util.shader.Shader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

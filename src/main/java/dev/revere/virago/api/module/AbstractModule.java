@@ -35,7 +35,7 @@ public abstract class AbstractModule {
     private final String name = getClass().getAnnotation(ModuleData.class).name();
     private final String description = getClass().getAnnotation(ModuleData.class).description();
     private final EnumModuleType type = getClass().getAnnotation(ModuleData.class).type();
-    private final boolean isHidden = getClass().getAnnotation(ModuleData.class).isHidden();
+    private boolean isHidden = getClass().getAnnotation(ModuleData.class).isHidden();
 
     // The settings for all the modules.
     private final List<Setting<?>> settings = new ArrayList<>();

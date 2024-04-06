@@ -7,7 +7,7 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.client.events.update.PreMotionEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.Block;
@@ -26,7 +26,6 @@ public class AutoTool extends AbstractModule {
         KillAura aura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
         if (mc.gameSettings.keyBindAttack.isKeyDown() && mc.objectMouseOver != null) {
             BlockPos pos = mc.objectMouseOver.getBlockPos();
-            if (pos == null) return;
             updateTool(pos);
         }
 
@@ -53,12 +52,8 @@ public class AutoTool extends AbstractModule {
     }
 
     private void updateTool(BlockPos pos) {
-        if(!mc.gameSettings.keyBindAttack.pressed || mc.objectMouseOver == null) {
-            return;
-        }
-
         int itemToUse = this.getBestToolSlot(pos);
-        if(itemToUse == -1) {
+        if (itemToUse == -1) {
             return;
         }
 
@@ -70,9 +65,9 @@ public class AutoTool extends AbstractModule {
         float bestStr = 1.0f;
         int itemToUse = -1;
 
-        for(int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++) {
             ItemStack stack = mc.thePlayer.inventory.mainInventory[i];
-            if(stack == null || !(stack.getStrVsBlock(block) > bestStr)) {
+            if (stack == null || !(stack.getStrVsBlock(block) > bestStr)) {
                 continue;
             }
 

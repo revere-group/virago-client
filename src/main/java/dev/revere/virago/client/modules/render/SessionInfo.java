@@ -11,21 +11,19 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
-import dev.revere.virago.client.events.update.JoinEvent;
-import dev.revere.virago.client.events.update.LeaveEvent;
+import dev.revere.virago.client.events.player.JoinEvent;
+import dev.revere.virago.client.events.player.LeaveEvent;
+import dev.revere.virago.client.events.render.ShaderEvent;
 import dev.revere.virago.client.services.DraggableService;
 import dev.revere.virago.client.services.FontService;
-import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.lwjgl.Sys;
 
 import java.awt.*;
-import java.util.List;
 
 @ModuleData(name = "Session Info", description = "Modify the scoreboard aesthetics.", type = EnumModuleType.RENDER)
 public class SessionInfo extends AbstractModule {
@@ -69,6 +67,23 @@ public class SessionInfo extends AbstractModule {
 
         draggable.setWidth(100);
         draggable.setHeight(50);
+    };
+
+    @EventHandler
+    private final Listener<ShaderEvent> shaderEventListener = event -> {
+        FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
+        getFont(font);
+
+        fontRenderer.drawStringWithShadow("Session Stats", draggable.getX() + 25, draggable.getY() + 2, -1);
+
+        font.getIcon10().drawString("b", draggable.getX() + 2, draggable.getY() + 22, -1);
+        fontRenderer.drawStringWithShadow("Duration: " + getSessionTime(), draggable.getX() + 8, draggable.getY() + 18, -1);
+
+        font.getIcon10().drawString("a", draggable.getX() + 2, draggable.getY() + 31, -1);
+        fontRenderer.drawStringWithShadow("Kills: " + this.kills, draggable.getX() + 8, draggable.getY() + 27, -1);
+
+        font.getIcon10().drawString("v", draggable.getX() + 2, draggable.getY() + 40, -1);
+        fontRenderer.drawStringWithShadow("Wins: " + this.wins, draggable.getX() + 8, draggable.getY() + 36, -1);
     };
 
     @EventHandler

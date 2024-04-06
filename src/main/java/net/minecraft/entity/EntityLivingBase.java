@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.update.StrafeEvent;
+import dev.revere.virago.client.events.player.StrafeEvent;
 import dev.revere.virago.client.modules.render.BlockAnimations;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.Block;

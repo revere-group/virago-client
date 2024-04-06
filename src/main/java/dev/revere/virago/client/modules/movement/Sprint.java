@@ -7,7 +7,7 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.entity.EntityPlayerSP;

@@ -6,8 +6,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.attack.AttackEvent;
-import dev.revere.virago.client.events.update.JoinEvent;
+import dev.revere.virago.client.events.player.JoinEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;

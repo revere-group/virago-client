@@ -1,9 +1,12 @@
 package dev.revere.virago.api.font;
 
 import dev.revere.virago.util.Logger;
+import dev.revere.virago.util.shader.Shader;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -56,6 +59,41 @@ public class FontRenderer extends CFont {
      */
     public float drawString(String text, double x, double y, int color) {
         return drawString(text, x, y, color, false);
+    }
+
+    /**
+     * Draws glowing text using shaders from RoundedUtils.
+     *
+     * @param text      The text to draw
+     * @param x         The x position to draw the text
+     * @param y         The y position to draw the text
+     * @param color     The color of the text
+     * @param glowColor The color of the glow
+     */
+    public void drawGlowingText(String text, double x, double y, int color, int glowColor, float radius, float offsetAmount) {
+        // Use the glow shader from RoundedUtils
+        Shader glowShader = new Shader(new ResourceLocation("virago/shader/glowingText.frag"));
+
+        // Bind the glow shader
+        /*glowShader.init();
+
+        // Set uniform variables
+        glowShader.setupUniform("glowColor");
+        glowShader.setupUniform("glowRadius");
+        glowShader.setupUniform("offsetAmount");
+        GL20.glUniform4f(glowShader.getUniform("glowColor"),
+                ((glowColor >> 16) & 0xFF) / 255f,
+                ((glowColor >> 8) & 0xFF) / 255f,
+                (glowColor & 0xFF) / 255f,
+                ((glowColor >> 24) & 0xFF) / 255f);
+        GL20.glUniform1f(GL20.glGetUniformLocation(glowShader.getProgram(), "glowRadius"), radius);
+        GL20.glUniform1f(GL20.glGetUniformLocation(glowShader.getProgram(), "offsetAmount"), offsetAmount);*/
+
+        // Draw the text using FontRenderer's drawString method
+        drawString(text, x, y, color);
+
+        // Unbind the shader
+        glowShader.finish();
     }
 
     /**

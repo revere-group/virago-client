@@ -3,8 +3,7 @@ package net.minecraft.client.gui;
 import java.io.IOException;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.attack.AttackEvent;
-import dev.revere.virago.client.events.update.LeaveEvent;
+import dev.revere.virago.client.events.player.LeaveEvent;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;

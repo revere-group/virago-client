@@ -14,8 +14,12 @@ import net.minecraft.util.StringUtils;
 
 @ModuleData(name = "Auto Hypixel", description = "All your hypixel needs", type = EnumModuleType.PLAYER)
 public class AutoHypixel extends AbstractModule {
+
+
     private final Setting<Boolean> rejoin = new Setting<>("Rejoin", true);
     private final Setting<Boolean> autoGG = new Setting<>("AutoGG", false);
+
+    private final Setting<GameMode> gameMode = new Setting<>("GameMode", GameMode.SW_SOLO_NORMAL).visibleWhen(rejoin::getValue);
 
     @EventHandler
     private final Listener<PacketEvent> onPacketReceiveEvent = event -> {
@@ -24,25 +28,40 @@ public class AutoHypixel extends AbstractModule {
             if (s45.getMessage() == null) return;
 
             if (StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("VICTORY!") ) {
-                if(autoGG.getValue())
+                if(autoGG.getValue()) {
                     mc.thePlayer.sendChatMessage("GG");
+                }
 
-                if(rejoin.getValue())
-                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
-
+                doRejoin();
             } else if(StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("YOU DIED!")) {
-                if(rejoin.getValue())
-                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
-            }
-        } else if (event.getPacket() instanceof S02PacketChat) {
-            S02PacketChat s02 = event.getPacket();
-            if (s02.getChatComponent() == null) return;
-
-            String message = StringUtils.stripControlCodes(s02.getChatComponent().getUnformattedText());
-            if (message.contains("Want to play again?")) {
-                if (rejoin.getValue())
-                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
+                doRejoin();
             }
         }
     };
+
+    private void doRejoin() {
+        if(rejoin.getValue()) {
+            switch (gameMode.getValue()) {
+                case SW_SOLO_NORMAL:
+                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
+                    break;
+                case SW_SOLO_INSANE:
+                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_insane"));
+                    break;
+                case SW_TEAMS_NORMAL:
+                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play teams_normal"));
+                    break;
+                case SW_TEAMS_INSANE:
+                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play teams_insane"));
+                    break;
+            }
+        }
+    }
+
+    enum GameMode {
+        SW_SOLO_NORMAL,
+        SW_SOLO_INSANE,
+        SW_TEAMS_NORMAL,
+        SW_TEAMS_INSANE,
+    }
 }

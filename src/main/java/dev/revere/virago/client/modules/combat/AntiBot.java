@@ -5,7 +5,7 @@ import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
-import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.util.Logger;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;

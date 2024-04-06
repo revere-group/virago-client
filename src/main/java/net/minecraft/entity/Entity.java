@@ -5,8 +5,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.update.StrafeEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -15,7 +13,6 @@ import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockPattern;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;

@@ -12,6 +12,9 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glUniform1i;
+
 /**
  * @author Remi
  * @project Virago
@@ -92,6 +95,43 @@ public class Shader {
     public int getUniform(String uniform) {
         return this.uniformLocationMap.get(uniform);
     }
+
+    /**
+     * Set the uniform
+     *
+     * @param name the name
+     * @param args the args
+     */
+    public void setUniformf(String name, float... args) {
+        int loc = glGetUniformLocation(program, name);
+        switch (args.length) {
+            case 1:
+                glUniform1f(loc, args[0]);
+                break;
+            case 2:
+                glUniform2f(loc, args[0], args[1]);
+                break;
+            case 3:
+                glUniform3f(loc, args[0], args[1], args[2]);
+                break;
+            case 4:
+                glUniform4f(loc, args[0], args[1], args[2], args[3]);
+                break;
+        }
+    }
+
+    /**
+     * Set the uniform
+     *
+     * @param name the name
+     * @param args the args
+     */
+    public void setUniformi(String name, int... args) {
+        int loc = glGetUniformLocation(program, name);
+        if (args.length > 1) glUniform2i(loc, args[0], args[1]);
+        else glUniform1i(loc, args[0]);
+    }
+
 
     /**
      * Read resource location

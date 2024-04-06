@@ -10,6 +10,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.render.Render2DEvent;
+import dev.revere.virago.client.events.render.ShaderEvent;
 import dev.revere.virago.client.services.DraggableService;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
@@ -20,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
@@ -43,7 +45,6 @@ public class HUD extends AbstractModule {
     private final Draggable fpsDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "FPS", 6, 20));
     private final Draggable bpsDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "BPS", 20, 40));
 
-
     public Setting<Boolean> arraylist = new Setting<>("ArrayList", true).describedBy("Should the arraylist be rendered?");
     public Setting<Boolean> lowercase = new Setting<>("Lowercase", true)
             .visibleWhen(arraylist::getValue)
@@ -53,7 +54,7 @@ public class HUD extends AbstractModule {
     public Setting<Boolean> fps = new Setting<>("FPS", false).describedBy("Should the fps be rendered?");
     public Setting<Boolean> bps = new Setting<>("BPS", false).describedBy("Should the bps be rendered?");
 
-    public Setting<WatermarkMode> watermarkMode = new Setting<>("Watermark", WatermarkMode.CSGO).describedBy("The watermark mode to use for the HUD");
+    public Setting<WatermarkMode> watermarkMode = new Setting<>("Watermark Type", WatermarkMode.CSGO).describedBy("The watermark mode to use for the HUD");
     public Setting<ColorMode> colorMode = new Setting<>("Color", ColorMode.CLIENT).describedBy("The color mode to use for the HUD");
     public Setting<FontType> fontType = new Setting<>("Font", FontType.SF_PRO).describedBy("The font type to use for the HUD");
     public Setting<Outline> arrayListOutline = new Setting<>("Outline", Outline.TOP_RIGHT)
@@ -63,14 +64,12 @@ public class HUD extends AbstractModule {
     public static Setting<MetaData> arrayListMetaData = new Setting<>("Metadata", MetaData.SIMPLE)
             .describedBy("How to draw the module metadata");
 
-    public Setting<Color> customColor1 = new Setting<>("Color", new Color(0xE70BFF))
+    public Setting<Color> customColor1 = new Setting<>("First", new Color(0xE70BFF))
             .visibleWhen(() -> colorMode.getValue() == ColorMode.CUSTOM || colorMode.getValue() == ColorMode.STATIC)
-            .childOf(colorMode)
             .describedBy("Custom color either for static or fade accent");
 
-    public Setting<Color> customColor2 = new Setting<>("Color 2", new Color(0))
+    public Setting<Color> customColor2 = new Setting<>("Second", new Color(0))
             .visibleWhen(() -> colorMode.getValue() == ColorMode.CUSTOM)
-            .childOf(colorMode)
             .describedBy("Custom color either for static or fade accent");
 
     private final Setting<Integer> opacity = new Setting<>("Opacity", 100)
@@ -129,14 +128,13 @@ public class HUD extends AbstractModule {
         getFont(font);
 
         if (watermark.getValue())
-            renderWatermark();
+            renderWatermark(false);
 
         if (fps.getValue())
-            renderFPS();
+            renderFPS(false);
 
-
-        if(bps.getValue())
-            renderBPS();
+        if (bps.getValue())
+            renderBPS(false);
 
         String username = Virago.getInstance().getViragoUser().getUsername().toLowerCase();
         if (!(mc.currentScreen instanceof GuiChat)) {
@@ -144,31 +142,55 @@ public class HUD extends AbstractModule {
         }
 
         List<AbstractModule> modules = getSortedModules();
-        if (arraylist.getValue()) renderModules(sr, modules);
+        if (arraylist.getValue()) renderModules(sr, modules, false);
     };
 
-    private void renderFPS() {
+    @EventHandler
+    private final Listener<ShaderEvent> shaderEventListener = event -> {
+        FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
+        ScaledResolution sr = new ScaledResolution(mc);
+        getFont(font);
+
+
+        if (watermark.getValue())
+            renderWatermark(true);
+
+        if (fps.getValue())
+            renderFPS(true);
+
+        if (bps.getValue())
+            renderBPS(true);
+
+        List<AbstractModule> modules = getSortedModules();
+        if (arraylist.getValue()) renderModules(sr, modules, true);
+    };
+
+    private void renderFPS(boolean shader) {
         String fps = Minecraft.getDebugFPS() + " FPS";
         int width = fontRenderer.getStringWidth(fps) + 4;
         int height = fontRenderer.getHeight() + 4;
 
-        RenderUtils.rect(fpsDraggable.getX(), fpsDraggable.getY() - 1, width, height, new Color(0,0,0, 120));
-        RoundedUtils.shadowGradient(fpsDraggable.getX(), fpsDraggable.getY() - 1, width, height, 1, 5, 5, new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), false);
-        RenderUtils.renderGradientRect((int) fpsDraggable.getX(), (int) fpsDraggable.getY() - 1, (int) (width + fpsDraggable.getX()), (int) (fpsDraggable.getY()), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+        if (!shader) {
+            RenderUtils.rect(fpsDraggable.getX(), fpsDraggable.getY() - 1, width, height, new Color(0, 0, 0, 120));
+            RoundedUtils.shadowGradient(fpsDraggable.getX(), fpsDraggable.getY() - 1, width, height, 1, 5, 5, new Color(0, 0, 0, 100), new Color(0, 0, 0, 100), new Color(0, 0, 0, 100), new Color(0, 0, 0, 100), false);
+            RenderUtils.renderGradientRect((int) fpsDraggable.getX(), (int) fpsDraggable.getY() - 1, (int) (width + fpsDraggable.getX()), (int) (fpsDraggable.getY()), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+        }
 
         fontRenderer.drawString(fps, fpsDraggable.getX() + 2, fpsDraggable.getY() + 2, 0xFFFFFFFF);
         fpsDraggable.setWidth(width);
         fpsDraggable.setHeight(height);
     }
 
-    private void renderBPS() {
+    private void renderBPS(boolean shader) {
         String bps = getSpeed() + " BPS";
         int width = fontRenderer.getStringWidth(bps) + 4;
         int height = fontRenderer.getHeight() + 4;
 
-        RenderUtils.rect(bpsDraggable.getX(), bpsDraggable.getY() - 1, width, height, new Color(0,0,0, 120));
-        RoundedUtils.shadowGradient(bpsDraggable.getX(), bpsDraggable.getY() - 1, width, height, 1, 5, 5, new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), false);
-        RenderUtils.renderGradientRect((int) bpsDraggable.getX(), (int) bpsDraggable.getY() - 1, (int) (width + bpsDraggable.getX()), (int) (bpsDraggable.getY()), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+        if (!shader) {
+            RenderUtils.rect(bpsDraggable.getX(), bpsDraggable.getY() - 1, width, height, new Color(0, 0, 0, 120));
+            RoundedUtils.shadowGradient(bpsDraggable.getX(), bpsDraggable.getY() - 1, width, height, 1, 5, 5, new Color(0, 0, 0, 100), new Color(0, 0, 0, 100), new Color(0, 0, 0, 100), new Color(0, 0, 0, 100), false);
+            RenderUtils.renderGradientRect((int) bpsDraggable.getX(), (int) bpsDraggable.getY() - 1, (int) (width + bpsDraggable.getX()), (int) (bpsDraggable.getY()), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+        }
 
         fontRenderer.drawString(bps, bpsDraggable.getX() + 2, bpsDraggable.getY() + 2, 0xFFFFFFFF);
         bpsDraggable.setWidth(width);
@@ -183,32 +205,33 @@ public class HUD extends AbstractModule {
         return Math.round(bps * 100.0) / 100.0;
     }
 
-    private void renderWatermark() {
-        String clientText = Virago.getInstance().getName().toLowerCase() + "\u00A77client v";
+    private void renderWatermark(boolean shader) {
+        String clientText = Virago.getInstance().getName().toLowerCase() + "\u00A7fclient v";
         String versionText = Virago.getInstance().getVersion() + " | ";
-        String usernameText = Virago.getInstance().getViragoUser().getUsername().toLowerCase() + "\u00A77 | ";
+        String usernameText = Virago.getInstance().getViragoUser().getUsername().toLowerCase() + "\u00A7f | ";
         String serverText = mc.getCurrentServerData() != null ? mc.getCurrentServerData().serverIP : "singleplayer";
 
         String finalText = clientText + versionText + usernameText + serverText;
         switch (watermarkMode.getValue()) {
             case TEXT:
                 FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
-                RoundedUtils.round(watermarkDraggable.getX(), watermarkDraggable.getY(), font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()) + 5, watermarkDraggable.getHeight(), 4, new Color(10,10,10));
+                if (!shader) RoundedUtils.round(watermarkDraggable.getX(), watermarkDraggable.getY(), font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()) + 5, watermarkDraggable.getHeight(), 4, new Color(10, 10, 10));
                 font.getRalewayExtraBold().drawString(finalText.toUpperCase(), watermarkDraggable.getX() + 2, watermarkDraggable.getY() + 5, ColorUtil.getColor(false), false);
                 watermarkDraggable.setWidth(font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()));
                 watermarkDraggable.setHeight(font.getRalewayExtraBold().getHeight() + 7);
                 break;
             case CSGO:
-                RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, new Color(0,0, 0, 150));
-                RoundedUtils.shadowGradient(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, 1, 5, 5, new Color(0,0,0, 150), new Color(0,0,0, 150), new Color(0,0,0, 150), new Color(0,0,0, 150), false);
-                RenderUtils.renderGradientRect((int) watermarkDraggable.getX(), (int) watermarkDraggable.getY(), (int) (fontRenderer.getStringWidth(finalText) + 2 + watermarkDraggable.getX()), (int) (watermarkDraggable.getY() + 1), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
-
+                if (!shader) {
+                    RenderUtils.rect(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, new Color(0, 0, 0, 150));
+                    RoundedUtils.shadowGradient(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, 1, 5, 5, new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), false);
+                    RenderUtils.renderGradientRect((int) watermarkDraggable.getX(), (int) watermarkDraggable.getY(), (int) (fontRenderer.getStringWidth(finalText) + 2 + watermarkDraggable.getX()), (int) (watermarkDraggable.getY() + 1), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+                }
                 fontRenderer.drawStringWithShadow(finalText, watermarkDraggable.getX() + 1, watermarkDraggable.getY() + 4, ColorUtil.getColor(false));
                 watermarkDraggable.setWidth(fontRenderer.getStringWidth(finalText));
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 6);
                 break;
             case LOGO:
-                RenderUtils.drawImage(new ResourceLocation("virago/textures/logo/logo.png"), watermarkDraggable.getX(), watermarkDraggable.getY(), 50, 50);
+                if (!shader) RenderUtils.drawImage(new ResourceLocation("virago/textures/logo/logo.png"), watermarkDraggable.getX(), watermarkDraggable.getY(), 50, 50);
                 fontRenderer.drawString(Virago.getInstance().getName().toLowerCase(), watermarkDraggable.getX() + 11, watermarkDraggable.getY() + 50, -1);
                 watermarkDraggable.setWidth(fontRenderer.getStringWidth(Virago.getInstance().getName().toLowerCase()));
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 50);
@@ -263,12 +286,12 @@ public class HUD extends AbstractModule {
      * @param sr      The scaled resolution
      * @param modules The modules to render
      */
-    private void renderModules(ScaledResolution sr, List<AbstractModule> modules) {
-        y = 4;
+    private void renderModules(ScaledResolution sr, List<AbstractModule> modules, boolean shader) {
+        y = 6;
         int index = 0;
         for (AbstractModule module : modules) {
             if (!module.isEnabled()) continue;
-            renderModule(module, sr, y, index);
+            renderModule(module, sr, y, index, shader);
             y += elementHeight.getValue();
             index++;
         }
@@ -281,16 +304,18 @@ public class HUD extends AbstractModule {
      * @param sr     The scaled resolution
      * @param y      The y position
      */
-    private void renderModule(AbstractModule module, ScaledResolution sr, int y, int index) {
+    private void renderModule(AbstractModule module, ScaledResolution sr, int y, int index, boolean shader) {
         String moduleData = generateModuleData(module);
         int moduleWidth = fontRenderer.getStringWidth(moduleData);
 
-        if (background.getValue()) Gui.drawRect(sr.getScaledWidth() - moduleWidth - 6, y, sr.getScaledWidth() - 2, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
-        renderBar(module, sr, y, index);
-
+        if (!shader) {
+            if (background.getValue())
+                Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
+            renderBar(module, sr, y, index);
+        }
         int padding = 2;
         if (fontType.getValue() == FontType.SF_PRO) padding += 1;
-        fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 4) - moduleWidth, y + padding, ColorUtil.getColor(true));
+        fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6) - moduleWidth, y + padding, ColorUtil.getColor(true));
     }
 
     /**
@@ -304,24 +329,24 @@ public class HUD extends AbstractModule {
         String moduleData = generateModuleData(module);
         int moduleWidth = fontRenderer.getStringWidth(moduleData);
         int height = elementHeight.getValue().intValue();
-        float x = sr.getScaledWidth() - moduleWidth - 6;
+        float x = sr.getScaledWidth() - moduleWidth - 8;
         int color = ColorUtil.getColor(true);
 
         switch (arrayListOutline.getValue()) {
             case TOP: {
                 if (index == 0) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 2f, 3f, x, 4f, color);
+                    RenderUtils.drawRect(sr.getScaledWidth() - 4f, y - 1, x, y, color);
                 }
                 break;
             }
             case RIGHT:
-                RenderUtils.drawRect(x + moduleWidth + 4f, y - 1f, x + moduleWidth + 5f, y + height - 1f, color);
+                RenderUtils.drawRect(x + moduleWidth + 4f, y, x + moduleWidth + 5f, y + height, color);
                 break;
             case TOP_RIGHT:
                 if (index == 0) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 1f, 3f, x, 4f, color);
+                    RenderUtils.drawRect(sr.getScaledWidth() - 4f, y - 1, x, y, color);
                 }
-                RenderUtils.drawRect(x + moduleWidth + 4f, y - 1f, x + moduleWidth + 5f, y + height - 1f, color);
+                RenderUtils.drawRect(x + moduleWidth + 4f, y - 1f, x + moduleWidth + 5f, y + height, color);
                 break;
             case LEFT:
                 RenderUtils.drawRect(x - 1f, y, x, y + height, color);
@@ -331,7 +356,7 @@ public class HUD extends AbstractModule {
                 RenderUtils.drawRect(x - 1f, y, x, y + height, color);
 
                 if (index == 0) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 2f, 3f, x - 1, 4f, color);
+                    RenderUtils.drawRect(sr.getScaledWidth() - 2f, y - 1, x, y, color);
                 } else if (index == getSortedModules().size() - 1f) {
                     RenderUtils.drawRect(sr.getScaledWidth() - 1f, y + height - 1f, x, y + height, color);
                 }
@@ -470,9 +495,11 @@ public class HUD extends AbstractModule {
         CSGO,
         LOGO,
     }
+
     public enum Outline {
         TOP, RIGHT, TOP_RIGHT, LEFT, FULL, NONE
     }
+
     public enum MetaData {
         SIMPLE,
         SQUARE,

@@ -1863,7 +1863,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         {
             if (!(entity instanceof EntityLivingBase))
             {
-                throw new IllegalStateException("Server tried to update attributes of a non-living entity (actually: " + entity + ")");
+                throw new IllegalStateException("Server tried to game attributes of a non-living entity (actually: " + entity + ")");
             }
             else
             {

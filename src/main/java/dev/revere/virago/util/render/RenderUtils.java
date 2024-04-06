@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
@@ -35,6 +36,12 @@ public class RenderUtils {
     public static Minecraft mc = Minecraft.getMinecraft();
     private static final Frustum frustrum = new Frustum();
 
+    /**
+     * Gets the client color
+     *
+     * @param index index
+     * @return color
+     */
     public static int getColor(int index) {
         HUD hud = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class);
         switch (hud.colorMode.getValue()) {
@@ -50,14 +57,19 @@ public class RenderUtils {
         return -1;
     }
 
-    public static long drawGradientRect(int left, int top, int right, int bottom, int size) {
-        int size2 = 1;
-        long topCol = renderGradientRect(left, top - size2, right, top, 2.0, 10L, 0L, Direction.RIGHT);
-        long downCol = renderGradientRect(left - size2, top - size, left, bottom + size2, 2.0, 10L, 0L, Direction.DOWN);
-        renderGradientRect(right, top - size2, right + size2, bottom + size2, 2.0, 10L, topCol, Direction.DOWN);
-        return topCol;
-    }
-
+    /**
+     * Draws a gradient rect
+     *
+     * @param left      left
+     * @param top       top
+     * @param right     right
+     * @param bottom    bottom
+     * @param time      time
+     * @param difference difference
+     * @param delay     delay
+     * @param direction direction
+     * @return delay
+     */
     public static long renderGradientRect(int left, int top, int right, int bottom, double time, long difference, long delay, Direction direction) {
         int i;
         long endDelay = 0L;
@@ -84,29 +96,16 @@ public class RenderUtils {
         return endDelay;
     }
 
-    public static double interpolate(double current, double old, double scale) {
-        return old + (current - old) * scale;
-    }
-
-    public static boolean glEnableBlend() {
-        final boolean wasEnabled = GL11.glIsEnabled(GL11.GL_BLEND);
-
-        if (!wasEnabled) {
-            GL11.glEnable(GL11.GL_BLEND);
-            GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        }
-
-        return wasEnabled;
-    }
-
-
-    public static void glRestoreBlend(final boolean wasEnabled) {
-        if (!wasEnabled) {
-            GL11.glDisable(GL11.GL_BLEND);
-        }
-    }
-
-
+    /**
+     * Draws a hollow rectangle with a defined width
+     *
+     * @param x     x position
+     * @param y     y position
+     * @param w     width
+     * @param h     height
+     * @param width width of the rectangle
+     * @param color color
+     */
     public static void drawHollowRectDefineWidth(float x, float y, float w, float h, float width, int color) {
         Gui.drawHorizontalLineDefineWidth(x, w, y, width, color);
         Gui.drawHorizontalLineDefineWidth(x, w, h, width, color);
@@ -115,35 +114,44 @@ public class RenderUtils {
         Gui.drawVerticalLineDefineWidth(w, h, y, width, color);
     }
 
-    public static void drawMicrosoftLogo(float x, float y, float size, float spacing) {
-        drawMicrosoftLogo(x, y, size, spacing, 1f);
-    }
-
-    public static void drawMicrosoftLogo(float x, float y, float size, float spacing, float alpha) {
-        float rectSize = size /2f - spacing;
-        int alphaVal = (int) (255 * alpha);
-        Gui.drawRect2(x, y, rectSize, rectSize, new Color(244, 83, 38, alphaVal).getRGB());
-        Gui.drawRect2(x + rectSize + spacing, y, rectSize, rectSize, new Color(130, 188, 6, alphaVal).getRGB());
-        Gui.drawRect2(x, y + spacing + rectSize, rectSize, rectSize, new Color(5, 166, 241, alphaVal).getRGB());
-        Gui.drawRect2(x + rectSize + spacing, y + spacing + rectSize, rectSize, rectSize, new Color(254, 186, 7, alphaVal).getRGB());
-    }
-
+    /**
+     * Scales the screen
+     *
+     * @param x     x position
+     * @param y     y position
+     * @param scale scale
+     */
     public static void scale(float x, float y, float[] scale) {
         GlStateManager.translate(x, y, 0);
         GlStateManager.scale(scale[0], scale[1], 1);
         GlStateManager.translate(-x, -y, 0);
     }
 
+    /**
+     * Checks if an entity is in the view frustrum
+     *
+     * @param entity the entity
+     * @return if the entity is in the view frustrum
+     */
     public static boolean isInViewFrustrum(Entity entity) {
         return isInViewFrustrum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck;
     }
 
+    /**
+     * Checks if a bounding box is in the view frustrum
+     *
+     * @param bb the bounding box
+     * @return if the bounding box is in the view frustrum
+     */
     private static boolean isInViewFrustrum(AxisAlignedBB bb) {
         Entity current = Minecraft.getMinecraft().getRenderViewEntity();
         frustrum.setPosition(current.posX, current.posY, current.posZ);
         return frustrum.isBoundingBoxInFrustum(bb);
     }
 
+    /**
+     * Prepares the 3D rendering
+     */
     public static void pre3D() {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
@@ -155,6 +163,9 @@ public class RenderUtils {
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
     }
 
+    /**
+     * Post 3D rendering
+     */
     public static void post3D() {
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -164,6 +175,24 @@ public class RenderUtils {
         GL11.glColor4f(1, 1, 1, 1);
     }
 
+    /**
+     * Sets the alpha limit
+     *
+     * @param limit the limit
+     */
+    public static void setAlphaLimit(float limit) {
+        GlStateManager.enableAlpha();
+        GlStateManager.alphaFunc(GL11.GL_GREATER, (float) (limit * .01));
+    }
+
+    /**
+     * Projects a 3D vector to a 2D vector
+     *
+     * @param x x position
+     * @param y y position
+     * @param z z position
+     * @return 2D vector
+     */
     public static double[] project2D(final double x, final double y, final double z) {
         FloatBuffer objectPosition = ActiveRenderInfo.objectCoords();
         ScaledResolution sc = new ScaledResolution(mc);
@@ -508,7 +537,44 @@ public class RenderUtils {
         GL11.glDisable(2848);
     }
 
-    public static enum Direction {
+    /**
+     * Creates a frame buffer
+     *
+     * @param framebuffer frame buffer
+     * @return frame buffer
+     */
+    public static Framebuffer createFrameBuffer(Framebuffer framebuffer) {
+        return createFrameBuffer(framebuffer, false);
+    }
+
+    /**
+     * Creates a frame buffer
+     *
+     * @param framebuffer frame buffer
+     * @param depth       depth
+     * @return frame buffer
+     */
+    public static Framebuffer createFrameBuffer(Framebuffer framebuffer, boolean depth) {
+        if (needsNewFramebuffer(framebuffer)) {
+            if (framebuffer != null) {
+                framebuffer.deleteFramebuffer();
+            }
+            return new Framebuffer(mc.displayWidth, mc.displayHeight, depth);
+        }
+        return framebuffer;
+    }
+
+    /**
+     * Checks if a new frame buffer is needed
+     *
+     * @param framebuffer frame buffer
+     * @return if a new frame buffer is needed
+     */
+    public static boolean needsNewFramebuffer(Framebuffer framebuffer) {
+        return framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth || framebuffer.framebufferHeight != mc.displayHeight;
+    }
+
+    public enum Direction {
         LEFT,
         UP,
         RIGHT,

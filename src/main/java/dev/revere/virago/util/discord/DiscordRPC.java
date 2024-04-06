@@ -141,7 +141,7 @@ public class DiscordRPC {
             activity.assets().setLargeImage("logo");
             activity.assets().setLargeText("Virago " + Virago.getInstance().getVersion() + " @ virago.dev");
 
-            // Finally, update the current activity to our activity
+            // Finally, game the current activity to our activity
             core.activityManager().updateActivity(activity);
 
             // Run callbacks forever

@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.update.EventEntityOptionalForce;
+import dev.revere.virago.client.events.player.EventEntityOptionalForce;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHopper;
 import net.minecraft.block.BlockLiquid;

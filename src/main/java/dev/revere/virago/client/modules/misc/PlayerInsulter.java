@@ -9,7 +9,7 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.attack.AttackEvent;
 import dev.revere.virago.client.events.packet.PacketEvent;
-import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.entity.Entity;

@@ -7,7 +7,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
-import dev.revere.virago.client.events.update.PreMotionEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.network.play.server.S03PacketTimeUpdate;

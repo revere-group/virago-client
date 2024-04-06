@@ -6,7 +6,7 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.client.events.update.PreMotionEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.util.ItemUtil;
 import dev.revere.virago.util.TimerUtil;
 import net.minecraft.block.*;

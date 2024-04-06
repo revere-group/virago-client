@@ -1,6 +1,5 @@
 package dev.revere.virago.client.modules.combat;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
@@ -8,10 +7,8 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
-import dev.revere.virago.client.events.update.PostMotionEvent;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
-import net.minecraft.network.play.server.S03PacketTimeUpdate;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.play.server.S27PacketExplosion;
 import org.lwjgl.input.Keyboard;

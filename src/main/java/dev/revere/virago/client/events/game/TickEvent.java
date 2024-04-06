@@ -1,4 +1,4 @@
-package dev.revere.virago.client.events;
+package dev.revere.virago.client.events.game;
 
 import dev.revere.virago.api.event.Event;
 

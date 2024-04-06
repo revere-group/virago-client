@@ -1,6 +1,5 @@
 package dev.revere.virago.client.modules.render;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
@@ -9,8 +8,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.attack.AttackEvent;
-import dev.revere.virago.client.events.update.PreMotionEvent;
-import dev.revere.virago.client.events.update.UpdateEvent;
+import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.sound.SoundUtil;

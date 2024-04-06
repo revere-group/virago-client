@@ -35,14 +35,14 @@ public class AltService implements IService {
 
         dataFile = Paths.get(altManagerFolder.toString(), "alts.txt");
 
-        if(!altManagerFolder.toFile().exists() && altManagerFolder.toFile().mkdir())
+        /*if(!altManagerFolder.toFile().exists() && altManagerFolder.toFile().mkdir())
             Logger.info("Created altmanager folder.", getClass());
 
         if (!altManagerFolder.toFile().exists()) {
             altManagerFolder.toFile().mkdir();
-        }
+        }*/
 
-        if (!dataFile.toFile().exists()) {
+        /*if (!dataFile.toFile().exists()) {
             try {
                 if (dataFile.toFile().createNewFile()) {
                     Logger.info("Created alts file.", getClass());
@@ -50,7 +50,7 @@ public class AltService implements IService {
             } catch (Exception e) {
                 Logger.err("Failed to create alts file.", getClass());
             }
-        }
+        }*/
     }
 
     @Override

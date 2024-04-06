@@ -9,6 +9,8 @@ import java.util.Random;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.render.Render2DEvent;
+import dev.revere.virago.client.gui.panel.PanelGUI;
+import dev.revere.virago.client.modules.render.Bloom;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -334,6 +336,12 @@ public class GuiIngame extends Gui
         {
             this.overlayPlayerList.updatePlayerList(false);
         }
+
+        Bloom bloom = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Bloom.class);
+        if (bloom.isEnabled() && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null && (mc.currentScreen == null || mc.currentScreen instanceof PanelGUI)) {
+            bloom.applyBlurEffect();
+        }
+
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.disableLighting();

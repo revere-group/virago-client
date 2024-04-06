@@ -1040,7 +1040,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
         this.lastViewEntityPitch = (double)viewEntity.rotationPitch;
         this.lastViewEntityYaw = (double)viewEntity.rotationYaw;
         boolean flag = this.debugFixedClippingHelper != null;
-        this.mc.mcProfiler.endStartSection("update");
+        this.mc.mcProfiler.endStartSection("game");
         Lagometer.timerVisibility.start();
         int i = this.getCountLoadedChunks();
 

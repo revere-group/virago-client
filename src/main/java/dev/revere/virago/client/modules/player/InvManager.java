@@ -10,7 +10,7 @@ import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.window.WindowClickEvent;
 import dev.revere.virago.client.events.player.window.WindowClickRequest;
-import dev.revere.virago.client.events.update.PreMotionEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.InventoryUtil;

@@ -129,7 +129,7 @@ public class SettingEnumElement extends SettingElement<Enum<?>> {
 
         @Override
         public boolean mouseClicked(float mouseX, float mouseY, InteractionComponent click) {
-            if (hovered(mouseX, mouseY)) {
+            if (hovered(mouseX, mouseY) && click.equals(InteractionComponent.LEFT)) {
                 Enum<?> enumeration = getSetting().getValue();
                 getSetting().setValue(Enum.valueOf(enumeration.getClass(), Arrays.stream(enumeration.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new)[ordinal]));
             }

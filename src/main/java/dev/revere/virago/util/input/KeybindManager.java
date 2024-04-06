@@ -1,14 +1,11 @@
 package dev.revere.virago.util.input;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
-import dev.revere.virago.api.service.ServiceManager;
 import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.input.KeyUpEvent;
-import dev.revere.virago.client.events.update.PostMotionEvent;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

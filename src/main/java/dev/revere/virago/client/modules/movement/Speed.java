@@ -1,17 +1,13 @@
 package dev.revere.virago.client.modules.movement;
 
-import com.google.common.eventbus.Subscribe;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.client.events.MoveEvent;
-import dev.revere.virago.client.events.input.KeyDownEvent;
-import dev.revere.virago.client.events.update.PreMotionEvent;
-import dev.revere.virago.client.events.update.UpdateEvent;
-import dev.revere.virago.util.Logger;
+import dev.revere.virago.client.events.player.MoveEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.network.Packet;
 import net.minecraft.potion.Potion;
