@@ -31,7 +31,8 @@ public class SettingBooleanElement extends SettingElement<Boolean> {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
         RoundedUtils.round(getX() + getWidth() - 14, getY() + 4 , 10, 10, 2, new Color(0x1E1E1E));
 
-        if (toggle.getState()) {
+        boolean state = getSetting().getValue();
+        if (state) {
             font.getProductSans().drawCenteredString("+", getX() + getWidth() - 9.5f, getY() + getHeight() / 2f - font.getProductSans().getHeight() / 2f - 1f, ColorUtil.getColor(false));
         }
     }
@@ -39,7 +40,6 @@ public class SettingBooleanElement extends SettingElement<Boolean> {
     @Override
     public boolean mouseClicked(float mouseX, float mouseY, InteractionComponent click) {
         if (hovered(mouseX, mouseY) && click.equals(InteractionComponent.LEFT)) {
-            toggle.setState(!getSetting().getValue());
             getSetting().setValue(!getSetting().getValue());
         }
 
