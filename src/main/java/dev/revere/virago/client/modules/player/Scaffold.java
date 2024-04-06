@@ -789,7 +789,7 @@ public class Scaffold extends AbstractModule {
         mc.gameSettings.keyBindSneak.pressed = false;
         mc.timer.timerSpeed = 1F;
 
-        if(sprint.getValue()) {
+        if(!sprint.getValue()) {
             Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Sprint.class).setEnabled(true);
         }
 
