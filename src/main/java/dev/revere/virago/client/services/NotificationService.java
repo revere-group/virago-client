@@ -5,8 +5,15 @@ import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.client.events.render.Render2DEvent;
+import dev.revere.virago.client.modules.render.Notifications;
 import dev.revere.virago.client.notification.Notification;
+import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.util.Logger;
+import dev.revere.virago.util.animation.Animation;
+import dev.revere.virago.util.animation.Easing;
+import javafx.scene.transform.Scale;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -15,7 +22,7 @@ import java.util.List;
 
 public class NotificationService implements IService {
 
-    List<Notification> notifications = new ArrayList<>();
+    private final List<Notification> notifications = new ArrayList<>();
 
     /**
      * Initializes the service by registering the service to the event bus.
@@ -31,20 +38,19 @@ public class NotificationService implements IService {
      */
     @Override
     public void destroyService() {
-        //clear notification list
+        notifications.clear();
     }
 
-    public void addNotification(Notification notification) {
-        this.notifications.add(notification);
+    public void notify(NotificationType type, String title, String message) {
+        if(!Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class).isEnabled()) {
+            return;
+        }
+
+        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+        notifications.add(new Notification(scaledResolution.getScaledWidth() - 205, scaledResolution.getScaledHeight() - 30 * notifications.size(), type, title, message));
     }
 
-    public void drawNotification(Notification notification) {
-        String title = notification.getTitle();
-        String message = notification.getMessage();
-        Color color = notification.getColor();
 
-        //render shit here with animations remi
-    }
 
     /**
      * Renders all the notifications in the list.
@@ -53,19 +59,18 @@ public class NotificationService implements IService {
      */
     @EventHandler
     private final Listener<Render2DEvent> render2DEventListener = event -> {
-        int i = 0;
+        ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
+        notifications.removeIf(Notification::shouldNotificationHide);
 
-        for (Iterator<Notification> iterator = notifications.iterator(); iterator.hasNext(); ) {
-            final Notification notification = iterator.next();
+        float offset = 0;
 
-            this.drawNotification(notification);
+        for(Notification notification : notifications) {
+            notification.setX(resolution.getScaledWidth() - (float) ((notification.getWidth() + 5) * notification.getAnimation().getFactor()));
+            notification.setY(resolution.getScaledHeight() - (offset * 1.1f) - notification.getHeight() - 5);
 
-            if (notification.ended()) {
-                iterator.remove();
-            }
-            i++;
+            notification.draw(0, 0, 0);
+
+            offset += notification.getHeight() * notification.getAnimation().getFactor();
         }
-
-        notifications.removeIf(Notification::ended);
     };
 }

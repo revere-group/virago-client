@@ -11,6 +11,12 @@ public interface Easing {
     Easing SINE_IN_OUT = x -> (Math.sin(Math.PI * (x - 0.5)) + 1) / 2;
     Easing CIRC_OUT = x -> Math.sqrt(1 - Math.pow(x - 1, 2));
     Easing LINEAR = x -> x;
+    Easing BACK_IN_OUT = x -> {
+        double s = 1.70158;
+        if ((x /= 0.5) < 1) return 0.5 * (x * x * (((s *= (1.525)) + 1) * x - s));
+        return 0.5 * ((x -= 2) * x * (((s *= (1.525)) + 1) * x + s) + 2);
+    };
+
 
     double ease(double x);
 }

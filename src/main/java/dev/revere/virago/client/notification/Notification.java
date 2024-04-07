@@ -1,21 +1,101 @@
 package dev.revere.virago.client.notification;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.gui.components.InteractionComponent;
+import dev.revere.virago.client.gui.components.RenderableComponent;
+import dev.revere.virago.client.services.FontService;
+import dev.revere.virago.util.animation.Animation;
+import dev.revere.virago.util.animation.Easing;
+import dev.revere.virago.util.render.ColorUtil;
+import dev.revere.virago.util.render.RenderUtils;
+import dev.revere.virago.util.render.RoundedUtils;
+import lombok.Getter;
+import net.minecraft.util.MathHelper;
+import org.lwjgl.Sys;
+
 
 import java.awt.*;
 
-@Data
-@AllArgsConstructor
-public class Notification {
-    public String title;
-    public String message;
-    public Color color;
+import static org.lwjgl.opengl.GL11.glScalef;
 
-    long endTime;
+public class Notification extends RenderableComponent {
 
-    public boolean ended() {
-        if(System.currentTimeMillis() >= endTime) return true;
-        return false;
+    private final NotificationType type;
+    private final String title;
+    private final String message;
+
+    private final FontService fontService = Virago.getInstance().getServiceManager().getService(FontService.class);
+
+    @Getter
+    private final Animation animation = new Animation(() -> 700F, true, () -> Easing.BACK_IN_OUT);
+
+    private long initTime = 0L;
+
+    public Notification(float x, float y, NotificationType type, String title, String message) {
+        super(x, y, 125, 30);
+
+        this.type = type;
+        this.title = title;
+        this.message = message;
+
+        animation.resetToDefault();
+        animation.setState(false);
     }
+
+    @Override
+    public void draw(float mouseX, float mouseY, int mouseDelta) {
+        if (initTime == 0L && animation.getFactor() >= 1) {
+            initTime = System.currentTimeMillis();
+        }
+
+        long time = initTime > 0 ? System.currentTimeMillis() - initTime : 0;
+
+        System.out.println(animation.getState());
+
+
+        if (time >= 1500) {
+            System.out.println("we got to this code bitch");
+            animation.setState(false);
+        }
+
+        RoundedUtils.round(getX(), getY(), getWidth(), getHeight(), 5, ColorUtil.interpolate(new Color(0, 0, 0, 130), new Color(0, 0, 0, 100), 0.2f));
+        RenderUtils.pushScissor(getX(), getY(), MathHelper.clamp_float(getWidth() * (time / 1500f), 0, getWidth()), getHeight());
+
+        RoundedUtils.gradient(getX(), getY(), getWidth(), getHeight(), 1f, new Color(0, 0,0,100).getRGB(), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)));
+        RenderUtils.popScissor();
+
+        RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, new Color(ColorUtil.getColor(true)));
+
+        glScalef(2, 2, 2);
+        {
+            float factor = 0.5f;
+            fontService.getIcon10().drawString(type.icon, (getX() + 8) * factor, (getY() + 6) * factor, type.color.getRGB(), false);
+
+            glScalef(factor, factor, factor);
+        }
+
+
+        fontService.getSfProTextRegular().drawString(title, getX() + 27, getY() + 4, -1);
+        fontService.getSfProTextRegular().drawString(message, getX() + 27, getY() + 16, -1);
+    }
+
+    @Override
+    public boolean mouseClicked(float mouseX, float mouseY, InteractionComponent click) { return false; }
+
+    @Override
+    public void mouseReleased(float mouseX, float mouseY, InteractionComponent click) {}
+
+    @Override
+    public float getWidth() {
+        float titleWidth = fontService.getSfProTextRegular().getStringWidth(this.title);
+        float descWidth = fontService.getSfProTextRegular().getStringWidth(this.message);
+
+        return Math.max(titleWidth, descWidth) + 47;
+    }
+
+    public boolean shouldNotificationHide() {
+        return !animation.getState() && animation.getFactor() == 0;
+    }
+
+    public void keyTyped(char typedChar, int keyCode) {}
 }

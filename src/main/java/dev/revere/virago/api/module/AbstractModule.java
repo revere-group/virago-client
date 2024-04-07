@@ -2,6 +2,9 @@ package dev.revere.virago.api.module;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.client.modules.render.Notifications;
+import dev.revere.virago.client.notification.NotificationType;
+import dev.revere.virago.client.services.NotificationService;
 import dev.revere.virago.util.animation.Animation;
 import dev.revere.virago.util.animation.Easing;
 import dev.revere.virago.util.input.BindType;
@@ -128,7 +131,7 @@ public abstract class AbstractModule {
      */
     public void onEnable() {
         Virago.getInstance().getEventBus().register(this);
-        //Virago.getInstance().getServiceManager().getService(NotificationService.class).drawNotification("Toggled Module", this.getName() + " has been enabled", NotificationType.INFO);
+        Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Enabled Module", this.getName());
     }
 
     /**
@@ -137,7 +140,7 @@ public abstract class AbstractModule {
      */
     public void onDisable() {
         Virago.getInstance().getEventBus().unregister(this);
-        //Virago.getInstance().getServiceManager().getService(NotificationService.class).drawNotification("Toggled Module", this.getName() + " has been disabled", NotificationType.INFO);
+        Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Disabled Module", this.getName());
     }
 
     public String getDisplayName() {
