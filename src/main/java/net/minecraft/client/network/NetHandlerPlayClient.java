@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.authlib.GameProfile;
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.events.packet.TeleportEvent;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
 import io.netty.buffer.Unpooled;
 import java.io.File;
@@ -594,6 +596,13 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         double d2 = packetIn.getZ();
         float f = packetIn.getYaw();
         float f1 = packetIn.getPitch();
+
+        final TeleportEvent event = new TeleportEvent(new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.posY, entityplayer.posZ, entityplayer.rotationYaw, entityplayer.rotationPitch, false), d0, d1, d2, f, f1);
+        Virago.getInstance().getEventBus().call(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
 
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.X))
         {

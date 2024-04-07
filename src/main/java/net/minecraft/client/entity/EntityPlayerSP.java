@@ -5,7 +5,9 @@ import dev.revere.virago.client.events.player.MoveEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.player.UpdateEvent;
+import dev.revere.virago.client.modules.player.NoSlow;
 import dev.revere.virago.client.services.CommandService;
+import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -714,7 +716,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
 
-        if (this.isUsingItem() && !this.isRiding())
+        if (this.isUsingItem() && !this.isRiding() && !Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(NoSlow.class).isEnabled())
         {
             this.movementInput.moveStrafe *= 0.2F;
             this.movementInput.moveForward *= 0.2F;

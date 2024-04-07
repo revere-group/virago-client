@@ -36,7 +36,7 @@ public class Bloom extends AbstractModule {
     private Framebuffer blurFramebuffer = new Framebuffer(1, 1, false);
 
     public void applyBlurEffect() {
-        if (bloom.getValue()) {
+        if (bloom.getValue() && mc.thePlayer != null) {
             blurFramebuffer = RenderUtils.createFrameBuffer(blurFramebuffer);
             blurFramebuffer.framebufferClear();
             blurFramebuffer.bindFramebuffer(false);

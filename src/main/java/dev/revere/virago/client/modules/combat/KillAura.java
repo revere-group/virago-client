@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
 public class KillAura extends AbstractModule {
 
     private final Setting<AttackStage> attackStage = new Setting<>("Attack Stage", AttackStage.PRE).describedBy("The attack stage.");
-    private final Setting<BlockMode> blockMode = new Setting<>("Block Mode", BlockMode.FAKE)
+    public final Setting<BlockMode> blockMode = new Setting<>("Block Mode", BlockMode.FAKE)
             .describedBy("The autoblock mode.");
 
     private final Setting<Double> aps = new Setting<>("APS", 10.5).minimum(1.0).maximum(20.0).incrementation(0.5).describedBy("The amount of times to attack per second");
@@ -213,13 +213,13 @@ public class KillAura extends AbstractModule {
             case N_C_P:
                 break;
             case WATCHDOG:
-                if (this.blockingTicks == 0) {
+                /*if (this.blockingTicks == 0) {
                     sendBlocking(false, true);
                     this.blockingTicks = 6;
                 } else if (this.blockingTicks == 4) {
                     releaseUseItem(false);
                 }
-                this.blockingTicks--;
+                this.blockingTicks--;*/
                 break;
             case VERUS:
                 mc.getNetHandler().addToSendQueueNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem(), new BlockPos(-1, -1, -1)));
@@ -294,7 +294,7 @@ public class KillAura extends AbstractModule {
                     mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
                     break;
                 case WATCHDOG:
-                    this.blockingTicks = 0;
+                    //this.blockingTicks = 0;
                     break;
             }
         }
@@ -465,7 +465,7 @@ public class KillAura extends AbstractModule {
         this.releaseBlock();
     }
 
-    enum BlockMode {
+    public enum BlockMode {
         FAKE, H_V_H, VANILLA, CONTROL, VERUS, WATCHDOG, N_C_P
     }
 

@@ -27,13 +27,12 @@ public class AutoHypixel extends AbstractModule {
             S45PacketTitle s45 = event.getPacket();
             if (s45.getMessage() == null) return;
 
-            if (StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("VICTORY!") ) {
+            String title = StringUtils.stripControlCodes(s45.getMessage().getUnformattedText());
+            if (title.equals("VICTORY!") || title.equals("YOU LOST!") || title.equals("YOU DIED!")) {
                 if(autoGG.getValue()) {
                     mc.thePlayer.sendChatMessage("GG");
                 }
 
-                doRejoin();
-            } else if(StringUtils.stripControlCodes(s45.getMessage().getUnformattedText()).equals("YOU DIED!")) {
                 doRejoin();
             }
         }
