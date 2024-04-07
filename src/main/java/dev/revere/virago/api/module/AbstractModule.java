@@ -2,8 +2,6 @@ package dev.revere.virago.api.module;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.client.services.NotificationService;
-import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.util.animation.Animation;
 import dev.revere.virago.util.animation.Easing;
 import dev.revere.virago.util.input.BindType;
@@ -17,7 +15,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * @author Remi

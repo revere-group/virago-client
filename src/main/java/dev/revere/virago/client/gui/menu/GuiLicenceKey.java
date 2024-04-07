@@ -3,10 +3,8 @@ package dev.revere.virago.client.gui.menu;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.protection.auth.Safelock;
-import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.ConfigService;
 import dev.revere.virago.client.services.FontService;
-import dev.revere.virago.client.services.NotificationService;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
 import dev.revere.virago.client.gui.menu.components.CustomGuiTextField;

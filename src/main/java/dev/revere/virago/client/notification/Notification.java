@@ -1,20 +1,21 @@
 package dev.revere.virago.client.notification;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.awt.*;
 
-@Getter
-@RequiredArgsConstructor
-public abstract class Notification {
-    private final String title;
-    private final String message;
-    private final long init = System.currentTimeMillis();
-    private final long length;
-    private final Color color;
+@Data
+@AllArgsConstructor
+public class Notification {
+    public String title;
+    public String message;
+    public Color color;
 
-    public abstract void show(int amount);
-    public abstract boolean ended();
+    long endTime;
 
+    public boolean ended() {
+        if(System.currentTimeMillis() >= endTime) return true;
+        return false;
+    }
 }
