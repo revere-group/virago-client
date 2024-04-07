@@ -4,6 +4,7 @@ import dev.revere.virago.Virago;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.modules.render.Notifications;
 import dev.revere.virago.client.notification.NotificationType;
+import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.client.services.NotificationService;
 import dev.revere.virago.util.animation.Animation;
 import dev.revere.virago.util.animation.Easing;
@@ -130,8 +131,12 @@ public abstract class AbstractModule {
      * Override this method to perform actions when the module is enabled.
      */
     public void onEnable() {
+        Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
         Virago.getInstance().getEventBus().register(this);
-        Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Enabled Module", this.getName());
+
+        if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
+            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getName());
+        }
     }
 
     /**
@@ -139,8 +144,12 @@ public abstract class AbstractModule {
      * Override this method to perform actions when the module is disabled.
      */
     public void onDisable() {
+        Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
+
         Virago.getInstance().getEventBus().unregister(this);
-        Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Disabled Module", this.getName());
+        if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
+            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getName());
+        }
     }
 
     public String getDisplayName() {

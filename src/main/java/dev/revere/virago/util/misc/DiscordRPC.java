@@ -1,4 +1,4 @@
-package dev.revere.virago.util.discord;
+package dev.revere.virago.util.misc;
 
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;

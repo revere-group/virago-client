@@ -1,4 +1,4 @@
-package dev.revere.virago.util;
+package dev.revere.virago.util.misc;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

@@ -313,8 +313,8 @@ public class HUD extends AbstractModule {
                 Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
             renderBar(module, sr, y, index);
         }
-        int padding = 2;
-        if (fontType.getValue() == FontType.SF_PRO) padding += 1;
+        int padding = 3;
+        if (fontType.getValue() == FontType.POPPINS) padding -= 1;
         fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6) - moduleWidth, y + padding, ColorUtil.getColor(true));
     }
 

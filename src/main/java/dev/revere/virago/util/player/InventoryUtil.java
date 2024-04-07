@@ -1,6 +1,7 @@
-package dev.revere.virago.util;
+package dev.revere.virago.util.player;
 
 import com.google.common.collect.Multimap;
+import lombok.Getter;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -16,8 +17,6 @@ import net.minecraft.potion.PotionEffect;
 import java.util.Iterator;
 import java.util.List;
 
-import static dev.revere.virago.util.ItemUtil.getItemDamage;
-
 /**
  * @author Remi
  * @project Virago-Client
@@ -27,29 +26,43 @@ public class InventoryUtil {
 
     public static final int INCLUDE_ARMOR_BEGIN = 5;
     public static final int EXCLUDE_ARMOR_BEGIN = 9;
-    public static final int ONLY_HOT_BAR_BEGIN = 36;
     public static final int END = 45;
 
-    public static void windowClick(Minecraft mc, int windowId, int slotId, int mouseButtonClicked, ClickType mode) {
-        mc.playerController.windowClick(windowId, slotId,
-                mouseButtonClicked, mode.ordinal(), mc.thePlayer);
-    }
-
-    public static void windowClick(Minecraft mc, int slotId, int mouseButtonClicked, ClickType mode) {
+    /**
+     * Click a slot in the player's inventory
+     *
+     * @param mc              The Minecraft instance
+     * @param slotId          The slot to click
+     * @param button          The mouse button clicked
+     * @param mode            The click mode
+     */
+    public static void windowClick(Minecraft mc, int slotId, int button, ClickType mode) {
         mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slotId,
-                mouseButtonClicked, mode.ordinal(), mc.thePlayer);
+                button, mode.ordinal(), mc.thePlayer);
     }
 
     public enum ClickType {
         CLICK, SHIFT_CLICK, SWAP_WITH_HOT_BAR_SLOT, PLACEHOLDER, DROP_ITEM
     }
 
+    /**
+     * Check if the item is a good item to use
+     *
+     * @param item The item to check
+     * @return True if the item is a good item to use
+     */
     public static boolean isGoodItem(final Item item) {
         return item instanceof ItemEnderPearl || item == Items.arrow;
     }
 
-    public static boolean isBestSword(final EntityPlayerSP player,
-                                      final ItemStack itemStack) {
+    /**
+     * Check if the item is the best sword in the player's inventory
+     *
+     * @param player    The player to check
+     * @param itemStack The item to check
+     * @return True if the item is the best sword in the player's inventory
+     */
+    public static boolean isBestSword(final EntityPlayerSP player, final ItemStack itemStack) {
         double damage = 0.0;
         ItemStack bestStack = null;
 
@@ -69,8 +82,14 @@ public class InventoryUtil {
         return bestStack == itemStack || getItemDamage(itemStack) > damage;
     }
 
-    public static boolean isBestArmor(final EntityPlayerSP player,
-                                      final ItemStack itemStack) {
+    /**
+     * Check if the item is the best armor in the player's inventory
+     *
+     * @param player    The player to check
+     * @param itemStack The item to check
+     * @return True if the item is the best armor in the player's inventory
+     */
+    public static boolean isBestArmor(final EntityPlayerSP player, final ItemStack itemStack) {
         final ItemArmor itemArmor = (ItemArmor) itemStack.getItem();
 
         double reduction = 0.0;
@@ -95,15 +114,13 @@ public class InventoryUtil {
         return bestStack == itemStack || getDamageReduction(itemStack) > reduction;
     }
 
-    public static int getToolType(final ItemStack stack) {
-        final ItemTool tool = (ItemTool) stack.getItem();
-
-        if (tool instanceof ItemPickaxe) return 0;
-        else if (tool instanceof ItemAxe) return 1;
-        else if (tool instanceof ItemSpade) return 2;
-        else return -1;
-    }
-
+    /**
+     * Check if the item is the best tool in the player's inventory
+     *
+     * @param player    The player to check
+     * @param itemStack The item to check
+     * @return True if the item is the best tool in the player's inventory
+     */
     public static boolean isBestTool(final EntityPlayerSP player, final ItemStack itemStack) {
         final int type = getToolType(itemStack);
 
@@ -156,6 +173,27 @@ public class InventoryUtil {
         return reduction;
     }
 
+    /**
+     * Get the type of tool
+     *
+     * @param stack The tool to check
+     * @return The type of tool
+     */
+    public static int getToolType(final ItemStack stack) {
+        final ItemTool tool = (ItemTool) stack.getItem();
+
+        if (tool instanceof ItemPickaxe) return 0;
+        else if (tool instanceof ItemAxe) return 1;
+        else if (tool instanceof ItemSpade) return 2;
+        else return -1;
+    }
+
+    /**
+     * Check if the item is a good potion
+     *
+     * @param stack The item to check
+     * @return True if the item is a good potion
+     */
     public static boolean isBuffPotion(final ItemStack stack) {
         final ItemPotion potion = (ItemPotion) stack.getItem();
         final List<PotionEffect> effects = potion.getEffects(stack);
@@ -167,6 +205,12 @@ public class InventoryUtil {
         return true;
     }
 
+    /**
+     * Get the damage of the bow
+     *
+     * @param stack The bow to check
+     * @return The damage of the bow
+     */
     public static double getBowDamage(ItemStack stack) {
         double damage = 0.0;
 
@@ -176,6 +220,12 @@ public class InventoryUtil {
         return damage;
     }
 
+    /**
+     * Check if the item is a good food
+     *
+     * @param stack The item to check
+     * @return True if the item is a good food
+     */
     public static boolean isGoodFood(final ItemStack stack) {
         final ItemFood food = (ItemFood) stack.getItem();
 
@@ -185,6 +235,12 @@ public class InventoryUtil {
         return food.getHealAmount(stack) >= 4 && food.getSaturationModifier(stack) >= 0.3F;
     }
 
+    /**
+     * Get the efficiency of the tool
+     *
+     * @param itemStack The tool to check
+     * @return The efficiency of the tool
+     */
     public static float getToolEfficiency(final ItemStack itemStack) {
         final ItemTool tool = (ItemTool) itemStack.getItem();
 
@@ -198,6 +254,12 @@ public class InventoryUtil {
         return efficiency;
     }
 
+    /**
+     * Get the damage of the item
+     *
+     * @param stack The item to check
+     * @return The damage of the item
+     */
     public static double getItemDamage(final ItemStack stack) {
         double damage = 0.0;
 
@@ -220,6 +282,12 @@ public class InventoryUtil {
         return damage;
     }
 
+    /**
+     * Check if the stack is valid to place
+     *
+     * @param stack The stack to check
+     * @return True if the stack is valid to place
+     */
     public static boolean isStackValidToPlace(final ItemStack stack) {
         return stack.stackSize >= 1 && validateBlock(Block.getBlockFromItem(stack.getItem()), BlockAction.PLACE);
     }
@@ -228,6 +296,13 @@ public class InventoryUtil {
         PLACE, REPLACE, PLACE_ON
     }
 
+    /**
+     * Validate the block
+     *
+     * @param block  The block to validate
+     * @param action The action to validate
+     * @return True if the block is valid
+     */
     public static boolean validateBlock(final Block block, final BlockAction action) {
         if (block instanceof BlockContainer) return false;
         final Material material = block.getMaterial();
@@ -244,6 +319,7 @@ public class InventoryUtil {
         return true;
     }
 
+    @Getter
     private static class Tool {
         private final int slot;
         private final double efficiency;
@@ -253,18 +329,6 @@ public class InventoryUtil {
             this.slot = slot;
             this.efficiency = efficiency;
             this.stack = stack;
-        }
-
-        public int getSlot() {
-            return slot;
-        }
-
-        public double getEfficiency() {
-            return efficiency;
-        }
-
-        public ItemStack getStack() {
-            return stack;
         }
     }
 }

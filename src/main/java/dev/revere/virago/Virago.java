@@ -7,7 +7,7 @@ import dev.revere.virago.api.service.ServiceManager;
 import dev.revere.virago.client.gui.panel.PanelGUI;
 import dev.revere.virago.client.services.*;
 import dev.revere.virago.util.Logger;
-import dev.revere.virago.util.discord.DiscordRPC;
+import dev.revere.virago.util.misc.DiscordRPC;
 import dev.revere.virago.util.input.KeybindManager;
 import lombok.Getter;
 import lombok.Setter;

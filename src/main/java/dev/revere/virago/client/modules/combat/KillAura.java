@@ -19,7 +19,7 @@ import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.FriendService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
-import dev.revere.virago.util.TimerUtil;
+import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;

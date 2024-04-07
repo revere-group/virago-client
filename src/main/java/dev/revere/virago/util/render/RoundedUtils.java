@@ -49,19 +49,19 @@ public class RoundedUtils {
         GL11.glBegin(9);
         ColorUtil.glColor(color1);
         for (rad = 0; rad <= 90; ++rad) {
-            GL11.glVertex2d((double) ((double) (x + radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius * -1.0), (double) ((double) (y + radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius * -1.0));
+            GL11.glVertex2d(((double) (x + radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius * -1.0), (double) ((double) (y + radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius * -1.0));
         }
         ColorUtil.glColor(color2);
         for (rad = 90; rad <= 180; ++rad) {
-            GL11.glVertex2d((double) ((double) (x + radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius * -1.0), (double) ((double) (y + height - radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius * -1.0));
+            GL11.glVertex2d(((double) (x + radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius * -1.0), (double) ((double) (y + height - radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius * -1.0));
         }
         ColorUtil.glColor(color3);
         for (rad = 0; rad <= 90; ++rad) {
-            GL11.glVertex2d((double) ((double) (x + width - radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius), (double) ((double) (y + height - radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius));
+            GL11.glVertex2d(((double) (x + width - radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius), (double) ((double) (y + height - radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius));
         }
         ColorUtil.glColor(color4);
         for (rad = 90; rad <= 180; ++rad) {
-            GL11.glVertex2d((double) ((double) (x + width - radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius), (double) ((double) (y + radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius));
+            GL11.glVertex2d(((double) (x + width - radius) + Math.sin((double) rad * Math.PI / 180.0) * (double) radius), (double) ((double) (y + radius) + Math.cos((double) rad * Math.PI / 180.0) * (double) radius));
         }
         GL11.glEnd();
         GL11.glEnable(3553);
@@ -299,8 +299,6 @@ public class RoundedUtils {
         GL20.glUniform1f(GL20.glGetUniformLocation(shadowShader.getProgram(), "shadowSoftness"), softness);
         GL20.glUniform1f(GL20.glGetUniformLocation(shadowShader.getProgram(), "edgeSoftness"), 1.0f);
         GL20.glUniform4f(GL20.glGetUniformLocation(shadowShader.getProgram(), "color"), (color.getRed() / 255.0f), (color.getGreen() / 255.0f), (color.getBlue() / 255.0f), (color.getAlpha() / 255.0f));
-        float g = width / 5.05f;
-        float h = height / 5.05f;
         shadowShader.bind(0.0f, 0.0f, (float) (sr.getScaledWidth_double() * sF), (float) (sr.getScaledHeight_double() * sF));
         GL20.glUseProgram(0);
         GL11.glEnable(3008);
@@ -429,5 +427,4 @@ public class RoundedUtils {
         GL11.glScaled(2.0D, 2.0D, 2.0D);
         GL11.glPopAttrib();
     }
-
 }

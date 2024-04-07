@@ -3,7 +3,7 @@ package dev.revere.virago.client.services;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.util.AES256;
+import dev.revere.virago.util.misc.AES256;
 import dev.revere.virago.util.Logger;
 import lombok.Getter;
 import lombok.Setter;

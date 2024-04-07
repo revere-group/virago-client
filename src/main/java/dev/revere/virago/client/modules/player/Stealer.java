@@ -7,8 +7,9 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.player.PreMotionEvent;
-import dev.revere.virago.util.ItemUtil;
-import dev.revere.virago.util.TimerUtil;
+import dev.revere.virago.util.player.InventoryUtil;
+import dev.revere.virago.util.player.ItemUtil;
+import dev.revere.virago.util.misc.TimerUtil;
 import net.minecraft.block.*;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
@@ -64,7 +65,7 @@ public class Stealer extends AbstractModule {
                     continue;
                 }
 
-                if (this.ignoreTrash.getValue() && !isValidItem(stack)) {
+                if (this.ignoreTrash.getValue() && !ItemUtil.isValidItem(stack)) {
                     continue;
                 }
 
@@ -96,15 +97,4 @@ public class Stealer extends AbstractModule {
         super.onDisable();
     }
 
-    private boolean isValidItem(final ItemStack stack) {
-        final Item item = stack.getItem();
-        if (item instanceof ItemBlock) {
-            final Block block = ((ItemBlock) item).getBlock();
-            if (block instanceof BlockGlass || block instanceof BlockStainedGlass || (block.isFullBlock() && !(block instanceof BlockTNT || block instanceof BlockSlime || block instanceof BlockFalling))) {
-                return true;
-            }
-        }
-
-        return ItemUtil.compareDamage(stack, ItemUtil.bestSword()) != null && ItemUtil.compareDamage(stack, ItemUtil.bestSword()) == stack || stack.getItem() instanceof ItemBlock || stack.getItem() instanceof ItemPotion && !ItemUtil.isBadPotion(stack) || stack.getItem() instanceof ItemArmor || stack.getItem() instanceof ItemAppleGold || stack.getItem() instanceof ItemFood || stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemBow || stack.getItem().getUnlocalizedName().contains("arrow");
-    }
 }

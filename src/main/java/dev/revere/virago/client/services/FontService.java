@@ -41,6 +41,7 @@ public class FontService implements IService {
     private FontRenderer visionBlack;
     private FontRenderer jetbrainsMonoBold;
     private FontRenderer icon10;
+    private FontRenderer icon20;
 
     @Override
     public void initService() {
@@ -50,6 +51,7 @@ public class FontService implements IService {
 
     public void createFonts() {
         this.icon10 = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/Icon.ttf"), 10, Font.TRUETYPE_FONT), true, true);
+        this.icon20 = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/Icon.ttf"), 30, Font.TRUETYPE_FONT), true, true);
         this.jetbrainsMonoBold = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/JetBrainsMono-Bold.ttf"), 20, Font.TRUETYPE_FONT), true, true);
         this.visionBlack = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/Vision-Black.otf"), 20, Font.TRUETYPE_FONT), true, true);
         this.sfProTextRegular = new FontRenderer(fontFromTTF(new ResourceLocation("virago/fonts/SF-Pro-Text-Regular.ttf"), 20, Font.TRUETYPE_FONT), true, true);

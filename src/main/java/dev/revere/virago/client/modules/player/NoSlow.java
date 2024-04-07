@@ -6,6 +6,7 @@ import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
+import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.packet.TeleportEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
@@ -28,10 +29,14 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange;
 @ModuleData(name = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.PLAYER)
 public class NoSlow extends AbstractModule {
 
+    private final Setting<Boolean> cancelEating = new Setting<>("Cancel Eating", false);
+    private final Setting<Boolean> cancelBlocking = new Setting<>("Cancel Blocking", true);
+
     private boolean isUsingItem;
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
+        if (!cancelEating.getValue()) return;
         if (mc.thePlayer.isUsingItem() && !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) && !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBow)) {
             event.setPitch(90);
             mc.thePlayer.rotationPitchHead = 90;
@@ -41,10 +46,8 @@ public class NoSlow extends AbstractModule {
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
         KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
+        if (!cancelBlocking.getValue()) return;
         if (mc.thePlayer.isUsingItem() && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword && killAura.getSingleTarget() == null) {
-            isUsingItem = true;
-        }
-        if (isUsingItem) {
             mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
             mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
             isUsingItem = false;

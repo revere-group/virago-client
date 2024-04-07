@@ -10,7 +10,9 @@ import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
+import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.FontService;
+import dev.revere.virago.client.services.NotificationService;
 import dev.revere.virago.util.Logger;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -82,6 +84,7 @@ public class NoFall extends AbstractModule {
 
                         this.vectors.clear();
                         this.isBlinking = false;
+                        Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "No Fall", "Blinked whilst falling down " + Math.round(distance) + " blocks.");
                     }
                 }
                 break;
@@ -128,7 +131,7 @@ public class NoFall extends AbstractModule {
         switch (mode.getValue()) {
             case BLINK:
                 if (this.isBlinking) {
-                    font.getProductSans().drawString("Blinking for " + Math.round(distance) + " blocks.", (float) sr.getScaledWidth() / 2, (float) sr.getScaledHeight() / 2, -1);
+                    font.getSfProTextRegular().drawString("Blinking for " + Math.round(distance) + " blocks.", (float) sr.getScaledWidth() / 2, (float) sr.getScaledHeight() / 2, -1);
                 }
                 break;
         }

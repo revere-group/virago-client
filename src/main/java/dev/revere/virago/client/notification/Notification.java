@@ -39,7 +39,7 @@ public class Notification extends RenderableComponent {
         this.message = message;
 
         animation.resetToDefault();
-        animation.setState(false);
+        //animation.setState(false);
     }
 
     @Override
@@ -50,33 +50,23 @@ public class Notification extends RenderableComponent {
 
         long time = initTime > 0 ? System.currentTimeMillis() - initTime : 0;
 
-        System.out.println(animation.getState());
-
-
         if (time >= 1500) {
-            System.out.println("we got to this code bitch");
             animation.setState(false);
         }
 
-        RoundedUtils.round(getX(), getY(), getWidth(), getHeight(), 5, ColorUtil.interpolate(new Color(0, 0, 0, 130), new Color(0, 0, 0, 100), 0.2f));
-        RenderUtils.pushScissor(getX(), getY(), MathHelper.clamp_float(getWidth() * (time / 1500f), 0, getWidth()), getHeight());
+        if (animation.getState()) {
+            RoundedUtils.round(getX(), getY(), getWidth(), getHeight(), 5, ColorUtil.interpolate(new Color(0, 0, 0, 130), new Color(0, 0, 0, 100), 0.2f));
+            RenderUtils.pushScissor(getX(), getY(), MathHelper.clamp_float(getWidth() * (time / 1500f), 0, getWidth()), getHeight());
 
-        RoundedUtils.gradient(getX(), getY(), getWidth(), getHeight(), 1f, new Color(0, 0,0,100).getRGB(), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)));
-        RenderUtils.popScissor();
+            RoundedUtils.round(getX(), getY(), getWidth(), getHeight(), 5f, new Color(0, 0, 0, 130));
+            RenderUtils.popScissor();
 
-        RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, new Color(ColorUtil.getColor(true)));
+            RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, new Color(ColorUtil.getColor(true)));
 
-        glScalef(2, 2, 2);
-        {
-            float factor = 0.5f;
-            fontService.getIcon10().drawString(type.icon, (getX() + 8) * factor, (getY() + 6) * factor, type.color.getRGB(), false);
-
-            glScalef(factor, factor, factor);
+            fontService.getIcon20().drawString(type.icon, (getX() + 8), (getY() + 10), type.color.getRGB(), false);
+            fontService.getPoppinsMedium().drawString(title, getX() + 27, getY() + 5, -1);
+            fontService.getProductSans().drawString(message, getX() + 27, getY() + 17, -1);
         }
-
-
-        fontService.getSfProTextRegular().drawString(title, getX() + 27, getY() + 4, -1);
-        fontService.getSfProTextRegular().drawString(message, getX() + 27, getY() + 16, -1);
     }
 
     @Override
@@ -94,7 +84,7 @@ public class Notification extends RenderableComponent {
     }
 
     public boolean shouldNotificationHide() {
-        return !animation.getState() && animation.getFactor() == 0;
+        return !animation.getState();
     }
 
     public void keyTyped(char typedChar, int keyCode) {}

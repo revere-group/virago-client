@@ -60,7 +60,10 @@ public class NotificationService implements IService {
     @EventHandler
     private final Listener<Render2DEvent> render2DEventListener = event -> {
         ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
-        notifications.removeIf(Notification::shouldNotificationHide);
+
+        if (notifications.removeIf(Notification::shouldNotificationHide)) {
+            System.out.println("Notification removed");
+        }
 
         float offset = 0;
 
@@ -70,7 +73,7 @@ public class NotificationService implements IService {
 
             notification.draw(0, 0, 0);
 
-            offset += notification.getHeight() * notification.getAnimation().getFactor();
+            offset += (float) (notification.getHeight() * notification.getAnimation().getFactor());
         }
     };
 }

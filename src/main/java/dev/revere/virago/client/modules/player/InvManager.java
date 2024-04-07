@@ -13,7 +13,7 @@ import dev.revere.virago.client.events.player.window.WindowClickRequest;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.InventoryUtil;
+import dev.revere.virago.util.player.InventoryUtil;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.*;
 import net.minecraft.network.Packet;

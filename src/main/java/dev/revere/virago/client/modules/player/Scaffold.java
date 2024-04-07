@@ -16,7 +16,7 @@ import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.TimerUtil;
+import dev.revere.virago.util.misc.TimerUtil;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
