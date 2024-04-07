@@ -1,5 +1,6 @@
 package dev.revere.virago.client.modules.combat;
 
+import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
@@ -7,6 +8,8 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
+import dev.revere.virago.client.modules.movement.LongJump;
+import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -44,11 +47,12 @@ public class Velocity extends AbstractModule {
      */
     @EventHandler
     private final Listener<PacketEvent> packetEventListener = event -> {
+        LongJump longJump = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(LongJump.class);
         if (event.getEventState() == PacketEvent.EventState.RECEIVING) {
             Packet<INetHandlerPlayClient> packet = event.getPacket();
-            if (packet instanceof S12PacketEntityVelocity) {
+            if (packet instanceof S12PacketEntityVelocity && !longJump.isEnabled()) {
                 handleEntityVelocityPacket((S12PacketEntityVelocity) packet, event);
-            } else if (packet instanceof S27PacketExplosion) {
+            } else if (packet instanceof S27PacketExplosion && !longJump.isEnabled()) {
                 handleExplosionPacket((S27PacketExplosion) packet, event);
             }
         }

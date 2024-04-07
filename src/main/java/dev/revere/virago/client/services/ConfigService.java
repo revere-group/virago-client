@@ -95,7 +95,7 @@ public class ConfigService implements IService {
                             }
                         }
 
-                        module.setEnabled(moduleData.getBoolean("enabled"));
+                        module.setEnabledSilent(moduleData.getBoolean("enabled"));
                         module.setKey(moduleData.getInt("keybind"));
                     } catch (JSONException e) {
                         Logger.err("Failed to load module " + module.getName() + "!" + " | " + e.getMessage(), getClass());

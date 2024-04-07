@@ -29,8 +29,8 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange;
 @ModuleData(name = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.PLAYER)
 public class NoSlow extends AbstractModule {
 
-    private final Setting<Boolean> cancelEating = new Setting<>("Cancel Eating", false);
-    private final Setting<Boolean> cancelBlocking = new Setting<>("Cancel Blocking", true);
+    public final Setting<Boolean> cancelEating = new Setting<>("Cancel Eating", false);
+    public final Setting<Boolean> cancelBlocking = new Setting<>("Cancel Blocking", true);
 
     private boolean isUsingItem;
 

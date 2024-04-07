@@ -61,8 +61,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private double lastReportedPosX;
     private double lastReportedPosY;
     private double lastReportedPosZ;
-    private float lastReportedYaw;
-    private float lastReportedPitch;
+    public float lastReportedYaw;
+    public float lastReportedPitch;
     private boolean serverSneakState;
     private boolean serverSprintState;
     private int positionUpdateTicks;
@@ -716,7 +716,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
 
-        if (this.isUsingItem() && !this.isRiding() && !Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(NoSlow.class).isEnabled())
+        NoSlow noSlow = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(NoSlow.class);
+        if (this.isUsingItem() && !this.isRiding() && !noSlow.isEnabled())
         {
             this.movementInput.moveStrafe *= 0.2F;
             this.movementInput.moveForward *= 0.2F;

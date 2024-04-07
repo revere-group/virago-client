@@ -61,7 +61,7 @@ public class Notification extends RenderableComponent {
             RoundedUtils.round(getX(), getY(), getWidth(), getHeight(), 5f, new Color(0, 0, 0, 130));
             RenderUtils.popScissor();
 
-            RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, new Color(ColorUtil.getColor(true)));
+            RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, type.getColor());
 
             fontService.getIcon20().drawString(type.icon, (getX() + 8), (getY() + 10), type.color.getRGB(), false);
             fontService.getPoppinsMedium().drawString(title, getX() + 27, getY() + 5, -1);

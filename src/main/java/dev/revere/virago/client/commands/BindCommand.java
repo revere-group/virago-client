@@ -23,7 +23,7 @@ public class BindCommand extends AbstractCommand {
         }
 
         String action = args[1];
-        String moduleName = args[2];
+        String moduleName = args[2].replace("&", " ");
 
         ModuleService moduleService = Virago.getInstance().getServiceManager().getService(ModuleService.class);
         if (moduleService.getModuleByName(moduleName) == null) {

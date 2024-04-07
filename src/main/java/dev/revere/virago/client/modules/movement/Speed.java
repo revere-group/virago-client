@@ -8,6 +8,7 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.player.MoveEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
+import dev.revere.virago.util.Logger;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.network.Packet;
 import net.minecraft.potion.Potion;
@@ -108,6 +109,9 @@ public class Speed extends AbstractModule {
 
                         double randomFactor = lowerBound + Math.random() * (upperBound - lowerBound);
                         double difference = (randomFactor * (lastDist - mc.thePlayer.getBaseMoveSpeed()));
+                        if (randomFactor > 1.276) {
+                            Logger.addChatMessage("[Debug] Boosted by " + randomFactor);
+                        }
                         speed = lastDist - difference;
                     } else {
                         speed = lastDist - lastDist / 159D;

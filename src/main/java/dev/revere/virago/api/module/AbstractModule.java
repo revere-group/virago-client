@@ -67,6 +67,24 @@ public abstract class AbstractModule {
     public void toggle() {
         enabled = !enabled;
         if (enabled) {
+            Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
+
+            if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getName());
+            }
+            onEnable();
+        } else {
+            Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
+            if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getName());
+            }
+            onDisable();
+        }
+    }
+
+    public void toggleSilent() {
+        enabled = !enabled;
+        if (enabled) {
             onEnable();
         } else {
             onDisable();
@@ -79,6 +97,30 @@ public abstract class AbstractModule {
      * @param toggled true to toggle the module on, false to toggle it off.
      */
     public void setEnabled(boolean toggled) {
+        enabled = toggled;
+
+        if (toggled) {
+            Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
+
+            if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getName());
+            }
+            onEnable();
+        } else {
+            Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
+            if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getName());
+            }
+            onDisable();
+        }
+    }
+
+    /**
+     * Set whether the module is toggled on or off.
+     *
+     * @param toggled true to toggle the module on, false to toggle it off.
+     */
+    public void setEnabledSilent(boolean toggled) {
         enabled = toggled;
 
         if (toggled) {
@@ -131,12 +173,7 @@ public abstract class AbstractModule {
      * Override this method to perform actions when the module is enabled.
      */
     public void onEnable() {
-        Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
         Virago.getInstance().getEventBus().register(this);
-
-        if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
-            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getName());
-        }
     }
 
     /**
@@ -144,12 +181,7 @@ public abstract class AbstractModule {
      * Override this method to perform actions when the module is disabled.
      */
     public void onDisable() {
-        Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
-
         Virago.getInstance().getEventBus().unregister(this);
-        if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
-            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getName());
-        }
     }
 
     public String getDisplayName() {
