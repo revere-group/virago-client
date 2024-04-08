@@ -245,11 +245,15 @@ public class Scaffold extends AbstractModule {
     private final Listener<MoveEvent> moveEventListener = e -> {
         this.moveTowerMotion(e);
         if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG) {
-            mc.thePlayer.setSpeed(e, mc.gameSettings.keyBindJump.isKeyDown() ? mc.thePlayer.getBaseMoveSpeed() - 0.025 : mc.thePlayer.getBaseMoveSpeed() - 0.079);
+            if (towerMode.getValue() == TowerMode.WATCHDOG) {
+                mc.thePlayer.setSpeed(e, mc.gameSettings.keyBindJump.isKeyDown() ? 0.2625 : 0.2085);
+            } else {
+                mc.thePlayer.setSpeed(e, 0.2085);
+            }
         }
 
         if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.onGround) {
-            mc.thePlayer.setSpeed(e, mc.thePlayer.getBaseMoveSpeed() - 0.032);
+            mc.thePlayer.setSpeed(e, 0.254);
         }
     };
 
@@ -360,26 +364,6 @@ public class Scaffold extends AbstractModule {
                         z1 = info.getPos().getZ() + 0.5f + (0.25f * info.getFacing().getDirectionVec().getZ());
                 return new Vec3(x1, y1, z1);
             case ZERO:
-                Vec3i directionVec = info.getFacing().getDirectionVec();
-                x = (double) directionVec.getX() * 0.5D;
-                z = (double) directionVec.getZ() * 0.5D;
-                if (info.getFacing().getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE) {
-                    x = -x;
-                    z = -z;
-                }
-
-                Vec3 hitVec = (new Vec3(info.getPos())).addVector(x + z, (double) directionVec.getY() * 0.5D, x + z);
-                Vec3 src = mc.thePlayer.getPositionEyes(1.0F);
-                MovingObjectPosition obj = mc.theWorld.rayTraceBlocks(src, hitVec, false, false, true);
-                if (obj != null && obj.hitVec != null && obj.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                    if (info.getFacing() != EnumFacing.DOWN && info.getFacing() != EnumFacing.UP) {
-                        obj.hitVec = obj.hitVec.addVector(0.0D, -0.2D, 0.0D);
-                    }
-
-                    return obj.hitVec;
-                } else {
-                    return null;
-                }
             default:
                 return new Vec3(0, 0, 0);
         }
@@ -439,9 +423,6 @@ public class Scaffold extends AbstractModule {
                 }
                 break;
             case WATCHDOG:
-                if (mc.gameSettings.keyBindJump.isKeyDown()) {
-                    mc.thePlayer.setSpeed(e, mc.thePlayer.getBaseMoveSpeed() - 0.02);
-                }
                 break;
             case NONE:
                 break;
