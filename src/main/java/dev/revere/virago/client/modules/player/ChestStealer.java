@@ -7,10 +7,8 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.player.PreMotionEvent;
-import dev.revere.virago.util.player.InventoryUtil;
 import dev.revere.virago.util.player.ItemUtil;
 import dev.revere.virago.util.misc.TimerUtil;
-import net.minecraft.block.*;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.*;
@@ -22,15 +20,15 @@ import net.optifine.util.MathUtils;
  * @date 3/28/2024
  */
 @ModuleData(name = "Chest Stealer", description = "Steals items from players", type = EnumModuleType.PLAYER)
-public class Stealer extends AbstractModule {
+public class ChestStealer extends AbstractModule {
 
-    private final Setting<Long> maxDelay = new Setting<>("Max Delay", 100L)
-            .minimum(25L)
+    private final Setting<Long> maxDelay = new Setting<>("Delay", 50L)
+            .minimum(0L)
             .maximum(500L)
             .incrementation(1L)
             .describedBy("The amount of times to loot per second");
-    private final Setting<Long> minDelay = new Setting<>("Min Delay", 50L)
-            .minimum(25L)
+    private final Setting<Long> minDelay = new Setting<>("Min Delay", 30L)
+            .minimum(0L)
             .maximum(500L)
             .incrementation(1L)
             .describedBy("The amount of times to loot per second");
