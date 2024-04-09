@@ -474,12 +474,14 @@ public class Scaffold extends AbstractModule {
                 }
                 break;
             case WATCHDOG:
+                rots = getRotations(info);
+                pitch = processRotation(rots[1]);
                 double xDiff = info.getPos().getX() - mc.thePlayer.posX;
                 double yDiff = info.getPos().getY() - mc.thePlayer.posY - 1.7;
                 double zDiff = info.getPos().getZ() - mc.thePlayer.posZ;
                 double dist = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
                 yaw = (float) (Math.atan2(zDiff, xDiff) * 180.0D / Math.PI) - 90.0F;
-                pitch = (float) -(Math.atan2(yDiff, dist) * 180.0D / Math.PI);
+                //pitch = (float) -(Math.atan2(yDiff, dist) * 180.0D / Math.PI);
 
                 yaw = processRotation(mc.thePlayer.getDirection() - 150);
                 yaw = processRotation(yaw);
