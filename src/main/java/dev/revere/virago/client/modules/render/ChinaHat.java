@@ -31,7 +31,7 @@ public class ChinaHat extends AbstractModule {
         for (int i = 0; i <= 10800; ++i) {
             final Color color = new Color(ColorUtil.getColor(true));
 
-            GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, 140 / 255.0F);
+            GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, 0.5f);
             GL11.glVertex3d(x, y, z);
             GL11.glVertex3d(x + 1 * Math.cos(i * 6.283185307179586 / 5400), y - 0.3, z + 1 * Math.sin(i * 6.283185307179586 / 5400));
         }

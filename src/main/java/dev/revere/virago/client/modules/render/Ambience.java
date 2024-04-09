@@ -8,6 +8,8 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
+import dev.revere.virago.client.modules.render.ambience.WeatherMode;
+import lombok.Getter;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.network.play.server.S03PacketTimeUpdate;
@@ -20,6 +22,7 @@ public class Ambience extends AbstractModule {
             .maximum(22999)
             .incrementation(100);
 
+    @Getter
     private final Setting<WeatherMode> weather = new Setting<>("Weather", WeatherMode.UNCHANGED);
 
     @EventHandler
@@ -47,7 +50,9 @@ public class Ambience extends AbstractModule {
                 break;
             }
 
-            case RAIN: {
+            case RAIN:
+
+            case SNOW: {
                 mc.theWorld.setRainStrength(1);
                 mc.theWorld.getWorldInfo().setCleanWeatherTime(0);
                 mc.theWorld.getWorldInfo().setRainTime(Integer.MAX_VALUE);
@@ -77,9 +82,5 @@ public class Ambience extends AbstractModule {
         mc.theWorld.getWorldInfo().setThundering(false);
         super.onDisable();
     }
-
-    private enum WeatherMode {
-        UNCHANGED, CLEAR, RAIN
-    }
-
 }
+
