@@ -717,11 +717,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.movementInput.updatePlayerMoveState();
 
         NoSlow noSlow = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(NoSlow.class);
-        if (this.isUsingItem() && !this.isRiding() && !noSlow.isEnabled())
-        {
-            this.movementInput.moveStrafe *= 0.2F;
-            this.movementInput.moveForward *= 0.2F;
-            this.sprintToggleTimer = 0;
+        if (!noSlow.isEnabled() || !isBlocking()) {
+            if (this.isUsingItem() && !this.isRiding()) {
+                this.movementInput.moveStrafe *= 0.2F;
+                this.movementInput.moveForward *= 0.2F;
+                this.sprintToggleTimer = 0;
+            }
         }
 
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);

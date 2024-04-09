@@ -231,9 +231,6 @@ public class ConfigService implements IService {
                 file.createNewFile();
             }
 
-            AES256 aes256 = new AES256(System.getProperty("user.name"), System.getProperty("os.name"));
-            key = aes256.encrypt(key);
-
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(key);
             fileWriter.flush();
@@ -255,9 +252,7 @@ public class ConfigService implements IService {
         try {
             if (!file.exists()) return result;
 
-            String key = FileUtils.readFileToString(file);
-            AES256 aes256 = new AES256(System.getProperty("user.name"), System.getProperty("os.name"));
-            result = aes256.decrypt(key);
+            result = FileUtils.readFileToString(file);
 
             return result;
         } catch (IOException exception) {
