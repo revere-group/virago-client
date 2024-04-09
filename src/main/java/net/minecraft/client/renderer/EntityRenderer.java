@@ -13,6 +13,8 @@ import java.util.concurrent.Callable;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.render.Render3DEvent;
+import dev.revere.virago.client.modules.render.Camera;
+import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -606,8 +608,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
     }
 
-    private void hurtCameraEffect(float partialTicks)
-    {
+    private void hurtCameraEffect(float partialTicks) {
+        if(!Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Camera.class).hurtCam.getValue())
+            return;
+
         if (this.mc.getRenderViewEntity() instanceof EntityLivingBase)
         {
             EntityLivingBase entitylivingbase = (EntityLivingBase)this.mc.getRenderViewEntity();
