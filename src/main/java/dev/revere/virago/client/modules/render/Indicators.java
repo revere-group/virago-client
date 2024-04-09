@@ -13,6 +13,7 @@ import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import lombok.Getter;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -103,7 +104,7 @@ public class Indicators extends AbstractModule {
             GL11.glTranslatef((float) x, (float) y, 0.0f);
             GL11.glRotatef(yaw, 0.0f, 0.0f, 1.0f);
             GL11.glTranslatef((float) (-x), (float) (-y), 0.0f);
-            RenderUtils.drawTracerPointer((float) x, (float) y - this.radius.getValue(), this.scale.getValue(), 2.0f, 1.0f, Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class).customColor1.getValue().getRGB());
+            RenderUtils.drawTracerPointer((float) x, (float) y - this.radius.getValue(), this.scale.getValue(), 2.0f, 1.0f, ColorUtil.getColor(true));
             GL11.glTranslatef((float) x, (float) y, 0.0f);
             GL11.glRotatef((-yaw), 0.0f, 0.0f, 1.0f);
             GL11.glTranslatef((float) (-x), (float) (-y), 0.0f);

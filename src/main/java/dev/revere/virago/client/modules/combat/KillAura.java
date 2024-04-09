@@ -108,9 +108,6 @@ public class KillAura extends AbstractModule {
             return;
         }
 
-        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
-            return;
-
         blocking = true;
 
         if (!moveFix.getValue()) {
@@ -173,8 +170,6 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
-        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
-            return;
         this.postAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.POST) && this.hitTimerDone()) {
             this.attack(this.target);
@@ -183,6 +178,8 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<Render3DEvent> render3DEventListener = event -> {
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
         if (target != null) this.targetAnimation(this.target);
     };
 
@@ -190,6 +187,9 @@ public class KillAura extends AbstractModule {
         if (e == null) {
             return;
         }
+
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
 
         mc.thePlayer.swingItem();
         mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
@@ -203,6 +203,8 @@ public class KillAura extends AbstractModule {
         if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) || target == null) {
             return;
         }
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
 
         switch (blockMode.getValue()) {
             case VANILLA:
@@ -226,7 +228,9 @@ public class KillAura extends AbstractModule {
                 blocking = true;
                 break;
             case CONTROL:
-                this.releaseBlock();
+                mc.gameSettings.keyBindUseItem.pressed = true;
+                blocking = true;
+                //this.releaseBlock();
                 break;
         }
     }
@@ -235,6 +239,8 @@ public class KillAura extends AbstractModule {
         if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) || target == null) {
             return;
         }
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
 
         switch (blockMode.getValue()) {
             case N_C_P:
@@ -244,8 +250,16 @@ public class KillAura extends AbstractModule {
                 }
                 break;
             case CONTROL:
-                mc.gameSettings.keyBindUseItem.pressed = true;
-                blocking = true;
+                /*boolean damageOnly = false;
+                if (damageOnly) {
+                    if (mc.thePlayer.hurtTime > 2) {
+                        mc.gameSettings.keyBindUseItem.pressed = true;
+                        blocking = true;
+                    }
+                } else {
+                    mc.gameSettings.keyBindUseItem.pressed = true;
+                    blocking = true;
+                }*/
                 break;
         }
     }
@@ -294,6 +308,7 @@ public class KillAura extends AbstractModule {
                     mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
                     break;
                 case WATCHDOG:
+                    //mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     //this.blockingTicks = 0;
                     break;
             }
