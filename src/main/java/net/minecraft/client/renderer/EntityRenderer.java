@@ -15,7 +15,6 @@ import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.render.Render3DEvent;
 import dev.revere.virago.client.modules.render.Ambience;
 import dev.revere.virago.client.modules.render.NoHurtCam;
-import dev.revere.virago.client.modules.render.ambience.WeatherMode;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -2056,16 +2055,16 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
                                 j1 = 0;
 
-                                if(ambience.getWeather().getValue().equals(WeatherMode.SNOW)) {
+                                if(ambience.weather.getValue().equals(Ambience.WeatherMode.SNOW)) {
                                     this.mc.getTextureManager().bindTexture(locationSnowPng);
-                                } else if(ambience.getWeather().getValue().equals(WeatherMode.RAIN)) {
+                                } else if(ambience.weather.getValue().equals(Ambience.WeatherMode.RAIN)) {
                                     this.mc.getTextureManager().bindTexture(locationRainPng);
                                 }
 
                                 worldrenderer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
                             }
 
-                            if(ambience.getWeather().getValue().equals(WeatherMode.SNOW)) {
+                            if(ambience.weather.getValue().equals(Ambience.WeatherMode.SNOW)) {
                                 double d8 = (double)(((float)(this.rendererUpdateCount & 511) + partialTicks) / 512.0F);
                                 double d9 = this.random.nextDouble() + (double)f * 0.01D * (double)((float)this.random.nextGaussian());
                                 double d10 = this.random.nextDouble() + (double)(f * (float)this.random.nextGaussian()) * 0.001D;
@@ -2081,7 +2080,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                                 worldrenderer.pos((double)l1 + d3 + 0.5D, (double)k2, (double)k1 + d4 + 0.5D).tex(1.0D + d9, (double)k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(j4, k4).endVertex();
                                 worldrenderer.pos((double)l1 + d3 + 0.5D, (double)l2, (double)k1 + d4 + 0.5D).tex(1.0D + d9, (double)l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(j4, k4).endVertex();
                                 worldrenderer.pos((double)l1 - d3 + 0.5D, (double)l2, (double)k1 - d4 + 0.5D).tex(0.0D + d9, (double)l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(j4, k4).endVertex();
-                            } else if(ambience.getWeather().getValue().equals(WeatherMode.RAIN)) {
+                            } else if(ambience.weather.getValue().equals(Ambience.WeatherMode.RAIN)) {
                                 double d5 = ((double)(this.rendererUpdateCount + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + (double)partialTicks) / 32.0D * (3.0D + this.random.nextDouble());
                                 double d6 = (double)((float)l1 + 0.5F) - entity.posX;
                                 double d7 = (double)((float)k1 + 0.5F) - entity.posZ;

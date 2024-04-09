@@ -8,7 +8,6 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
-import dev.revere.virago.client.modules.render.ambience.WeatherMode;
 import lombok.Getter;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -22,8 +21,7 @@ public class Ambience extends AbstractModule {
             .maximum(22999)
             .incrementation(100);
 
-    @Getter
-    private final Setting<WeatherMode> weather = new Setting<>("Weather", WeatherMode.UNCHANGED);
+    public final Setting<WeatherMode> weather = new Setting<>("Weather", WeatherMode.UNCHANGED);
 
     @EventHandler
     private final Listener<PacketEvent> packetEventListener = event -> {
@@ -82,5 +80,11 @@ public class Ambience extends AbstractModule {
         mc.theWorld.getWorldInfo().setThundering(false);
         super.onDisable();
     }
+
+    public enum WeatherMode {
+        UNCHANGED, CLEAR, RAIN, SNOW
+    }
+
+
 }
 
