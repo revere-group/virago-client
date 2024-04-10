@@ -1,5 +1,6 @@
 package dev.revere.virago.client.modules.player;
 
+import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
@@ -7,6 +8,8 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
+import dev.revere.virago.client.notification.NotificationType;
+import dev.revere.virago.client.services.NotificationService;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
@@ -40,6 +43,8 @@ public class AutoHypixel extends AbstractModule {
 
     private void doRejoin() {
         if(rejoin.getValue()) {
+            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Auto Hypixel", "You are being sent to a new " + gameMode.getValue().name().toLowerCase().replace("_", " ") + " game.");
+
             switch (gameMode.getValue()) {
                 case SW_SOLO_NORMAL:
                     mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));

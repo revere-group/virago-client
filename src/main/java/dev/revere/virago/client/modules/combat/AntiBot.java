@@ -37,7 +37,6 @@ public class AntiBot extends AbstractModule {
                 return;
             }
             if (player.getName().startsWith("\u00a7") && player.getName().contains("\u00a7c") || this.isEntityBot(player) && !player.getDisplayName().getFormattedText().contains("NPC")) {
-                Logger.addChatMessage("Removed bot: " + player.getName());
                 mc.theWorld.removeEntity(player);
             }
             ++i;

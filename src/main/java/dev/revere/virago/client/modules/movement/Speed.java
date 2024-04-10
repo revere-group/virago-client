@@ -1,16 +1,21 @@
 package dev.revere.virago.client.modules.movement;
 
+import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.MoveEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
+import dev.revere.virago.client.notification.NotificationType;
+import dev.revere.virago.client.services.NotificationService;
 import dev.revere.virago.util.Logger;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.potion.Potion;
 import org.lwjgl.input.Keyboard;
 
@@ -80,11 +85,17 @@ public class Speed extends AbstractModule {
                     /*if (mc.thePlayer.hurtTime > 0) {
                         speed = Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ) + 0.0245F;
                     }*/
-                    if(mc.thePlayer.onGround || prevOnGround)
+                    if (mc.thePlayer.hurtTime > 0) {
+                        Logger.addChatMessage("Hurt time: " + mc.thePlayer.hurtTime);
+                    }
+                    if(mc.thePlayer.onGround || prevOnGround) {
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
-                    else
+                    } else if (mc.thePlayer.hurtTime > 8) {
+                        Logger.addChatMessage("Do strafe");
+                        mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
+                    } else {
                         mc.thePlayer.setSpeedWithCorrection(event, Math.max(mc.thePlayer.getSpeed(), speed), lastMotionX, lastMotionZ, 0.1);
-
+                    }
 
                     lastMotionX = event.getX();
                     lastMotionZ = event.getZ();
@@ -130,6 +141,21 @@ public class Speed extends AbstractModule {
                     mc.thePlayer.setSpeed(event, 0);
                 }
                 break;
+        }
+    };
+
+    @EventHandler
+    private final Listener<PacketEvent> packetEventListener = event -> {
+        Packet packet = event.getPacket();
+        if (event.getEventState() == PacketEvent.EventState.RECEIVING) {
+            if (packet instanceof S08PacketPlayerPosLook) {
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.ERROR, "Lagback Check", "Speed has been disabled due to lagback.");
+                mc.thePlayer.onGround = false;
+                mc.thePlayer.motionX *= 0;
+                mc.thePlayer.motionZ *= 0;
+                mc.thePlayer.jumpMovementFactor = 0;
+                toggleSilent();
+            }
         }
     };
 
