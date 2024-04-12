@@ -181,21 +181,26 @@ public class Scaffold extends AbstractModule {
 
         if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump && mc.thePlayer.isMoving()) {
             airTicks++;
+            int position = (int) mc.thePlayer.posY;
+
 
             if (mc.thePlayer.onGround) {
                 airTicks = 0;
             }
 
-            if (airTicks == 0) {
+            if (airTicks == 0 && mc.thePlayer.posY - position < 0.05) {
+                mc.thePlayer.posY = position;
                 mc.thePlayer.motionY = 0.42f;
             }
             if (airTicks == 1) {
-                mc.thePlayer.motionY = 0.33;
+                mc.thePlayer.motionY = 0.33f;
             }
             if (airTicks == 2) {
                 mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1;
                 airTicks = -1;
             }
+        } else {
+            airTicks = 0;
         }
 
         if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG)) {

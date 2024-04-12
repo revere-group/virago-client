@@ -7,6 +7,7 @@ import dev.revere.virago.client.gui.menu.alt.components.CustomRectButton;
 import dev.revere.virago.client.gui.menu.components.CustomGuiTextField;
 import dev.revere.virago.client.services.AltService;
 import dev.revere.virago.client.services.FontService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.alt.CookieLogin;
 import dev.revere.virago.util.alt.SkinUtil;
 import dev.revere.virago.util.render.RenderUtils;
@@ -253,7 +254,7 @@ public class GuiAltManager extends GuiScreen {
                         altmgr.setStatus(EnumChatFormatting.GREEN + "Added account \"" + comboCredentials[0] + ":" + comboCredentials[1] + "\".");
                         combo.setText("");
                     } catch (MicrosoftAuthenticationException e) {
-                        altmgr.setStatus(EnumChatFormatting.RED + "Failed to add account.");
+                        altmgr.setStatus(EnumChatFormatting.RED + "Failed to add account. " + e.getMessage());
                     }
                 } else if (altmgr.isValidCrackedAlt(comboCredentials[0])) {
                     altmgr.addAlt(new Alt(comboCredentials[0], comboCredentials[0], "", "cracked", "cracked"));
@@ -287,8 +288,10 @@ public class GuiAltManager extends GuiScreen {
 
                 MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
                 try {
-                    MicrosoftAuthResult result = authenticator.loginWithCredentials(comboCredentials[0], comboCredentials[1]);
+                    //MicrosoftAuthResult result = authenticator.loginWithCredentials(comboCredentials[0], comboCredentials[1]);
+                    MicrosoftAuthResult result = authenticator.loginWithWebview();
                     MinecraftProfile profile = result.getProfile();
+                    Logger.info(profile + "", getClass());
                     mc.session = new Session(profile.getName(), profile.getId(), result.getAccessToken(), "microsoft");
                     altmgr.setStatus(EnumChatFormatting.GREEN + "Logged in as " + profile.getName() + ".");
                     altmgr.addAlt(new Alt(profile.getName(), comboCredentials[0], comboCredentials[1], "microsoft", profile.getId()));
