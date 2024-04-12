@@ -136,11 +136,6 @@ public class HUD extends AbstractModule {
         if (bps.getValue())
             renderBPS(false);
 
-        String username = Virago.getInstance().getViragoUser().getUsername().toLowerCase();
-        if (!(mc.currentScreen instanceof GuiChat)) {
-            drawString(username, sr.getScaledWidth() - fontRenderer.getStringWidth(username) - 3, sr.getScaledHeight() - 13, -1);
-        }
-
         List<AbstractModule> modules = getSortedModules();
         if (arraylist.getValue()) renderModules(sr, modules, false);
     };
