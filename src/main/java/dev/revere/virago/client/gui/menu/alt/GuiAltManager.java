@@ -267,34 +267,18 @@ public class GuiAltManager extends GuiScreen {
                 altmgr.save();
                 break;
             case 0: {
-                if (combo.getText().length() < 2) {
-                    String[] combo = GuiScreen.getClipboardString().replace("\n", "").replace(" ", "").split(":", 2);
-                    if (combo.length < 2) {
-                        return;
-                    }
-                }
-
-                comboCredentials = combo.getText().split(":", 2);
-                if (combo.getText().length() < 2) {
-                    comboCredentials = GuiScreen.getClipboardString().replace("\n", "").replace(" ", "").split(":", 2);
-                }
-
-                if (comboCredentials.length < 2) {
-                    return;
-                }
-                if (comboCredentials[0].isEmpty() || comboCredentials[1].isEmpty()) {
-                    return;
-                }
-
                 MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
                 try {
-                    //MicrosoftAuthResult result = authenticator.loginWithCredentials(comboCredentials[0], comboCredentials[1]);
                     MicrosoftAuthResult result = authenticator.loginWithWebview();
+                    if (result == null) {
+                        altmgr.setStatus(EnumChatFormatting.RED + "Failed to login.");
+                        return;
+                    }
                     MinecraftProfile profile = result.getProfile();
-                    Logger.info(profile + "", getClass());
+                    Logger.info("Logged in as " + profile.getName() + " with UUID " + profile.getId() + " and access token " + result.getAccessToken() + ".", getClass());
                     mc.session = new Session(profile.getName(), profile.getId(), result.getAccessToken(), "microsoft");
                     altmgr.setStatus(EnumChatFormatting.GREEN + "Logged in as " + profile.getName() + ".");
-                    altmgr.addAlt(new Alt(profile.getName(), comboCredentials[0], comboCredentials[1], "microsoft", profile.getId()));
+                    altmgr.addAlt(new Alt(profile.getName(), profile.getName(), result.getAccessToken(), "cookie", profile.getId()));
                     combo.setText("");
                 } catch (MicrosoftAuthenticationException e) {
                     altmgr.setStatus(EnumChatFormatting.RED + "Failed to login.");

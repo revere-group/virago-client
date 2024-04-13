@@ -37,4 +37,9 @@ public class PreMotionEvent extends Event {
         this.z = z;
         this.ground = ground;
     }
+
+    public void setRotations(float[] rotations) {
+        this.yaw = rotations[0];
+        this.pitch = rotations[1];
+    }
 }

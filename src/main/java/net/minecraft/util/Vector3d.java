@@ -1,5 +1,8 @@
 package net.minecraft.util;
 
+import lombok.Getter;
+
+@Getter
 public class Vector3d
 {
     public double x;

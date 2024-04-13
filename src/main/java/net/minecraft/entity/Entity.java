@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import dev.revere.virago.util.rotation.vec.Vector3d;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -58,6 +59,7 @@ public abstract class Entity implements ICommandSender
     public Entity riddenByEntity;
     public Entity ridingEntity;
     public boolean forceSpawn;
+    public double threadDistance;
     public World worldObj;
     public double prevPosX;
     public double prevPosY;
@@ -1240,11 +1242,22 @@ public abstract class Entity implements ICommandSender
         }
     }
 
+    public Vector3d getCustomPositionVector() {
+        return new Vector3d(posX, posY, posZ);
+    }
+
     public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks)
     {
         Vec3 vec3 = this.getPositionEyes(partialTicks);
         Vec3 vec31 = this.getLook(partialTicks);
         Vec3 vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance);
+        return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
+    }
+
+    public MovingObjectPosition rayTraceCustom(double blockReachDistance, float yaw, float pitch) {
+        final Vec3 vec3 = this.getPositionEyes(1.0F);
+        final Vec3 vec31 = this.getLookCustom(yaw, pitch);
+        final Vec3 vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance);
         return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
     }
 
@@ -1712,6 +1725,10 @@ public abstract class Entity implements ICommandSender
     public Vec3 getLookVec()
     {
         return null;
+    }
+
+    public Vec3 getLookCustom(float yaw, float pitch) {
+        return getVectorForRotation(pitch, yaw);
     }
 
     public void setPortal(BlockPos pos)

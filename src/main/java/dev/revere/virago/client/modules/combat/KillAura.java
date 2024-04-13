@@ -22,6 +22,7 @@ import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
+import dev.revere.virago.util.rotation.RotationUtil;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -44,10 +45,8 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.*;
+import net.optifine.util.MathUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -56,6 +55,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -70,8 +70,24 @@ public class KillAura extends AbstractModule {
     public final Setting<BlockMode> blockMode = new Setting<>("Block Mode", BlockMode.FAKE)
             .describedBy("The autoblock mode.");
 
+    private final Setting<RotationMode> rotationMode = new Setting<>("Rotation Mode", RotationMode.NORMAL).describedBy("The rotation mode.");
+    private final Setting<RandomMode> randomMode = new Setting<>("Random Mode", RandomMode.NORMAL).describedBy("The random mode.");
+
     private final Setting<Double> aps = new Setting<>("APS", 10.5).minimum(1.0).maximum(20.0).incrementation(0.5).describedBy("The amount of times to attack per second");
     public final Setting<Double> range = new Setting<>("Range", 3.0).minimum(2.0).maximum(6.0).incrementation(0.1).describedBy("The range to attack");
+    private final Setting<Float> randomization = new Setting<>("Randomization", 0.1f)
+            .minimum(0.1f)
+            .maximum(5.0f)
+            .incrementation(0.1f);
+    private final Setting<Integer> maxTurnSpeed = new Setting<>("Max Turn Speed", 120)
+            .minimum(10)
+            .maximum(180)
+            .incrementation(10);
+
+    private final Setting<Integer> minTurnSpeed = new Setting<>("Min Turn Speed", 120)
+            .minimum(10)
+            .maximum(180)
+            .incrementation(10);
 
     private final Setting<Boolean> smoothRotations = new Setting<>("Smooth Rotations", true).describedBy("Rotate smoothly.");
     private final Setting<Boolean> moveFix = new Setting<>("Move Fix", true).describedBy("Fix the move speed when attacking");
@@ -86,6 +102,8 @@ public class KillAura extends AbstractModule {
 
     private final TimerUtil attackTimer = new TimerUtil();
     private EntityLivingBase target;
+
+    private float yaw, pitch, lastYaw, lastPitch;
 
     private float finalPitch;
     private float finalYaw;
@@ -124,10 +142,16 @@ public class KillAura extends AbstractModule {
             finalPitch = Math.round(finalPitch / sens) * sens;
         }
 
-        mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = finalYaw;
-        mc.thePlayer.rotationPitchHead = finalPitch;
+        calculateRotations(target);
+        mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = yaw;
+        mc.thePlayer.rotationPitchHead = pitch;
         event.setYaw(mc.thePlayer.renderYawOffset);
         event.setPitch(mc.thePlayer.rotationPitchHead);
+
+        /*mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = finalYaw;
+        mc.thePlayer.rotationPitchHead = finalPitch;
+        event.setYaw(mc.thePlayer.renderYawOffset);
+        event.setPitch(mc.thePlayer.rotationPitchHead);*/
 
         this.preAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.PRE) && this.hitTimerDone()) {
@@ -180,8 +204,95 @@ public class KillAura extends AbstractModule {
     private final Listener<Render3DEvent> render3DEventListener = event -> {
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
             return;
-        if (target != null) this.targetAnimation(this.target);
+        if (target != null)  {
+            //this.targetAnimation(this.target);
+        }
     };
+
+    private void calculateRotations(EntityLivingBase target) {
+        lastYaw = yaw;
+        lastPitch = pitch;
+        float[] prevRots = new float[]{lastYaw, lastPitch};
+        float[] rotations = new float[]{0, 0};
+
+        switch (rotationMode.getValue()) {
+            case NONE: {
+                rotations = new float[]{mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch};
+                break;
+            }
+            case SMOOTH: {
+                rotations = RotationUtil.getRotations(target);
+                break;
+            }
+            case NORMAL: {
+                rotations = RotationUtil.getGCDRotations(RotationUtil.getRotationsNormal(mc.thePlayer.getPositionVector(), target.getPositionVector()), prevRots);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        yaw = rotations[0];
+        pitch = rotations[1];
+
+        switch (randomMode.getValue()) {
+            case NORMAL: {
+                yaw += (float) (Math.random() * randomization.getValue());
+                pitch += (float) (Math.random() * randomization.getValue());
+                break;
+            }
+            case DOUBLED: {
+                yaw += (float) (Math.random() * randomization.getValue());
+                pitch += (float) (Math.random() * randomization.getValue());
+
+                if (mc.thePlayer.ticksExisted % 3 == 0) {
+                    yaw += (float) (Math.random() * randomization.getValue());
+                    pitch += (float) (Math.random() * randomization.getValue());
+                }
+
+                break;
+            }
+            case GAUSSIAN: {
+                yaw += (float) (ThreadLocalRandom.current().nextGaussian() * randomization.getValue());
+                pitch += (float) (ThreadLocalRandom.current().nextGaussian() * randomization.getValue());
+                break;
+            }
+            case AUGUSTUS: {
+                final float random1 = RotationUtil.nextSecureFloat(-randomization.getValue(), randomization.getValue());
+                final float random2 = RotationUtil.nextSecureFloat(-randomization.getValue(), randomization.getValue());
+                final float random3 = RotationUtil.nextSecureFloat(-randomization.getValue(), randomization.getValue());
+                final float random4 = RotationUtil.nextSecureFloat(-randomization.getValue(), randomization.getValue());
+                yaw += RotationUtil.nextSecureFloat(Math.min(random1, random2), Math.max(random1, random2));
+                pitch += RotationUtil.nextSecureFloat(Math.min(random3, random4), Math.max(random3, random4));
+                break;
+            }
+            case MULTIPOINTS: {
+                pitch += (float) MathUtils.randomNumber(randomization.getValue() * 4, 0);
+                yaw += (float) (Math.random() * randomization.getValue());
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        float speed = (float) MathUtils.randomNumber(
+                maxTurnSpeed.getValue().floatValue(),
+                minTurnSpeed.getValue().floatValue()
+        );
+
+        yaw = RotationUtil.smoothRotation(lastYaw, yaw, speed);
+        pitch = RotationUtil.smoothRotation(lastPitch, pitch, speed);
+
+        float[] fixedRotations = RotationUtil.getFixedRotations(
+                new float[]{yaw, pitch},
+                new float[]{lastYaw, lastPitch}
+        );
+
+        yaw = fixedRotations[0];
+        pitch = fixedRotations[1];
+    }
 
     private void attack(EntityLivingBase e) {
         if (e == null) {
@@ -396,7 +507,7 @@ public class KillAura extends AbstractModule {
     }
 
     public EntityLivingBase getSingleTarget() {
-        List<EntityLivingBase> targets = mc.theWorld.getLoadedEntityLivingBases().stream().filter(entity -> entity != mc.thePlayer).filter(entity -> entity.ticksExisted > 0).filter(entity -> (double) mc.thePlayer.getDistanceToEntity((Entity) entity) <= this.range.getValue()).filter(entity -> mc.theWorld.loadedEntityList.contains(entity)).filter(this::validTarget).sorted(Comparator.comparingDouble(entity -> mc.thePlayer.getDistanceSqToEntity(entity))).collect(Collectors.toList());
+        List<EntityLivingBase> targets = mc.theWorld.getLoadedEntityLivingBases().stream().filter(entity -> entity != mc.thePlayer).filter(entity -> entity.ticksExisted > 0).filter(entity -> (double) mc.thePlayer.getDistanceToEntity(entity) <= this.range.getValue()).filter(entity -> mc.theWorld.loadedEntityList.contains(entity)).filter(this::validTarget).sorted(Comparator.comparingDouble(entity -> mc.thePlayer.getDistanceSqToEntity(entity))).collect(Collectors.toList());
         if (targets.isEmpty()) {
             return null;
         }
@@ -467,6 +578,11 @@ public class KillAura extends AbstractModule {
     public void onEnable() {
         super.onEnable();
         attackTimer.reset();
+        yaw = mc.thePlayer.rotationYaw;
+        pitch = mc.thePlayer.rotationPitch;
+        lastYaw = mc.thePlayer.rotationYaw;
+        lastPitch = mc.thePlayer.rotationPitch;
+
         finalYaw = mc.thePlayer.rotationYaw;
         finalPitch = mc.thePlayer.rotationPitch;
         mc.gameSettings.keyBindUseItem.pressed = false;
@@ -487,6 +603,14 @@ public class KillAura extends AbstractModule {
     public enum AttackStage {
         PRE,
         POST;
+    }
+
+    public enum RotationMode {
+        NONE, SMOOTH, NORMAL
+    }
+
+    public enum RandomMode {
+        NORMAL, DOUBLED, GAUSSIAN, AUGUSTUS, MULTIPOINTS
     }
 
     public class TargetHUD {

@@ -11,12 +11,8 @@ import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
 import lombok.Getter;
 import net.minecraft.util.MathHelper;
-import org.lwjgl.Sys;
-
 
 import java.awt.*;
-
-import static org.lwjgl.opengl.GL11.glScalef;
 
 public class Notification extends RenderableComponent {
 

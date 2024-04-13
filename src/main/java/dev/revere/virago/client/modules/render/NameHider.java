@@ -14,15 +14,14 @@ import net.minecraft.util.ChatComponentText;
 public class NameHider extends AbstractModule {
     @EventHandler
     private final Listener<PacketEvent> onPacket = event -> {
-        String username = Virago.getInstance().getViragoUser().getUsername().toLowerCase();
+        String viragoUser = Virago.getInstance().getViragoUser().getUsername();
+        String sessionUser = mc.getSession().getUsername();
 
-        if(!(event.getPacket() instanceof S02PacketChat))
+        if (!(event.getPacket() instanceof S02PacketChat))
             return;
 
         S02PacketChat packet = event.getPacket();
-        if(packet.getChatComponent().getUnformattedText().contains(mc.getSession().getUsername()))
-            packet.chatComponent = new ChatComponentText(packet.getChatComponent().getFormattedText().replaceAll(mc.getSession().getUsername(), username));
+        if (packet.getChatComponent().getUnformattedText().contains(sessionUser))
+            packet.chatComponent = new ChatComponentText(packet.getChatComponent().getFormattedText().replaceAll(sessionUser, viragoUser));
     };
-
-
 }

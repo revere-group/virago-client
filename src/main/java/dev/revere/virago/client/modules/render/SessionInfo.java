@@ -99,7 +99,7 @@ public class SessionInfo extends AbstractModule {
             S02PacketChat s02 = event.getPacket();
             String message = s02.getChatComponent().getUnformattedText();
 
-            if (message.contains("killed by " + mc.thePlayer.getName())) {
+            if (message.contains("killed by " + mc.thePlayer.getName()) || message.contains("killed by " + Virago.getInstance().getViragoUser().getUsername())) {
                 this.kills++;
             }
         }

@@ -46,7 +46,7 @@ public class ChestStealer extends AbstractModule {
         if (mc.currentScreen instanceof GuiChest) {
             final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
 
-            if ((container.getLowerChestInventory().getName().toLowerCase().contains("menu") || container.getLowerChestInventory().getName().toLowerCase().contains("play"))) {
+            if ((container.getLowerChestInventory().getName().toLowerCase().contains("menu") || container.getLowerChestInventory().getName().toLowerCase().contains("play") || container.getLowerChestInventory().getName().toLowerCase().contains("selector"))) {
                 return;
             }
 

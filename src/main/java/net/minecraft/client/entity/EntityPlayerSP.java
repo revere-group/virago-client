@@ -8,6 +8,7 @@ import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.player.NoSlow;
 import dev.revere.virago.client.services.CommandService;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.rotation.vec.Vector2f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -907,5 +908,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed))
                 baseSpeed *= 1.0D + 0.2D * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1);
         return baseSpeed;
+    }
+
+    public Vector2f getPreviousRotation() {
+        return new Vector2f(lastReportedYaw, lastReportedPitch);
     }
 }

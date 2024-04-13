@@ -53,6 +53,12 @@ public class FriendCommand extends AbstractCommand {
                 Logger.addChatMessage("Friends List: " + service.getFriends().toString().replace("[", "").replace("]", ""));
                 break;
             }
+
+            case "clear": {
+                service.getFriends().clear();
+                Logger.addChatMessage("You have cleared your friends list.");
+                break;
+            }
         }
     }
 }
