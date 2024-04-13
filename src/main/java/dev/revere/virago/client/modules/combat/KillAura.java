@@ -13,6 +13,7 @@ import dev.revere.virago.client.events.render.Render3DEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.player.StrafeEvent;
+import dev.revere.virago.client.modules.misc.Teams;
 import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.modules.render.HUD;
 import dev.revere.virago.client.services.FontService;
@@ -361,48 +362,7 @@ public class KillAura extends AbstractModule {
                 }
                 break;
             case CONTROL:
-                /*boolean damageOnly = false;
-                if (damageOnly) {
-                    if (mc.thePlayer.hurtTime > 2) {
-                        mc.gameSettings.keyBindUseItem.pressed = true;
-                        blocking = true;
-                    }
-                } else {
-                    mc.gameSettings.keyBindUseItem.pressed = true;
-                    blocking = true;
-                }*/
                 break;
-        }
-    }
-
-    public static void sendBlocking(boolean callEvent, boolean placement) {
-        if (mc.thePlayer == null)
-            return;
-
-        C08PacketPlayerBlockPlacement packet;
-        if (placement) {
-            packet = new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 255, mc.thePlayer.getHeldItem(), 0, 0, 0);
-        } else {
-            packet = new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem());
-        }
-
-        Logger.addChatMessage("Sending block packet");
-        if (callEvent) {
-            mc.getNetHandler().addToSendQueue(packet);
-        } else {
-            mc.getNetHandler().addToSendQueueNoEvent(packet);
-        }
-    }
-
-    public static void releaseUseItem(boolean callEvent) {
-        if (mc.thePlayer == null)
-            return;
-
-        C07PacketPlayerDigging packet = new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN);
-        if (callEvent) {
-            mc.getNetHandler().addToSendQueue(packet);
-        } else {
-            mc.getNetHandler().addToSendQueueNoEvent(packet);
         }
     }
 
@@ -419,8 +379,6 @@ public class KillAura extends AbstractModule {
                     mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
                     break;
                 case WATCHDOG:
-                    //mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-                    //this.blockingTicks = 0;
                     break;
             }
         }
@@ -529,9 +487,17 @@ public class KillAura extends AbstractModule {
     }
 
     private boolean validTargetLayer3(EntityLivingBase entity) {
+        FriendService friendService = Virago.getInstance().getServiceManager().getService(FriendService.class);
+        Teams teams = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Teams.class);
+
         if (entity instanceof EntityPlayer) {
-            if(Virago.getInstance().getServiceManager().getService(FriendService.class).isFriend(entity.getName()))
+            if(friendService.isFriend(entity.getName())) {
                 return false;
+            }
+
+            if (teams.isTeammate(entity)) {
+                return false;
+            }
 
             return this.targetPlayers.getValue();
         }
