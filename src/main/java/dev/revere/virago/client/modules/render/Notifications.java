@@ -10,6 +10,10 @@ public class Notifications extends AbstractModule {
 
     public final Setting<Boolean> moduleNotifications = new Setting<>("Module Notifications", true);
 
+    public Notifications() {
+        setEnabled(true);
+    }
+
     @Override
     public void onEnable() {
         super.onEnable();

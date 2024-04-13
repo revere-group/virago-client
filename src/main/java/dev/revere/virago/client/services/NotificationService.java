@@ -50,6 +50,15 @@ public class NotificationService implements IService {
         notifications.add(new Notification(scaledResolution.getScaledWidth() - 205, scaledResolution.getScaledHeight() - 30 * notifications.size(), type, title, message));
     }
 
+    public void notify(NotificationType type, String title, String message, long duration) {
+        if(!Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class).isEnabled()) {
+            return;
+        }
+
+        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+        notifications.add(new Notification(scaledResolution.getScaledWidth() - 205, scaledResolution.getScaledHeight() - 30 * notifications.size(), type, title, message, duration));
+    }
+
 
 
     /**

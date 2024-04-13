@@ -10,12 +10,11 @@ import dev.revere.virago.util.Logger;
 
 /**
  * @author Remi
- * @project Virago
- * @date 3/21/2024
+ * @project Virago-Client
+ * @date 4/13/2024
  */
-@CommandData(aliases = {"toggle", "t"}, description = "Toggle a module", syntax = "<module>")
-public class ToggleCommand extends AbstractCommand {
-
+@CommandData(aliases = {"hide"}, description = "Hide a module", syntax = "<module>")
+public class HideCommand extends AbstractCommand {
     @Override
     public void executeCommand(String line, String[] args) {
         ModuleService moduleService = Virago.getInstance().getServiceManager().getService(ModuleService.class);
@@ -32,9 +31,13 @@ public class ToggleCommand extends AbstractCommand {
             return;
         }
 
-        String toggled = moduleService.getModuleByName(moduleName).isEnabled() ? "disabled" : "enabled";
-        moduleService.getModuleByName(moduleName).toggleSilent();
+        if (moduleService.getModuleByName(moduleName).isHidden()) {
+            moduleService.getModuleByName(moduleName).setHidden(false);
+            notificationService.notify(NotificationType.YES, "Command Manager", "Module " + moduleName + " is now visible");
+        } else {
+            moduleService.getModuleByName(moduleName).setHidden(true);
+            notificationService.notify(NotificationType.YES, "Command Manager", "Module " + moduleName + " is now hidden");
+        }
 
-        notificationService.notify(NotificationType.YES, "Command Manager", "Module " + moduleName + " is now " + toggled);
     }
 }

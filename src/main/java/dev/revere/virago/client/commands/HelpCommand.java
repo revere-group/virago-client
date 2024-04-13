@@ -16,14 +16,14 @@ public class HelpCommand extends AbstractCommand {
 
     @Override
     public void executeCommand(String line, String[] args) {
-        Logger.addChatMessage("==========================");
+        Logger.addChatMessage("\u00a77\u00a7m------------------------");
         for (AbstractCommand command : Virago.getInstance().getServiceManager().getService(CommandService.class).getCommands().values()) {
             String aliases = String.join(", ", command.getAliases());
             String description = command.getDescription();
             String syntax = command.getSyntax();
 
-            Logger.addChatMessage(aliases + " - " + description);
+            Logger.addChatMessage("\u00a73" + aliases + " \u00a7f" + syntax + " \u00a77-\u00a7f " + description);
         }
-        Logger.addChatMessage("==========================");
+        Logger.addChatMessage("\u00a77\u00a7m------------------------");
     }
 }

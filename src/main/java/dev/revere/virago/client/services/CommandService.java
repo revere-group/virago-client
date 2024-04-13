@@ -1,11 +1,14 @@
 package dev.revere.virago.client.services;
 
+import dev.revere.virago.Virago;
 import dev.revere.virago.api.command.AbstractCommand;
 import dev.revere.virago.api.service.IService;
+import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.util.Logger;
 import lombok.Getter;
 import org.reflections.Reflections;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -40,19 +43,24 @@ public class CommandService implements IService {
     }
 
     public void executeCommand(String line) {
+        NotificationService notificationService = Virago.getInstance().getServiceManager().getService(NotificationService.class);
+
         String[] args = line.split(" ");
         String alias = args[0].substring(1);
 
-        AbstractCommand command = commands.values().stream().filter(cmd -> cmd.getAliases()[0].equalsIgnoreCase(alias)).findFirst().orElse(null);
+        AbstractCommand command = commands.values().stream()
+                .filter(cmd -> Arrays.stream(cmd.getAliases()).anyMatch(alias::equalsIgnoreCase))
+                .findFirst().orElse(null);
+
         if (command == null) {
-            Logger.addChatMessage("Unknown command! Type .help for a list of commands.");
+            notificationService.notify(NotificationType.NO, "Command Manager", "Command not found!");
             return;
         }
 
         try {
             command.executeCommand(line, args);
         } catch (Exception e) {
-            Logger.addChatMessage("Failed to execute command " + command.getClass().getSimpleName());
+            notificationService.notify(NotificationType.ERROR, "Command Manager", "An error occurred while executing the command!", 3000L);
         }
     }
 }

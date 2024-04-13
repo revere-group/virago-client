@@ -43,7 +43,7 @@ public class AutoHypixel extends AbstractModule {
 
     private void doRejoin() {
         if(rejoin.getValue()) {
-            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Auto Hypixel", "You are being sent to a new " + gameMode.getValue().name().toLowerCase().replace("_", " ") + " game.");
+            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Auto Hypixel", "You are being sent to a new " + gameMode.getValue().name().toLowerCase().replace("_", " ") + " game.", 3000L);
 
             switch (gameMode.getValue()) {
                 case SW_SOLO_NORMAL:

@@ -26,6 +26,7 @@ public class Notification extends RenderableComponent {
     private final Animation animation = new Animation(() -> 700F, true, () -> Easing.BACK_IN_OUT);
 
     private long initTime = 0L;
+    private long duration = 1500L;
 
     public Notification(float x, float y, NotificationType type, String title, String message) {
         super(x, y, 125, 30);
@@ -35,7 +36,17 @@ public class Notification extends RenderableComponent {
         this.message = message;
 
         animation.resetToDefault();
-        //animation.setState(false);
+    }
+
+    public Notification(float x, float y, NotificationType type, String title, String message, long duration) {
+        super(x, y, 125, 30);
+
+        this.type = type;
+        this.title = title;
+        this.message = message;
+        this.duration = duration;
+
+        animation.resetToDefault();
     }
 
     @Override
@@ -46,7 +57,7 @@ public class Notification extends RenderableComponent {
 
         long time = initTime > 0 ? System.currentTimeMillis() - initTime : 0;
 
-        if (time >= 1500) {
+        if (time >= duration) {
             animation.setState(false);
         }
 

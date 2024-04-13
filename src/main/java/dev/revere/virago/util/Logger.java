@@ -58,7 +58,7 @@ public class Logger {
      */
     public static void addChatMessage(String message) {
         if (message != null && Minecraft.getMinecraft().thePlayer != null) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "[" + EnumChatFormatting.RED + Virago.getInstance().getName() + EnumChatFormatting.GRAY + "] " + EnumChatFormatting.RESET + message));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "[" + EnumChatFormatting.DARK_AQUA + Virago.getInstance().getName() + EnumChatFormatting.GRAY + "] " + EnumChatFormatting.RESET + message));
         }
     }
 }
