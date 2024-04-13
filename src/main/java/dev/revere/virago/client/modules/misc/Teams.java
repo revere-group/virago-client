@@ -4,6 +4,7 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.util.Logger;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemArmor;
@@ -18,8 +19,8 @@ import net.minecraft.item.ItemStack;
 public class Teams extends AbstractModule {
 
     public final Setting<Boolean> scoreboard = new Setting<>("Scoreboard", false).describedBy("Check the scoreboard for team members");
+    public final Setting<Boolean> prefix = new Setting<>("Prefix", false).describedBy("Check the prefix of the player");
     public final Setting<Boolean> armor = new Setting<>("Armor", false).describedBy("Check the armor of the player");
-    public final Setting<Boolean> color = new Setting<>("Color", false).describedBy("Check the armor of the player");
 
     public boolean isTeammate(EntityLivingBase entity) {
         if (scoreboard.getValue() && mc.thePlayer.getTeam() != null && entity.getTeam() != null && mc.thePlayer.isOnSameTeam(entity)) {
@@ -41,12 +42,11 @@ public class Teams extends AbstractModule {
                 }
             }
         }
+        if (prefix.getValue() && mc.thePlayer.getDisplayName() != null && entity.getDisplayName() != null) {
+            String targetPrefix = entity.getDisplayName().getFormattedText().substring(0, 5);
+            String clientPrefix = mc.thePlayer.getDisplayName().getFormattedText().substring(0, 5);
 
-        if (color.getValue() && mc.thePlayer.getDisplayName() != null && entity.getDisplayName() != null) {
-            String targetName = entity.getDisplayName().getFormattedText().replace("§r", "");
-            String clientName = mc.thePlayer.getDisplayName().getFormattedText().replace("§r", "");
-
-            return targetName.startsWith(String.format("§%s", clientName));
+            return targetPrefix.equals(clientPrefix);
         }
 
         return false;
