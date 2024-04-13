@@ -92,6 +92,14 @@ public class ConfigService implements IService {
                                 String[] values = moduleData.getString(setting.getPath()).split(":");
 
                                 ((Setting<Color>) setting).setValue(new Color(Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2])));
+                            } else if (setting.getValue() instanceof Integer) {
+                                ((Setting<Integer>) setting).setValue(moduleData.getInt(setting.getPath()));
+                            } else if (setting.getValue() instanceof String) {
+                                ((Setting<String>) setting).setValue(moduleData.getString(setting.getPath()));
+                            } else if (setting.getValue() instanceof Float) {
+                                ((Setting<Float>) setting).setValue((float) moduleData.getDouble(setting.getPath()));
+                            } else if (setting.getValue() instanceof Long) {
+                                ((Setting<Long>) setting).setValue(moduleData.getLong(setting.getPath()));
                             }
                         }
 
