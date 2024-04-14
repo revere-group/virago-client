@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.events.player.WorldChangeEvent;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.DataWatcher;
@@ -87,12 +90,12 @@ public class RandomEntities
 
     public static void worldChanged(World oldWorld, World newWorld)
     {
-        if (newWorld != null)
-        {
+        if (newWorld != null) {
+            Virago.getInstance().getEventBus().call(new WorldChangeEvent());
+
             List list = newWorld.getLoadedEntityList();
 
-            for (int i = 0; i < list.size(); ++i)
-            {
+            for (int i = 0; i < list.size(); ++i) {
                 Entity entity = (Entity)list.get(i);
                 entityLoaded(entity, newWorld);
             }
