@@ -9,6 +9,7 @@ import dev.revere.virago.util.animation.Easing;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
+import javafx.scene.effect.ColorInput;
 import lombok.Getter;
 import net.minecraft.util.MathHelper;
 
@@ -68,9 +69,13 @@ public class Notification extends RenderableComponent {
             RoundedUtils.round(getX(), getY(), getWidth(), getHeight(), 5f, new Color(0, 0, 0, 130));
             RenderUtils.popScissor();
 
-            RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, type.getColor());
-
-            fontService.getIcon20().drawString(type.icon, (getX() + 8), (getY() + 10), type.color.getRGB(), false);
+            if (type == NotificationType.INFO || type == NotificationType.YES) {
+                RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, new Color(ColorUtil.getColor(false)));
+                fontService.getIcon20().drawString(type.icon, (getX() + 8), (getY() + 10), ColorUtil.getColor(false), false);
+            } else {
+                RoundedUtils.outline(getX(), getY(), getWidth(), getHeight(), 5f, 2f, new Color(0x202020));
+                fontService.getIcon20().drawString(type.icon, (getX() + 8), (getY() + 10), 0x202020, false);
+            }
             fontService.getPoppinsMedium().drawString(title, getX() + 27, getY() + 5, -1);
             fontService.getProductSans().drawString(message, getX() + 27, getY() + 17, -1);
         }

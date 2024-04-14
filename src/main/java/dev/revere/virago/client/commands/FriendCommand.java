@@ -59,7 +59,7 @@ public class FriendCommand extends AbstractCommand {
                 }
 
                 service.addFriend(player);
-                notificationService.notify(NotificationType.YES, "Command Manager", "You have added " + player + " as a friend.");
+                notificationService.notify(NotificationType.YES, "Command Manager", "You have added " + player + " to your friend list.");
                 break;
             }
 

@@ -7,8 +7,9 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.client.events.player.PreMotionEvent;
+import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.FriendService;
-import dev.revere.virago.util.Logger;
+import dev.revere.virago.client.services.NotificationService;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StringUtils;
 
@@ -27,7 +28,9 @@ public class MiddleClickFriend extends AbstractModule {
         if(!mc.inGameHasFocus) return;
 
         boolean down = mc.gameSettings.keyBindPickBlock.isKeyDown();
+        NotificationService notificationService = Virago.getInstance().getServiceManager().getService(NotificationService.class);
         FriendService friendService = Virago.getInstance().getServiceManager().getService(FriendService.class);
+
         if(down && !wasDown) {
             if(mc.objectMouseOver == null || !(mc.objectMouseOver.entityHit instanceof EntityPlayer)) return;
 
@@ -36,12 +39,12 @@ public class MiddleClickFriend extends AbstractModule {
 
             if(friendService.isFriend(name)) {
                 friendService.getFriends().removeIf(friend -> friend.equalsIgnoreCase(name));
-                Logger.addChatMessage("You have removed " + name + " as a friend.");
+                notificationService.notify(NotificationType.INFO, "Friend Manager", "You have removed " + name + " from your friend list.");
                 return;
             }
 
             friendService.getFriends().add(name);
-            Logger.addChatMessage("You have added " + name + " as a friend.");
+            notificationService.notify(NotificationType.INFO, "Friend Manager", "You have added " + name + " to your friend list.");
             wasDown = true;
         } else if(!down) {
             wasDown = false;

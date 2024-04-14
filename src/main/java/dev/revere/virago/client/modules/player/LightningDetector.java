@@ -27,7 +27,7 @@ public class LightningDetector extends AbstractModule {
             // not sure why? minecraft bullshit.
 
             Virago.getInstance().getServiceManager().getService(NotificationService.class)
-                    .notify(NotificationType.INFO, "Lightning", String.format("Struck at: %s, %s, %s", Math.round(packet.getX()), Math.round(packet.getY()), Math.round(packet.getZ())));
+                    .notify(NotificationType.INFO, "Lightning", String.format("Struck at: %s, %s, %s", Math.round(packet.getX()), Math.round(packet.getY()), Math.round(packet.getZ())), 3000L);
         }
     };
 }

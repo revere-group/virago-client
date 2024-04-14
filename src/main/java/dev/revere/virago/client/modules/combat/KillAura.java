@@ -127,7 +127,8 @@ public class KillAura extends AbstractModule {
             return;
         }
 
-        blocking = true;
+        if (blockMode.getValue() == BlockMode.FAKE)
+            blocking = true;
 
         if (!moveFix.getValue()) {
             float[] rots = this.getRotations(target);
@@ -154,7 +155,6 @@ public class KillAura extends AbstractModule {
         event.setYaw(mc.thePlayer.renderYawOffset);
         event.setPitch(mc.thePlayer.rotationPitchHead);*/
 
-        this.preAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.PRE) && this.hitTimerDone()) {
             this.attack(this.target);
         }
@@ -203,6 +203,8 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<Render3DEvent> render3DEventListener = event -> {
+        this.preAutoblock();
+
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
             return;
         if (target != null)  {
