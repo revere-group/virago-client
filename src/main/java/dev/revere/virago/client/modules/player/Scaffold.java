@@ -16,6 +16,7 @@ import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import lombok.Getter;
 import net.minecraft.block.Block;
@@ -253,7 +254,11 @@ public class Scaffold extends AbstractModule {
             if (towerMode.getValue() == TowerMode.WATCHDOG) {
                 mc.thePlayer.setSpeed(e, mc.gameSettings.keyBindJump.isKeyDown() ? 0.2625 : 0.2085);
             } else {
-                mc.thePlayer.setSpeed(e, 0.2085);
+                if (!mc.gameSettings.keyBindJump.isKeyDown()) {
+                    mc.thePlayer.setSpeed(e, 0.2085);
+                } else {
+                    mc.thePlayer.setSpeed(e, 0.325); // havent tested any higher than this
+                }
             }
         }
 
