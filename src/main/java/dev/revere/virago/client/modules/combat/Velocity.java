@@ -36,10 +36,6 @@ public class Velocity extends AbstractModule {
             .incrementation(1.0f)
             .describedBy("The amount of vertical knockback to take");
     
-    public Velocity() {
-        setKey(Keyboard.KEY_H);
-    }
-
     /**
      * Handles the receive packet event
      *

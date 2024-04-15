@@ -36,10 +36,6 @@ public class JumpCircles extends AbstractModule {
     public Setting<Color> customColor1 = new Setting<>("Color", new Color(-1)).visibleWhen(() -> customColor.getValue()).describedBy("Color 1");
     public Setting<Color> customColor2 = new Setting<>("Color2", new Color(-1)).visibleWhen(() -> customColor.getValue()).describedBy("Color 2");
 
-    public JumpCircles() {
-        setKey(Keyboard.KEY_P);
-    }
-
     /**
      * Updates the circles around the player
      *

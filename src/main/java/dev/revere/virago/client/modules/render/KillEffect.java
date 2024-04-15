@@ -29,8 +29,6 @@ public class KillEffect extends AbstractModule {
     public Setting<Boolean> explosion = new Setting<>("Explosion", true).describedBy("Whether explosions should be enabled.");
     private EntityLivingBase target;
 
-    public KillEffect() { setKey(Keyboard.KEY_K); }
-
     @EventHandler
     private final Listener<UpdateEvent> updateEventListener = event -> {
         KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
