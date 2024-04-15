@@ -257,7 +257,7 @@ public class Scaffold extends AbstractModule {
                 if (!mc.gameSettings.keyBindJump.isKeyDown()) {
                     mc.thePlayer.setSpeed(e, 0.2085);
                 } else {
-                    mc.thePlayer.setSpeed(e, 0.325); // havent tested any higher than this
+                    mc.thePlayer.setSpeed(e, 0.3); // havent tested any higher than this
                 }
             }
         }
