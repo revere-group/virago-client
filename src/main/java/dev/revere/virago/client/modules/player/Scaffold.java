@@ -236,10 +236,11 @@ public class Scaffold extends AbstractModule {
                         info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                     } else {
                         info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                        if (mc.thePlayer.ticksExisted % 6 == 0) {
-                            info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX - 1, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                        if (towerMode.getValue() == TowerMode.WATCHDOG) {
+                            if (mc.thePlayer.ticksExisted % 6 == 0) {
+                                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX - 1, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                            }
                         }
-
                     }
                 }
                 if (info.pos != null) this.placeBlock();
