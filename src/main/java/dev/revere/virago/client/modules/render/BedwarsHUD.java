@@ -54,7 +54,7 @@ public class BedwarsHUD extends AbstractModule {
         RenderUtils.renderGradientRect((int) draggable.getX(), (int) draggable.getY() + 14, (int) (115 + draggable.getX()), (int) (draggable.getY() + 15), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
         //RoundedUtils.round(draggable.getX(), draggable.getY() - 1, 113, 52, 4, new Color(20,20,20, 200));
 
-        fontRenderer.drawStringWithShadow("Bedwars", draggable.getX() + 25, draggable.getY() + 2, -1);
+        fontRenderer.drawStringWithShadow("Bedwars", draggable.getX() + 37, draggable.getY() + 2, -1);
 
         font.getIcon10().drawString("b", draggable.getX() + 2, draggable.getY() + 22, -1);
         fontRenderer.drawStringWithShadow("Trap: " + getTrap(), draggable.getX() + 8, draggable.getY() + 18, -1);
@@ -74,7 +74,7 @@ public class BedwarsHUD extends AbstractModule {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
         getFont(font);
 
-        fontRenderer.drawStringWithShadow("Bedwars", draggable.getX() + 25, draggable.getY() + 2, -1);
+        fontRenderer.drawStringWithShadow("Bedwars", draggable.getX() + 37, draggable.getY() + 2, -1);
 
         font.getIcon10().drawString("b", draggable.getX() + 2, draggable.getY() + 22, -1);
         fontRenderer.drawStringWithShadow("Trap: " + getTrap(), draggable.getX() + 8, draggable.getY() + 18, -1);
