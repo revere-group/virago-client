@@ -351,7 +351,7 @@ public class HUD extends AbstractModule {
                 RenderUtils.drawRect(x - 1f, y, x, y + height, color);
 
                 if (index == 0) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 2f, y - 1, x, y, color);
+                    RenderUtils.drawRect(sr.getScaledWidth() - 4f, y - 1, x - 1, y, color);
                 } else if (index == getSortedModules().size() - 1f) {
                     RenderUtils.drawRect(sr.getScaledWidth() - 1f, y + height - 1f, x, y + height, color);
                 }
