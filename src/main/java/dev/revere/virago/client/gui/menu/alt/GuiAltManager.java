@@ -33,7 +33,11 @@ import org.lwjgl.opengl.GL11;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -56,6 +60,9 @@ public class GuiAltManager extends GuiScreen {
     private GuiButton loginButton;
     private GuiButton deleteButton;
 
+    private CustomGuiTextField usernameField;
+    private GuiButton changeUsernameButton;
+
     public GuiAltManager(GuiScreen previousScreen) {
         this.previousScreen = previousScreen;
     }
@@ -75,6 +82,12 @@ public class GuiAltManager extends GuiScreen {
         loginButton = new GuiButton(5, width - 195, height - 50 - 60, 150, 18, "Login");
         deleteButton = new GuiButton(6, width - 195, height - 26 - 60, 150, 18, "Delete");
 
+        usernameField = new CustomGuiTextField(4, CENTER_X - 255, 362 + 30 + 10, 170, 18, "New Username");
+        usernameField.setMaxStringLength(16);
+
+        changeUsernameButton = new GuiButton(8, CENTER_X - 255, 362 + 50 + 10, 170, 20, "Change Username");
+        buttonList.add(changeUsernameButton);
+
         int BUTTON_WIDTH = 170;
         int BUTTON_HEIGHT = 40;
 
@@ -88,7 +101,7 @@ public class GuiAltManager extends GuiScreen {
         buttonList.add(new CustomRectButton(3, CENTER_X - 255, CENTER_Y, BUTTON_WIDTH, BUTTON_HEIGHT, "Generate Cracked Account", backgroundColor, outlineColor, textColor));
         buttonList.add(new CustomRectButton(4, CENTER_X - 255, CENTER_Y + 50, BUTTON_WIDTH, BUTTON_HEIGHT, "Add Cookie Alt", backgroundColor, outlineColor, textColor));
 
-        combo = new CustomGuiTextField(3, CENTER_X - 255, 362 + 40 + 10, 170, 18, "Username:Password");
+        combo = new CustomGuiTextField(3, CENTER_X - 255, 362 + 10 + 10, 170, 18, "Username:Password");
         combo.setMaxStringLength(256);
 
         list.setOverlayBackground(false);
@@ -160,6 +173,7 @@ public class GuiAltManager extends GuiScreen {
         }
 
         combo.drawTextBox();
+        usernameField.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -201,6 +215,7 @@ public class GuiAltManager extends GuiScreen {
         }
 
         combo.mouseClicked(mouseX, mouseY, mouseButton);
+        usernameField.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -211,6 +226,7 @@ public class GuiAltManager extends GuiScreen {
         }
 
         combo.textboxKeyTyped(typedChar, keyCode);
+        usernameField.textboxKeyTyped(typedChar, keyCode);
     }
 
     @Override
@@ -227,6 +243,7 @@ public class GuiAltManager extends GuiScreen {
     @Override
     public void updateScreen() {
         combo.updateCursorCounter();
+        usernameField.updateCursorCounter();
     }
 
     @Override
@@ -346,10 +363,54 @@ public class GuiAltManager extends GuiScreen {
                     altmgr.save();
                 }).start();
                 break;
+            case 8:
+                String newUsername = usernameField.getText();
+                if (!newUsername.isEmpty() && mc.getSession().getToken() != null) {
+                    try {
+                        HttpURLConnection connection = getHttpURLConnection(newUsername);
+
+                        int responseCode = connection.getResponseCode();
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        StringBuilder responseBuilder = new StringBuilder();
+                        String inputLine;
+                        while ((inputLine = in.readLine()) != null) {
+                            responseBuilder.append(inputLine);
+                        }
+                        in.close();
+
+                        if (responseCode == 200) {
+                            altmgr.setStatus(EnumChatFormatting.GREEN + "Successfully changed username to " + newUsername + ".");
+                            mc.session = new Session(newUsername, mc.getSession().getPlayerID(), mc.getSession().getToken(), "legacy");
+                        } else {
+                            altmgr.setStatus(EnumChatFormatting.RED + "Failed to change username: " + responseCode);
+                        }
+                    } catch (IOException e) {
+                        if (e.getMessage().contains("401")) {
+                            altmgr.setStatus(EnumChatFormatting.RED + "Failed to change username: Unauthorized.");
+                        } else if (e.getMessage().contains("403")) {
+                            altmgr.setStatus(EnumChatFormatting.RED + "Failed to change username: On cooldown.");
+                        } else {
+                            altmgr.setStatus(EnumChatFormatting.RED + "Failed to change username: " + e.getMessage());
+                        }
+                    }
+                } else {
+                    altmgr.setStatus(EnumChatFormatting.RED + "Please enter a valid username.");
+                }
+                break;
             case 7:
                 mc.displayGuiScreen(previousScreen);
                 break;
         }
+    }
+
+    private HttpURLConnection getHttpURLConnection(String newUsername) throws IOException {
+        URL url = new URL("https://api.minecraftservices.com/minecraft/profile/name/" + newUsername);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("PUT");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+        connection.setRequestProperty("Authorization", "Bearer " + mc.getSession().getToken());
+        connection.setDoOutput(true);
+        return connection;
     }
 
     class AltList extends Slot {

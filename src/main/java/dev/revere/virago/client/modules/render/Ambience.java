@@ -49,7 +49,6 @@ public class Ambience extends AbstractModule {
             }
 
             case RAIN:
-
             case SNOW: {
                 mc.theWorld.setRainStrength(1);
                 mc.theWorld.getWorldInfo().setCleanWeatherTime(0);
@@ -61,9 +60,6 @@ public class Ambience extends AbstractModule {
             }
         }
     };
-
-
-
 
     @Override
     public void onEnable() {
@@ -84,7 +80,5 @@ public class Ambience extends AbstractModule {
     public enum WeatherMode {
         UNCHANGED, CLEAR, RAIN, SNOW
     }
-
-
 }
 
