@@ -164,7 +164,9 @@ public class Scaffold extends AbstractModule {
             mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING));
 
         if (mc.thePlayer.onGround) {
-            yCoordinate = mc.thePlayer.posY;
+            if (mode.getValue() != Mode.NORMAL) {
+                yCoordinate = mc.thePlayer.posY;
+            }
             if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
 
@@ -183,7 +185,6 @@ public class Scaffold extends AbstractModule {
         if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump/*mc.thePlayer.isMoving()*/) {
             airTicks++;
             int position = (int) mc.thePlayer.posY;
-
 
             if (mc.thePlayer.onGround) {
                 airTicks = 0;
@@ -219,6 +220,8 @@ public class Scaffold extends AbstractModule {
         this.preTowerMotion(e);
     };
 
+    boolean yCoordinateUpdated = false;
+
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = e -> {
         if (placeMode.getValue() == PlaceMode.POST && !mode.getValue().equals(Mode.WATCHDOG)) {
@@ -226,6 +229,26 @@ public class Scaffold extends AbstractModule {
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
             else
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+            if (info.pos != null) this.placeBlock();
+        } else if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG) && autoJump.getValue() && keepY.getValue()) {
+            if (!mc.thePlayer.movementInput.jump) {
+                Logger.addChatMessage(yCoordinateUpdated + "");
+                if (!yCoordinateUpdated)
+                    yCoordinate = mc.thePlayer.posY - 1;
+
+                Logger.addChatMessage(yCoordinate + "");
+                if (mc.thePlayer.motionY < 0 && mc.thePlayer.fallDistance > 0.8) {
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ));
+                    Logger.addChatMessage("Falling");
+                } else {
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+                }
+                yCoordinateUpdated = true;
+            } else {
+                yCoordinate = mc.thePlayer.posY;
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                yCoordinateUpdated = false;
+            }
             if (info.pos != null) this.placeBlock();
         } else if (mode.getValue().equals(Mode.WATCHDOG)) {
             if (mc.gameSettings.keyBindJump.isKeyDown()) {
@@ -260,6 +283,14 @@ public class Scaffold extends AbstractModule {
                 } else {
                     mc.thePlayer.setSpeed(e, 0.3); // havent tested any higher than this
                 }
+            }
+        }
+
+        if (mode.getValue() == Mode.NORMAL && keepY.getValue()) {
+            if (!mc.gameSettings.keyBindJump.isKeyDown()) {
+                mc.thePlayer.setSpeed(e, 0.29);
+            } else {
+                mc.thePlayer.setSpeed(e, 0.3);
             }
         }
 
@@ -755,7 +786,7 @@ public class Scaffold extends AbstractModule {
         towerTicks = 0;
         sneaking = false;
         isPlacing = false;
-        yCoordinate = mc.thePlayer.posY;
+        yCoordinate = mc.thePlayer.posY - 1;
         placeTimer.reset();
         blockCount = getBlockCount();
 
@@ -763,7 +794,6 @@ public class Scaffold extends AbstractModule {
             mc.thePlayer.motionX = 0.0f;
             mc.thePlayer.motionY = 0.42f;
             mc.thePlayer.motionZ= 0.0f;
-
         }
 
         /*
