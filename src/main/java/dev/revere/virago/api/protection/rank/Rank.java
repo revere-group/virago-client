@@ -14,7 +14,8 @@ public enum Rank {
     USER("User", EnumChatFormatting.WHITE),
     TESTER("Tester", EnumChatFormatting.YELLOW),
     STAFF("Staff", EnumChatFormatting.LIGHT_PURPLE),
-    DEVELOPER("Developer", EnumChatFormatting.AQUA)
+    DEVELOPER("Developer", EnumChatFormatting.AQUA),
+    CONSOLE("#", EnumChatFormatting.DARK_RED)
 
     ;
 
