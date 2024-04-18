@@ -16,6 +16,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import static dev.revere.virago.api.socket.SocketHelper.socket;
 
@@ -37,7 +38,7 @@ public class SocketClient {
                 if(packet.code().equals("200")) {
                     jwt = packet.jwtToken();
                 } else {
-                    System.out.printf("Result code: %s. Failure. %n", packet.code());
+                    log("Result code: %s. Failure. " + packet.code());
                 }
             }
         });
@@ -56,11 +57,11 @@ public class SocketClient {
                                 "%s[%sIRC%s]%s %s[%s%s%s]%s %s%s: %s%s",
                                 EnumChatFormatting.DARK_GRAY, EnumChatFormatting.DARK_AQUA, EnumChatFormatting.DARK_GRAY, EnumChatFormatting.RESET,
                                 EnumChatFormatting.DARK_GRAY,
-                                Rank.getRank(packet.rank()).getColor(),
+                                Objects.requireNonNull(Rank.getRank(packet.rank())).getColor(),
                                 packet.rank(),
                                 EnumChatFormatting.DARK_GRAY,
                                 EnumChatFormatting.RESET,
-                                Rank.getRank(packet.rank()).getColor(),
+                                Objects.requireNonNull(Rank.getRank(packet.rank())).getColor(),
                                 packet.author(),
                                 EnumChatFormatting.RESET,
                                 packet.content()
