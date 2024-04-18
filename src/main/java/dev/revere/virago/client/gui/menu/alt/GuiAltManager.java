@@ -40,6 +40,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Remi
@@ -286,21 +288,23 @@ public class GuiAltManager extends GuiScreen {
             case 0: {
                 MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
                 try {
-                    MicrosoftAuthResult result = authenticator.loginWithWebview();
+                    CompletableFuture<MicrosoftAuthResult> result = authenticator.loginWithAsyncWebview();
                     if (result == null) {
                         altmgr.setStatus(EnumChatFormatting.RED + "Failed to login.");
                         return;
                     }
-                    MinecraftProfile profile = result.getProfile();
-                    Logger.info("Logged in as " + profile.getName() + " with UUID " + profile.getId() + " and access token " + result.getAccessToken() + ".", getClass());
-                    mc.session = new Session(profile.getName(), profile.getId(), result.getAccessToken(), "microsoft");
+                    MinecraftProfile profile = result.get().getProfile();
+                    Logger.info("Logged in as " + profile.getName() + " with UUID " + profile.getId() + " and access token " + result.get().getAccessToken() + ".", getClass());
+                    mc.session = new Session(profile.getName(), profile.getId(), result.get().getAccessToken(), "microsoft");
                     altmgr.setStatus(EnumChatFormatting.GREEN + "Logged in as " + profile.getName() + ".");
-                    altmgr.addAlt(new Alt(profile.getName(), profile.getName(), result.getAccessToken(), "cookie", profile.getId()));
+                    altmgr.addAlt(new Alt(profile.getName(), profile.getName(), result.get().getAccessToken(), "cookie", profile.getId()));
                     combo.setText("");
-                } catch (MicrosoftAuthenticationException e) {
-                    altmgr.setStatus(EnumChatFormatting.RED + "Failed to login.");
+                    altmgr.save();
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-                altmgr.save();
                 break;
             }
             case 2:

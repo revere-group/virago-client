@@ -26,7 +26,7 @@ public class SocketClient {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MMM/dd/yyyy HH:mm");
 
     public static String getURL(String path) {
-        return String.format("%s%s", DEV, path);
+        return String.format("%s%s", URL, path);
     }
 
     public static void init(String licenseKey) {

@@ -20,7 +20,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -168,7 +167,7 @@ public class Safelock {
             var json = gson.fromJson(response, JsonObject.class);
 
             String neekeri = json.get("status_msg").getAsString();
-            String status  = json.get("status_overview").getAsString();
+            String status = json.get("status_overview").getAsString();
             String statusCode = json.get("status_code").getAsString();
 
             if (status.contains("success")) {
@@ -229,14 +228,14 @@ public class Safelock {
             if (valid) {
                 SocketClient.init(productKey);
 
-//                Virago.getInstance().getDiscordRPC().start();
-//
-//                Virago.getInstance().getDiscordRPC().getActivity()
-//                        .setDetails(
-//                                Virago.getInstance().getName()
-//                                        + " v" +
-//                                        Virago.getInstance().getVersion() + " | " + clientName);
-//                Virago.getInstance().getDiscordRPC().getCore().activityManager().updateActivity(Virago.getInstance().getDiscordRPC().getActivity());
+                Virago.getInstance().getDiscordRPC().start();
+
+                Virago.getInstance().getDiscordRPC().getActivity()
+                        .setDetails(
+                                Virago.getInstance().getName()
+                                        + " v" +
+                                        Virago.getInstance().getVersion() + " | " + clientName);
+                Virago.getInstance().getDiscordRPC().getCore().activityManager().updateActivity(Virago.getInstance().getDiscordRPC().getActivity());
 
                 Minecraft.getMinecraft().displayGuiScreen(new CustomGuiMainMenu());
             }

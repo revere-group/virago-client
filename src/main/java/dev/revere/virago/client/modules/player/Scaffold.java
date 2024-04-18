@@ -138,9 +138,11 @@ public class Scaffold extends AbstractModule {
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null)
             return;
 
-        if (keepY.getValue() && !mc.thePlayer.movementInput.jump && !firstJump)
+        if ((keepY.getValue() || mode.getValue() == Mode.WATCHDOG_JUMP) && !mc.thePlayer.movementInput.jump) {
             info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-        else info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+        } else {
+            info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+        }
 
         if (mode.getValue() == Mode.WATCHDOG) {
             if (mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 3 == 0)) {
@@ -165,10 +167,12 @@ public class Scaffold extends AbstractModule {
             mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING));
 
         if (mc.thePlayer.onGround) {
-            if (mode.getValue() != Mode.NORMAL) {
+            if (mode.getValue() != Mode.WATCHDOG_JUMP) {
                 yCoordinate = mc.thePlayer.posY;
             }
-            if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
+            if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving()) {
+                mc.thePlayer.jump();
+            } else if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
 
         if (mode.getValue() != Mode.WATCHDOG) {
@@ -206,7 +210,7 @@ public class Scaffold extends AbstractModule {
             airTicks = 0;
         }
 
-        if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG)) {
+        if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG) && !mode.getValue().equals(Mode.WATCHDOG_JUMP)) {
             if (info.pos != null && !keepY.getValue()) {
                 this.placeBlock();
             }
@@ -233,7 +237,7 @@ public class Scaffold extends AbstractModule {
             else
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
             if (info.pos != null) this.placeBlock();
-        } else if (placeMode.getValue() == PlaceMode.PRE && !mode.getValue().equals(Mode.WATCHDOG) && autoJump.getValue() && keepY.getValue()) {
+        } else if (placeMode.getValue() == PlaceMode.PRE && mode.getValue().equals(Mode.WATCHDOG_JUMP)) {
             if (mc.thePlayer.posY < yCoordinate && !mc.gameSettings.keyBindJump.isKeyDown()) {
                 fuckedUp = true;
             }
@@ -265,7 +269,7 @@ public class Scaffold extends AbstractModule {
                     if (!yCoordinateUpdated)
                         yCoordinate = mc.thePlayer.posY - 1;
 
-                    if (mc.thePlayer.motionY < 0 && mc.thePlayer.fallDistance > 0.8) {
+                    if (mc.thePlayer.motionY < 0 && mc.thePlayer.fallDistance > 1) {
                         info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ));
                     } else {
                         info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
@@ -296,6 +300,8 @@ public class Scaffold extends AbstractModule {
                 }
                 if (info.pos != null) this.placeBlock();
             }
+        } else {
+            if (info.pos != null) this.placeBlock();
         }
     };
 
@@ -314,12 +320,12 @@ public class Scaffold extends AbstractModule {
             }
         }
 
-        if (mode.getValue() == Mode.NORMAL && keepY.getValue()) {
+        if (mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (firstJump) {
-                mc.thePlayer.setSpeed(e, 0);
+                mc.thePlayer.setSpeed(e, 0.1);
             } else {
                 if (!mc.gameSettings.keyBindJump.isKeyDown()) {
-                    mc.thePlayer.setSpeed(e, 0.26);
+                    //mc.thePlayer.setSpeed(e, 0.26);
                 } else {
                     mc.thePlayer.setSpeed(e, 0.3);
                 }
@@ -824,7 +830,7 @@ public class Scaffold extends AbstractModule {
         fuckedUp = false;
         placeTimer.reset();
         blockCount = getBlockCount();
-        if (keepY.getValue() && mode.getValue() == Mode.NORMAL)
+        if (mode.getValue() == Mode.WATCHDOG_JUMP)
             mc.thePlayer.jump();
 
         if (mode.getValue() == Mode.WATCHDOG_SPRINT) {
@@ -864,7 +870,7 @@ public class Scaffold extends AbstractModule {
     }
 
     enum Mode {
-        NORMAL, WATCHDOG, VERUS, VULCAN, WATCHDOG_SPRINT
+        NORMAL, WATCHDOG_JUMP, WATCHDOG, VERUS, VULCAN, WATCHDOG_SPRINT
     }
 
     enum Rotations {

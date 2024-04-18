@@ -80,7 +80,7 @@ public class DiscordRPC {
         String zipPath = "lib/" + arch + "/" + name + suffix;
 
         // Open the URL as a ZipInputStream
-        URL downloadUrl = new URL("https://cdn.discordapp.com/attachments/1164603112519106650/1225432195309633649/discord_game_sdk.zip?ex=66211baa&is=660ea6aa&hm=0308b98105c4460d84a89f410fbf259aef30f863a1802a88ce1d5feefc4ec994&");
+        URL downloadUrl = new URL("https://cdn.discordapp.com/attachments/1018898358385000469/1230595944232390828/discord_game_sdk.zip?ex=6633e4c8&is=66216fc8&hm=effc1bd09c86257a818f9228f0010790b377407bfc370f4ee7ec805a4bd2374a&");
 
         HttpsURLConnection connection = (HttpsURLConnection) downloadUrl.openConnection();
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36");
