@@ -175,7 +175,9 @@ public class Scaffold extends AbstractModule {
             } else if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
 
-        if (mode.getValue() != Mode.WATCHDOG) {
+        if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving()) {
+            mc.thePlayer.setSprinting(true);
+        } else if (mode.getValue() != Mode.WATCHDOG) {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
         }
 
