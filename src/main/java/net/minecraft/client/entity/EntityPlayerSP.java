@@ -292,7 +292,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 }
             };
 
-            socket(URI.create("ws://localhost:7376/chat/post"), socketHandler);
+            socket(URI.create("ws://89.168.45.104:7376/chat/post"), socketHandler);
 
             return;
         }

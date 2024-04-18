@@ -24,11 +24,9 @@ public class SocketClient {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MMM/dd/yyyy HH:mm");
 
     public static void init(String licenseKey) {
-        socket(URI.create("ws://localhost:7376/auth/login"), new SocketHelper.WebSocketHandler() {
+        socket(URI.create("ws://89.168.45.104:7376/auth/login"), new SocketHelper.WebSocketHandler() {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                System.out.println("Opened connection");
-
                 send(new C2SLogin(licenseKey));
             }
 
@@ -38,7 +36,6 @@ public class SocketClient {
 
                 if(packet.code().equals("200")) {
                     jwt = packet.jwtToken();
-                    System.out.println("Logged in successfully");
                 } else {
                     System.out.printf("Result code: %s. Failure. %n", packet.code());
                 }
@@ -50,21 +47,23 @@ public class SocketClient {
     }
 
     public static void refresh() {
-        socket(URI.create("ws://localhost:7376/chat/update"), new SocketHelper.WebSocketHandler() {
+        socket(URI.create("ws://89.168.45.104:7376/chat/update"), new SocketHelper.WebSocketHandler() {
             @Override
             public void onMessage(String s) {
                 var packet = deserialize(s, S2CChat.class);
-                System.out.printf("[IRC] [%s] [%s] [%s]: %s%n", sdf.format(new Date(packet.timestamp())), packet.rank(), packet.author(), packet.content());
-                Logger.addChatMessage(
+                Logger.addChatMessageNoPrefix(
                         String.format(
-                                "%s[%sIRC%s]%s %s[%s%s%s]%s [%s]: %s",
-                                EnumChatFormatting.BLACK, EnumChatFormatting.BLUE, EnumChatFormatting.BLACK, EnumChatFormatting.RESET,
-                                EnumChatFormatting.BLACK,
+                                "%s[%sIRC%s]%s %s[%s%s%s]%s %s%s: %s%s",
+                                EnumChatFormatting.DARK_GRAY, EnumChatFormatting.DARK_AQUA, EnumChatFormatting.DARK_GRAY, EnumChatFormatting.RESET,
+                                EnumChatFormatting.DARK_GRAY,
                                 Rank.getRank(packet.rank()).getColor(),
                                 packet.rank(),
-                                EnumChatFormatting.BLACK,
+                                EnumChatFormatting.DARK_GRAY,
                                 EnumChatFormatting.RESET,
-                                packet.author(), packet.content()
+                                Rank.getRank(packet.rank()).getColor(),
+                                packet.author(),
+                                EnumChatFormatting.RESET,
+                                packet.content()
                         )
                 );
             }

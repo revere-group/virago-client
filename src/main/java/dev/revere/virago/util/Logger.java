@@ -61,4 +61,15 @@ public class Logger {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "[" + EnumChatFormatting.DARK_AQUA + Virago.getInstance().getName() + EnumChatFormatting.GRAY + "] " + EnumChatFormatting.RESET + message));
         }
     }
+
+    /**
+     * Sends a chat message to the player without the prefix
+     *
+     * @param message message to send
+     */
+    public static void addChatMessageNoPrefix(String message) {
+        if (message != null && Minecraft.getMinecraft().thePlayer != null) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(message));
+        }
+    }
 }
