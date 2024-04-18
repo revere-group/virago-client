@@ -2,7 +2,7 @@ ofFogType:1
 ofFogStart:0.8
 ofMipmapType:0
 ofOcclusionFancy:false
-ofSmoothFps:false
+ofSmoothFps:true
 ofSmoothWorld:true
 ofAoLevel:1.0
 ofClouds:0
@@ -38,7 +38,7 @@ ofStars:true
 ofSunMoon:true
 ofVignette:0
 ofChunkUpdates:1
-ofChunkUpdatesDynamic:false
+ofChunkUpdatesDynamic:true
 ofTime:0
 ofClearWater:false
 ofAaLevel:0
@@ -56,7 +56,7 @@ ofShowCapes:true
 ofNaturalTextures:false
 ofEmissiveTextures:true
 ofLazyChunkLoading:true
-ofRenderRegions:false
+ofRenderRegions:true
 ofSmartAnimations:true
 ofDynamicFov:true
 ofAlternateBlocks:true
@@ -67,6 +67,6 @@ ofCustomGuis:true
 ofShowGlErrors:true
 ofFullscreenMode:Default
 ofFastMath:true
-ofFastRender:false
+ofFastRender:true
 ofTranslucentBlocks:0
 key_of.key.zoom:46

@@ -1,6 +1,7 @@
 package dev.revere.virago.api.protection.rank;
 
 import lombok.Getter;
+import net.minecraft.util.EnumChatFormatting;
 
 /**
  * @author Remi
@@ -10,17 +11,19 @@ import lombok.Getter;
 @Getter
 public enum Rank {
 
-    USER("User"),
-    TESTER("Tester"),
-    STAFF("Staff"),
-    DEVELOPER("Developer")
+    USER("User", EnumChatFormatting.WHITE),
+    TESTER("Tester", EnumChatFormatting.YELLOW),
+    STAFF("Staff", EnumChatFormatting.LIGHT_PURPLE),
+    DEVELOPER("Developer", EnumChatFormatting.AQUA)
 
     ;
 
     private final String rankName;
+    private final EnumChatFormatting color;
 
-    Rank(String rankName) {
+    Rank(String rankName, EnumChatFormatting color) {
         this.rankName = rankName;
+        this.color = color;
     }
 
     /**

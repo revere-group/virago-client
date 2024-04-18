@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.protection.ViragoUser;
 import dev.revere.virago.api.protection.rank.Rank;
+import dev.revere.virago.api.socket.SocketClient;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import lombok.var;
@@ -226,6 +227,8 @@ public class Safelock {
             GuiLicenceKey.isAuthorized = valid;
             Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
             if (valid) {
+                SocketClient.init(productKey);
+
                 Virago.getInstance().getDiscordRPC().getActivity().setDetails(Virago.getInstance().getName() + " v" + Virago.getInstance().getVersion() + " | " + clientName);
                 Virago.getInstance().getDiscordRPC().getCore().activityManager().updateActivity(Virago.getInstance().getDiscordRPC().getActivity());
 

@@ -1,14 +1,15 @@
 package net.minecraft.client.entity;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.events.player.MoveEvent;
-import dev.revere.virago.client.events.player.PostMotionEvent;
-import dev.revere.virago.client.events.player.PreMotionEvent;
-import dev.revere.virago.client.events.player.UpdateEvent;
+import dev.revere.virago.api.event.handler.EventHandler;
+import dev.revere.virago.api.packet.C2SChat;
+import dev.revere.virago.api.socket.SocketHelper;
+import dev.revere.virago.client.events.player.*;
 import dev.revere.virago.client.modules.player.NoSlow;
 import dev.revere.virago.client.services.CommandService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.rotation.vec.Vector2f;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -54,6 +55,12 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.*;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+
+import static dev.revere.virago.api.socket.SocketClient.jwt;
+import static dev.revere.virago.api.socket.SocketHelper.socket;
 
 public class EntityPlayerSP extends AbstractClientPlayer
 {
@@ -271,6 +278,22 @@ public class EntityPlayerSP extends AbstractClientPlayer
     {
         if (message.startsWith(".")) {
             Virago.getInstance().getServiceManager().getService(CommandService.class).executeCommand(message);
+            return;
+        }
+        if (message.startsWith("#")) {
+            var socketHandler = new SocketHelper.WebSocketHandler() {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    if(jwt != null) {
+                        String pattern = "#\\s*";
+                        String cleaned = message.replaceAll(pattern, "");
+                        send(new C2SChat(cleaned, jwt));
+                    }
+                }
+            };
+
+            socket(URI.create("ws://localhost:7376/chat/post"), socketHandler);
+
             return;
         }
         this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
