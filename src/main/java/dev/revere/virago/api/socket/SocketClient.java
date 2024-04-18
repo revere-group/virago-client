@@ -32,12 +32,6 @@ public class SocketClient {
             }
 
             @Override
-            public void onClose(int i, String s, boolean b) {
-                Logger.addChatMessageNoPrefix("Connection closed. Reconnecting...");
-                init(licenseKey);
-            }
-
-            @Override
             public void onMessage(String s) {
                 var packet = deserialize(s, S2CLogin.class);
 
