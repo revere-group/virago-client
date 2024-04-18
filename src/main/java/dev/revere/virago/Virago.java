@@ -1,9 +1,12 @@
 package dev.revere.virago;
 
 import dev.revere.virago.api.event.core.EventBus;
+import dev.revere.virago.api.packet.C2SUpdate;
 import dev.revere.virago.api.protection.ViragoUser;
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.api.service.ServiceManager;
+import dev.revere.virago.api.socket.SocketClient;
+import dev.revere.virago.api.socket.SocketHelper;
 import dev.revere.virago.client.gui.panel.PanelGUI;
 import dev.revere.virago.client.services.*;
 import dev.revere.virago.util.Logger;
@@ -12,8 +15,14 @@ import dev.revere.virago.util.input.KeybindManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
+import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.File;
+import java.net.URI;
+
+import static dev.revere.virago.api.socket.SocketClient.getURL;
+import static dev.revere.virago.api.socket.SocketClient.key;
+import static dev.revere.virago.api.socket.SocketHelper.socket;
 
 /**
  * @author Remi
@@ -51,6 +60,20 @@ public class Virago {
         handleEvents();
         handleServices();
         handleManagers();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if(SocketClient.jwt != null) {
+                    socket(URI.create(getURL("/auth/logout")), new SocketHelper.WebSocketHandler() {
+                        @Override
+                        public void onOpen(ServerHandshake serverHandshake) {
+                            send(new C2SUpdate(key));
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**

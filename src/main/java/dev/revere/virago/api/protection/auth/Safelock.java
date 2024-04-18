@@ -229,8 +229,14 @@ public class Safelock {
             if (valid) {
                 SocketClient.init(productKey);
 
-                Virago.getInstance().getDiscordRPC().getActivity().setDetails(Virago.getInstance().getName() + " v" + Virago.getInstance().getVersion() + " | " + clientName);
-                Virago.getInstance().getDiscordRPC().getCore().activityManager().updateActivity(Virago.getInstance().getDiscordRPC().getActivity());
+//                Virago.getInstance().getDiscordRPC().start();
+//
+//                Virago.getInstance().getDiscordRPC().getActivity()
+//                        .setDetails(
+//                                Virago.getInstance().getName()
+//                                        + " v" +
+//                                        Virago.getInstance().getVersion() + " | " + clientName);
+//                Virago.getInstance().getDiscordRPC().getCore().activityManager().updateActivity(Virago.getInstance().getDiscordRPC().getActivity());
 
                 Minecraft.getMinecraft().displayGuiScreen(new CustomGuiMainMenu());
             }

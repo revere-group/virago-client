@@ -205,7 +205,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     private final PropertyMap profileProperties;
     private ServerData currentServerData;
     private TextureManager renderEngine;
-    private static Minecraft theMinecraft;
+    public static Minecraft theMinecraft;
     public PlayerControllerMP playerController;
     private boolean fullscreen;
     private boolean enableGLErrorChecking = true;

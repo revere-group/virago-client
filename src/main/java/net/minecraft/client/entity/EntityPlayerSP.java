@@ -59,6 +59,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 
+import static dev.revere.virago.api.socket.SocketClient.getURL;
 import static dev.revere.virago.api.socket.SocketClient.jwt;
 import static dev.revere.virago.api.socket.SocketHelper.socket;
 
@@ -292,7 +293,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 }
             };
 
-            socket(URI.create("ws://89.168.45.104:7376/chat/post"), socketHandler);
+            socket(URI.create(getURL("/chat/post")), socketHandler);
 
             return;
         }
