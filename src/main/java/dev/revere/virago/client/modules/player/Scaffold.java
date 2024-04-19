@@ -324,10 +324,12 @@ public class Scaffold extends AbstractModule {
 
         if (mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (firstJump) {
-                mc.thePlayer.setSpeed(e, 0.1);
+                mc.thePlayer.setSpeed(e, 0.05);
             } else {
                 if (!mc.gameSettings.keyBindJump.isKeyDown()) {
                     //mc.thePlayer.setSpeed(e, 0.26);
+                    mc.thePlayer.motionX *= 0.98;
+                    mc.thePlayer.motionZ *= 0.98;
                 } else {
                     mc.thePlayer.setSpeed(e, 0.3);
                 }
