@@ -53,6 +53,17 @@ public class RotationUtil {
         };
     }
 
+    public static float[] getRotationFromPosition(double x, double y, double z) {
+        double xDiff = x - Minecraft.getMinecraft().thePlayer.posX;
+        double zDiff = z - Minecraft.getMinecraft().thePlayer.posZ;
+        double yDiff = y - Minecraft.getMinecraft().thePlayer.posY - 1.2;
+
+        double dist = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
+        float yaw = (float) (Math.atan2(zDiff, xDiff) * 180.0D / 3.141592653589793D) - 90.0F;
+        float pitch = (float) -(Math.atan2(yDiff, dist) * 180.0D / 3.141592653589793D);
+        return new float[] { yaw, pitch };
+    }
+
     public static float[] getFixedRotations(float[] rotations, float[] lastRotations) {
         Minecraft mc = Minecraft.getMinecraft();
 

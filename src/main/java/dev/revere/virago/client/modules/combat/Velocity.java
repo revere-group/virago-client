@@ -9,6 +9,7 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.modules.movement.LongJump;
+import dev.revere.virago.client.modules.movement.Speed;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -61,7 +62,9 @@ public class Velocity extends AbstractModule {
      */
     private void handleEntityVelocityPacket(S12PacketEntityVelocity packet, PacketEvent event) {
         if (packet.getEntityID() == mc.thePlayer.getEntityId()) {
-            if (horizontal.getValue() == 0.0f && vertical.getValue() == 0.0f) {
+            if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Speed.class).isEnabled()) {
+                event.setCancelled(true);
+            } else if (horizontal.getValue() == 0.0f && vertical.getValue() == 0.0f) {
                 event.setCancelled(true);
             } else {
                 packet.setMotionX((int)((double)((float)packet.getMotionX() * horizontal.getValue()) / 100.0));

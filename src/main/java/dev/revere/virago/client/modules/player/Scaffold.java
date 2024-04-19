@@ -260,7 +260,7 @@ public class Scaffold extends AbstractModule {
                     yCoordinate = mc.thePlayer.posY;
                     yCoordinateUpdated = true;
                 }
-                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.fallDistance > 0.1) {
+                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                     if (info.pos != null) this.placeBlock();
                     firstJump = false;
@@ -799,10 +799,6 @@ public class Scaffold extends AbstractModule {
             isPlacing = false;
         } catch (Exception ignored) {
         }
-    }
-
-    private Block blockRelativeToPlayer(final double offsetX, final double offsetY, final double offsetZ) {
-        return mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(offsetX, offsetY, offsetZ)).getBlock();
     }
 
     private float processRotation(float value) {

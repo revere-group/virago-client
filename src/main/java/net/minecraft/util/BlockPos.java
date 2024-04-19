@@ -2,6 +2,8 @@ package net.minecraft.util;
 
 import com.google.common.collect.AbstractIterator;
 import java.util.Iterator;
+
+import dev.revere.virago.util.rotation.vec.Vector3d;
 import net.minecraft.entity.Entity;
 
 public class BlockPos extends Vec3i
@@ -147,6 +149,12 @@ public class BlockPos extends Vec3i
         int j = (int)(serialized << 64 - Y_SHIFT - NUM_Y_BITS >> 64 - NUM_Y_BITS);
         int k = (int)(serialized << 64 - NUM_Z_BITS >> 64 - NUM_Z_BITS);
         return new BlockPos(i, j, k);
+    }
+
+    public boolean equalsVector(Vector3d vec) {
+        return ((Math.floor(vec.getX()) == Math.floor(getX()) &&
+                Math.floor(vec.getY()) == Math.floor(getY()) &&
+                Math.floor(vec.getZ()) == Math.floor(getZ())));
     }
 
     public static Iterable<BlockPos> getAllInBox(BlockPos from, BlockPos to)

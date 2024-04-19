@@ -326,6 +326,11 @@ public class Block
         return this.blockHardness;
     }
 
+    public float getBlockHardness()
+    {
+        return this.blockHardness;
+    }
+
     protected Block setTickRandomly(boolean shouldTick)
     {
         this.needsRandomTick = shouldTick;
