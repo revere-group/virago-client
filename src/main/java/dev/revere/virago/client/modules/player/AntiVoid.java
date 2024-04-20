@@ -6,6 +6,7 @@ import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
+import dev.revere.virago.client.events.game.TickEvent;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.packet.TeleportEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
@@ -21,7 +22,6 @@ import net.minecraft.util.Vec3;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 @ModuleData(name = "Anti Void", description = "Prevents you from falling into the void.", type = EnumModuleType.PLAYER)
@@ -31,65 +31,58 @@ public class AntiVoid extends AbstractModule {
     private Vec3 position;
     private boolean overVoid;
     private boolean blinking;
+    private boolean worldLoaded;
+
 
     @EventHandler
     private final Listener<PacketEvent> packetEvent = event -> {
+        if(!(event.getEventState() == PacketEvent.EventState.SENDING))
+            return;
+
         C03PacketPlayer wrapper = event.getPacket();
 
-        if (!isBlockUnder()) {
-            Logger.addChatMessage("We are over the void.");
+        if(!isBlockUnder()) {
+            Logger.addChatMessage("we just ran this code and set it to true.");
             blinking = true;
             overVoid = true;
 
-            if (position != null && mc.thePlayer.fallDistance > 10) {
-                Logger.addChatMessage("Teleporting to position.");
+            Logger.addChatMessage(String.valueOf(mc.thePlayer.fallDistance));
+
+            if(position != null && mc.thePlayer.fallDistance > 10) {
                 mc.thePlayer.setPosition(position.xCoord, position.yCoord, position.zCoord);
+                Logger.addChatMessage("sent position packet.");
 
                 mc.thePlayer.motionY = (0 - 0.08) * 0.98F;
                 mc.thePlayer.motionX = 0;
                 mc.thePlayer.motionZ = 0;
 
-                Iterator<Packet> iterator = packets.iterator();
-                while (iterator.hasNext()) {
-                    Logger.addChatMessage("Sending packets.");
-                    Packet packet = iterator.next();
+                this.packets.forEach(packet -> {
+                    Logger.addChatMessage("Released packet.");
+                    this.packets.remove(packet);
                     mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
-                    iterator.remove();
-                }
+                });
 
                 blinking = false;
                 packets.clear();
             }
         } else {
-            if (blinking) {
-                Iterator<Packet> iterator = packets.iterator();
-                while (iterator.hasNext()) {
-                    Logger.addChatMessage("Sending packets.");
-                    Packet packet = iterator.next();
-                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
-                    iterator.remove();
-                }
-                event.setCancelled(false);
-                blinking = false;
-            }
-            if (overVoid) {
-                Logger.addChatMessage("set over void and blinking to false.");
+            if(overVoid) {
                 overVoid = false;
                 blinking = false;
             }
 
-
             position = new Vec3(wrapper.getPositionX(), wrapper.getPositionY(), wrapper.getPositionZ());
-            Logger.addChatMessage("we dont cancel here");
         }
     };
 
     @EventHandler
     private final Listener<PacketEvent> onPacket = event -> {
-        if (mc.thePlayer == null) return;
+        if(mc.thePlayer == null) return;
+        if(!blinking) return;
 
-        if (event.getEventState() == PacketEvent.EventState.SENDING && event.getPacket() instanceof C03PacketPlayer && blinking) {
-            Logger.addChatMessage("Cancelling packet.");
+        if (event.getEventState() == PacketEvent.EventState.SENDING && event.getPacket() instanceof C03PacketPlayer) {
+            Logger.addChatMessage(String.valueOf(blinking));
+            Logger.addChatMessage("packet was sent and we blinked it.");
             event.setCancelled(true);
             this.packets.add(event.getPacket());
         }
@@ -97,27 +90,41 @@ public class AntiVoid extends AbstractModule {
 
     @EventHandler
     private final Listener<WorldChangeEvent> onWorldChange = event -> {
+        Logger.addChatMessage("Called world change event.");
+        worldLoaded = false; // Reset the worldLoaded flag on world change
         blinking = false;
+        packets.clear();
     };
 
     @EventHandler
-    private final Listener<TeleportEvent> onTeleport = event -> {
-
+    private final Listener<TickEvent> onClientTick = event -> {
+        if (mc.theWorld != null && mc.thePlayer != null && mc.thePlayer.getEntityBoundingBox() != null) {
+            worldLoaded = true; // Set worldLoaded to true once the world has loaded
+        }
     };
 
     @Override
     public void onEnable() {
         super.onEnable();
         blinking = false;
+        packets.clear();
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
         blinking = false;
+        packets.clear();
     }
 
+
+
     private boolean isBlockUnder() {
+        // Check if the world is still loading
+        if (!worldLoaded) {
+            return true; // Assume there's a block under when world is still loading
+        }
+
         for (int offset = (int) mc.thePlayer.posY; offset > 0; offset -= 1) {
             AxisAlignedBB boundingBox = mc.thePlayer.getEntityBoundingBox().offset(0, -(mc.thePlayer.posY - offset), 0);
 
@@ -126,4 +133,6 @@ public class AntiVoid extends AbstractModule {
         }
         return false;
     }
+
+
 }
