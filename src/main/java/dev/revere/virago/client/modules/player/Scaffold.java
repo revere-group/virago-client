@@ -328,8 +328,8 @@ public class Scaffold extends AbstractModule {
             } else {
                 if (!mc.gameSettings.keyBindJump.isKeyDown()) {
                     //mc.thePlayer.setSpeed(e, 0.26);
-                    mc.thePlayer.motionX *= 0.98;
-                    mc.thePlayer.motionZ *= 0.98;
+                    mc.thePlayer.motionX *= 0.99;
+                    mc.thePlayer.motionZ *= 0.99;
                 } else {
                     mc.thePlayer.setSpeed(e, 0.3);
                 }
