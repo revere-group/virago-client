@@ -497,7 +497,7 @@ public class KillAura extends AbstractModule {
                 return false;
             }
 
-            if (teams.isTeammate(entity)) {
+            if (teams.isTeammate(entity) && teams.isEnabled()) {
                 return false;
             }
 

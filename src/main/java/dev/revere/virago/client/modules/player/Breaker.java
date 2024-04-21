@@ -9,7 +9,9 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.TeleportEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
+import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
+import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.player.PlayerUtil;
 import dev.revere.virago.util.rotation.RayCastUtil;
@@ -19,6 +21,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemShears;
@@ -26,11 +30,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
+
+import java.awt.*;
 
 /**
  * @author Remi
@@ -76,6 +79,28 @@ public class Breaker extends AbstractModule {
 
         this.destroy();
     };
+
+    @EventHandler
+    private final Listener<Render2DEvent> render2DEventListener = event -> {
+        if (block != null && damage > 0) {
+            ScaledResolution resolution = new ScaledResolution(mc);
+            FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
+
+            double percentage = damage * 100;
+            String progressText = "Progress: " + String.format("%.0f%%", percentage);
+            int posX = resolution.getScaledWidth() / 2 - (font.getProductSans().getStringWidth(progressText) / 2);
+            int posY = resolution.getScaledHeight() / 2 - font.getProductSans().getHeight() - 10;
+
+            float percentage2 = (float) ((Math.min(percentage, 100) / 100) / 3f);
+
+            font.getProductSans().drawString(progressText, posX + 1, posY, 0);
+            font.getProductSans().drawString(progressText, posX - 1, posY, 0);
+            font.getProductSans().drawString(progressText, posX, posY + 1, 0);
+            font.getProductSans().drawString(progressText, posX, posY - 1, 0);
+            font.getProductSans().drawString(progressText, posX, posY, new Color(Color.HSBtoRGB(percentage2, 1.0F, 1.0F)).getRGB());
+        }
+    };
+
 
     @EventHandler
     private final Listener<TeleportEvent> teleportEventListener = event -> {
