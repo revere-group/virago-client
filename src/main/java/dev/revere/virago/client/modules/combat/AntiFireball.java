@@ -9,6 +9,7 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.rotation.RotationUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFireball;
 
@@ -30,8 +31,17 @@ public class AntiFireball extends AbstractModule {
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
         KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
         EntityFireball fireball = getFireball();
+        if (fireball == null) return;
 
-        if (fireball != null && killAura.getSingleTarget() == null) {
+        float[] rotations = RotationUtil.getRotationFromPosition(fireball.posX, fireball.posY, fireball.posZ);
+        event.setYaw(rotations[0]);
+        event.setPitch(rotations[1]);
+
+        mc.thePlayer.renderYawOffset = rotations[0];
+        mc.thePlayer.rotationYawHead = rotations[0];
+        mc.thePlayer.rotationPitchHead = rotations[1];
+
+        if (killAura.getSingleTarget() == null) {
             mc.thePlayer.swingItem();
             mc.playerController.attackEntity(mc.thePlayer, fireball);
         }

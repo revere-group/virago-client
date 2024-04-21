@@ -39,7 +39,6 @@ public class AntiVoid extends AbstractModule {
 
         if (!isBlockUnder(30)) {
             if (mc.thePlayer.fallDistance < 8) {
-                Logger.addChatMessage("Falling into the void, cancelling packet.");
                 event.setCancelled(true);
                 packets.add(event.getPacket());
             } else {
@@ -55,7 +54,6 @@ public class AntiVoid extends AbstractModule {
         } else {
             position = new Vec3(wrapper.getPositionX(), wrapper.getPositionY(), wrapper.getPositionZ());
             if (!packets.isEmpty()) {
-                Logger.addChatMessage("Sending " + packets.size() + " packets.");
                 packets.forEach(packet -> {
                     mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(packet);
                 });
@@ -66,14 +64,12 @@ public class AntiVoid extends AbstractModule {
 
     @EventHandler
     private final Listener<TeleportEvent> teleportEventListener = event -> {
-        Logger.addChatMessage("Called teleport event.");
         worldLoaded = false;
         packets.clear();
     };
 
     @EventHandler
     private final Listener<WorldChangeEvent> onWorldChange = event -> {
-        Logger.addChatMessage("Called world change event.");
         worldLoaded = false;
         packets.clear();
     };
