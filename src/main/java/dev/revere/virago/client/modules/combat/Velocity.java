@@ -10,6 +10,7 @@ import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.modules.movement.LongJump;
 import dev.revere.virago.client.modules.movement.Speed;
+import dev.revere.virago.client.modules.player.Breaker;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;

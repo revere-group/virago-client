@@ -113,6 +113,7 @@ public class Virago {
         this.serviceManager.addService(new ConfigService());
         this.serviceManager.addService(new AltService());
         this.serviceManager.addService(new FriendService());
+        this.serviceManager.addService(new CheckService());
         this.serviceManager.getServices().values().forEach(IService::initService);
         this.serviceManager.getServices().values().forEach(IService::startService);
     }

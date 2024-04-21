@@ -119,6 +119,9 @@ public class KillAura extends AbstractModule {
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
         setMetaData("R: " + range.getValue().floatValue() + " APS: " + aps.getValue().floatValue());
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
+
         this.target = this.getSingleTarget();
 
         if (target == null) {
@@ -195,6 +198,8 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
+            return;
         this.postAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.POST) && this.hitTimerDone()) {
             this.attack(this.target);
@@ -301,9 +306,6 @@ public class KillAura extends AbstractModule {
         if (e == null) {
             return;
         }
-
-        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
-            return;
 
         mc.thePlayer.swingItem();
         mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));

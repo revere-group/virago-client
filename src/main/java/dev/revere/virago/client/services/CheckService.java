@@ -6,6 +6,7 @@ import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.client.events.game.TickEvent;
+import dev.revere.virago.client.modules.misc.AntiCheat;
 import dev.revere.virago.util.Logger;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -53,6 +54,8 @@ public class CheckService implements IService {
      */
     @EventHandler
     private final Listener<TickEvent> tickEventListener = event -> {
+        AntiCheat antiCheat = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(AntiCheat.class);
+        if (!antiCheat.isEnabled()) return;
         for (Entity entity : Minecraft.getMinecraft().theWorld.getLoadedEntityList()) {
             if (entity instanceof EntityPlayer) {
                 for (AbstractCheck check : checksHashMap.values()) {
