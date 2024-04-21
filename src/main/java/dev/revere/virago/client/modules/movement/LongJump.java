@@ -9,28 +9,19 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.MoveEvent;
-import dev.revere.virago.client.events.player.PostMotionEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
-import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.FontService;
-import dev.revere.virago.client.services.NotificationService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
+import dev.revere.virago.util.player.InventoryUtil;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.network.Packet;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3;
-
-import java.util.ArrayList;
-import java.util.List;
+import net.minecraft.util.MathHelper;
 
 /**
  * @author Remi
@@ -59,12 +50,66 @@ public class LongJump extends AbstractModule {
     private boolean canLongJump = false;
     private boolean check = false;
 
+    private double moveSpeed = 0;
+    private float yawAtDamage;
+    private int tick;
+
     private final TimerUtil timer = new TimerUtil();
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
         switch (mode.getValue()) {
             case WATCHDOG:
+                if (mc.thePlayer.onGround) {
+                    event.setPitch(90);
+                    event.setYaw(180);
+                    mc.thePlayer.rotationPitchHead = 90;
+                    mc.thePlayer.rotationYawHead = 180;
+                    mc.thePlayer.renderYawOffset = 180;
+                }
+
+                int item = InventoryUtil.findItem(Items.fire_charge);
+
+                if (item == -1) return;
+
+                tick++;
+
+                mc.thePlayer.inventory.currentItem = item;
+
+                if (tick == 5) {
+                    mc.thePlayer.jump();
+                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem());
+                }
+
+                if (mc.thePlayer.fallDistance > 0) {
+                    mc.thePlayer.motionY += 0.02;
+                }
+
+                if (mc.thePlayer.onGround && timer.hasTimeElapsed(400L)) {
+                    toggleSilent();
+                }
+                break;
+            case VERUS:
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.rotationPitch = 90.0f;
+                }
+                if (timer.hasTimeElapsed(10, true)) {
+                    int fireballSlot = -1;
+                    for (int i = 0; i < 9; i++) {
+                        ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
+                        if (stack != null && (stack.getItem().getUnlocalizedName().equalsIgnoreCase("item.fireball") || stack.getItem().getUnlocalizedName().equalsIgnoreCase("item.firecharge"))) {
+                            fireballSlot = i;
+                            break;
+                        }
+                    }
+                    if (fireballSlot != -1) {
+                        mc.thePlayer.inventory.currentItem = fireballSlot;
+                        mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem());
+                        if (timer.hasTimeElapsed(100L)) {
+                            mc.thePlayer.rotationPitch = 0f;
+                        }
+                    }
+                }
                 break;
             case SPARTAN:
                 if (!this.spartanCheck && spartanCanLongJump) {
@@ -94,7 +139,7 @@ public class LongJump extends AbstractModule {
                     if (this.timer.hasTimeElapsed(2000L)) {
                         timer.reset();
                         Logger.addChatMessage("Toggle");
-                        toggle();
+                        toggleSilent();
                     }
                 }
 
@@ -107,6 +152,18 @@ public class LongJump extends AbstractModule {
                 }
                 break;
             case FIREBALL:
+                int fireballSlot = -1;
+                for (int i = 0; i < 9; i++) {
+                    ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
+                    if (stack != null && (stack.getItem().getUnlocalizedName().equalsIgnoreCase("item.fireball") || stack.getItem().getUnlocalizedName().equalsIgnoreCase("item.firecharge"))) {
+                        fireballSlot = i;
+                        break;
+                    }
+                }
+                if (fireballSlot != -1) {
+                    mc.thePlayer.inventory.currentItem = fireballSlot;
+                    mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem());
+                }
                 break;
         }
     };
@@ -173,6 +230,12 @@ public class LongJump extends AbstractModule {
     private final Listener<MoveEvent> moveEventListener = event -> {
         switch (mode.getValue()) {
             case WATCHDOG:
+                if (mc.thePlayer.hurtTime > 7) {
+                    mc.thePlayer.setSpeed(event, 1);
+                }
+                if (mc.thePlayer.fallDistance == 1) {
+                    mc.thePlayer.setSpeed(event, 0.7);
+                }
                 break;
             case SPARTAN:
                 if (!spartanCheck && spartanCanLongJump) {
@@ -183,24 +246,51 @@ public class LongJump extends AbstractModule {
                     event.setZ(0);
                 }
                 break;
+            case VERUS:
+                if (mc.thePlayer.hurtTime > 0) {
+                    mc.thePlayer.rotationPitch = 0f;
+                    mc.thePlayer.setSpeed(event, 1.2);
+                    toggleSilent();
+                }
+                break;
             case FIREBALL:
+                if (mc.thePlayer.hurtTime >= 7) {
+                    mc.thePlayer.setSpeed(event, 1.2);
+                    toggleSilent();
+                }
                 break;
         }
     };
 
     @Override
     public void onEnable() {
-        if (mode.getValue() == Mode.WATCHDOG) {
-            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.ERROR, "Disabled as this module does not bypass.", this.getName());
-            toggleSilent();
-        }
         this.spartanJumps = 0;
         this.spartanCheck = true;
         this.canLongJump = false;
         this.check = false;
+        this.tick = 0;
         this.timer.reset();
         super.onEnable();
     }
+
+    public int getItemIndex() {
+        return mc.thePlayer.inventory.currentItem;
+    }
+
+    public ItemStack getItemStack() {
+        return (mc.thePlayer == null || mc.thePlayer.inventoryContainer == null ? null : mc.thePlayer.inventoryContainer.getSlot(getItemIndex() + 36).getStack());
+    }
+
+    public void strafe(final double speed, float yaw) {
+        if (!mc.thePlayer.isMoving()) {
+            return;
+        }
+
+        yaw = (float) Math.toRadians(yaw);
+        mc.thePlayer.motionX = -MathHelper.sin(yaw) * speed;
+        mc.thePlayer.motionZ = MathHelper.cos(yaw) * speed;
+    }
+
 
     @Override
     public void onDisable() {
@@ -210,6 +300,7 @@ public class LongJump extends AbstractModule {
 
     enum Mode {
         WATCHDOG,
+        VERUS,
         SPARTAN,
         FIREBALL
     }

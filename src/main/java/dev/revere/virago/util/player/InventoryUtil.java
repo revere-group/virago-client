@@ -292,6 +292,31 @@ public class InventoryUtil {
         return stack.stackSize >= 1 && validateBlock(Block.getBlockFromItem(stack.getItem()), BlockAction.PLACE);
     }
 
+    /**
+     * Find the item in the player's hotbar
+     *
+     * @param item The item to find
+     * @return The slot of the item
+     */
+    public static int findItem(final Item item) {
+        for (int i = 0; i < 9; i++) {
+            final ItemStack itemStack = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(i);
+
+            if (itemStack == null) {
+                if (item == null) {
+                    return i;
+                }
+                continue;
+            }
+
+            if (itemStack.getItem() == item) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public enum BlockAction {
         PLACE, REPLACE, PLACE_ON
     }

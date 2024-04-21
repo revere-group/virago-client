@@ -87,7 +87,7 @@ public class Speed extends AbstractModule {
                     }*/
                     if(mc.thePlayer.onGround || prevOnGround) {
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
-                    } else if (mc.thePlayer.hurtTime > 8) {
+                    } else if (mc.thePlayer.hurtTime == 9) {
                         Logger.addChatMessage("Attempting to disable strafe check!");
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
                     } else {
