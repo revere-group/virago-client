@@ -19,34 +19,31 @@ import net.minecraft.client.shader.Framebuffer;
 @ModuleData(name = "Bloom", description = "Adds a bloom effect to the game", type = EnumModuleType.RENDER)
 public class Bloom extends AbstractModule {
 
-    private final Setting<Boolean> bloom = new Setting<>("Bloom", true);
-
     private final Setting<Integer> bloomIterations = new Setting<>("Bloom Iterations", 1)
             .minimum(1)
             .maximum(5)
-            .incrementation(1)
-            .visibleWhen(bloom::getValue);
+            .incrementation(1);
 
     private final Setting<Integer> bloomOffset = new Setting<>("Bloom Offset", 1)
             .minimum(1)
             .maximum(3)
-            .incrementation(1)
-            .visibleWhen(bloom::getValue);
+            .incrementation(1);
 
     private Framebuffer blurFramebuffer = new Framebuffer(1, 1, false);
 
     public void applyBlurEffect() {
-        if (bloom.getValue() && mc.thePlayer != null) {
-            blurFramebuffer = RenderUtils.createFrameBuffer(blurFramebuffer);
-            blurFramebuffer.framebufferClear();
-            blurFramebuffer.bindFramebuffer(false);
+        if(mc.thePlayer == null)
+            return;
 
-            Virago.getInstance().getEventBus().call(new ShaderEvent());
+        blurFramebuffer = RenderUtils.createFrameBuffer(blurFramebuffer);
+        blurFramebuffer.framebufferClear();
+        blurFramebuffer.bindFramebuffer(false);
 
-            blurFramebuffer.unbindFramebuffer();
+        Virago.getInstance().getEventBus().call(new ShaderEvent());
 
-            BloomUtil.renderBlur(blurFramebuffer.framebufferTexture, bloomIterations.getValue(), bloomOffset.getValue());
-        }
+        blurFramebuffer.unbindFramebuffer();
+
+        BloomUtil.renderBlur(blurFramebuffer.framebufferTexture, bloomIterations.getValue(), bloomOffset.getValue());
     }
 
     @Override
