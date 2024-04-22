@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -57,6 +58,9 @@ public class ESP extends AbstractModule {
             .minimum(1)
             .maximum(10)
             .incrementation(1);
+
+    public final Setting<Boolean> personProperty = new Setting<>("Person", false);
+    private final Setting<PersonMode> personModeProperty = new Setting<>("Person Mode", PersonMode.ZIUE).visibleWhen(personProperty::getValue);
 
     public int getBoxColor() {
         return ColorUtil.getColor(true);
@@ -107,6 +111,24 @@ public class ESP extends AbstractModule {
             } else if (glow.getValue()) {
                 RoundedUtils.shadowGradient(minX, minY, width, height, 1, innerGlowIntensity.getValue(), 0.5f, new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), new Color(ColorUtil.getColor(true)), true);
             }
+
+            if (personProperty.getValue()) {
+                switch (personModeProperty.getValue()) {
+                    case ZION:
+                        mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/zion.jpg"));
+                        break;
+                    case ZIUE:
+                        mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/ziue.png"));
+                        break;
+                    case NTDI:
+                        mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/ntdi.png"));
+                        break;
+                }
+
+                GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                Gui.drawModalRectWithCustomSizedTexture((int) minX, (int) minY, 0, 0, (int) width, (int) height, width, height);
+            }
+
             switch (boxModeProperty.getValue()) {
                 case BOX: {
                     RenderUtils.pre3D();
@@ -382,6 +404,9 @@ public class ESP extends AbstractModule {
         }
     };
 
+    private double interpret(double newPosition, double oldPosition) {
+        return oldPosition + (newPosition - oldPosition) * mc.timer.renderPartialTicks;
+    }
 
     private void convertTo2D(AxisAlignedBB interpolatedBB, double[][] vectors, float[] coords) {
         if (coords == null || vectors == null || interpolatedBB == null) return;
@@ -418,6 +443,22 @@ public class ESP extends AbstractModule {
         coords[1] = minY;
         coords[2] = maxX;
         coords[3] = maxY;
+    }
+
+    @AllArgsConstructor
+    public enum PersonMode {
+        ZIUE("ziue"),
+        ZION("Zion"),
+        NTDI("NTDI"),
+
+        ;
+
+        private final String personName;
+
+        @Override
+        public String toString() {
+            return personName;
+        }
     }
 
     @AllArgsConstructor

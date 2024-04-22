@@ -125,7 +125,7 @@ public class Breaker extends AbstractModule {
                         continue;
                     }
 
-                    final MovingObjectPosition movingObjectPosition = RayCastUtil.rayCast(RotationUtil.calculate(position), 3.5f);
+                    final MovingObjectPosition movingObjectPosition = RayCastUtil.rayCast(RotationUtil.calculate(position), 3f);
                     if (movingObjectPosition == null || movingObjectPosition.hitVec.distanceTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)) > 3.5) {
                         continue;
                     }
@@ -143,7 +143,7 @@ public class Breaker extends AbstractModule {
                         for (int addX = -1; addX <= 1; addX++) {
                             for (int addY = 0; addY <= 1; addY++) {
                                 for (int addZ = -1; addZ <= 1; addZ++) {
-                                    if (empty || (mc.thePlayer.getDistanceSq(position.getX() + addX, position.getY() + addY, position.getZ() + addZ) + 3 > 3.5 * 3.5))
+                                    if (empty || (mc.thePlayer.getDistanceSq(position.getX() + addX, position.getY() + addY, position.getZ() + addZ) + 3 > 3 * 3))
                                         continue;
 
                                     if (Math.abs(addX) + Math.abs(addY) + Math.abs(addZ) != 1) {

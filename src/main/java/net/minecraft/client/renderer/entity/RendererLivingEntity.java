@@ -6,6 +6,8 @@ import java.util.List;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.render.RenderNametagEvent;
+import dev.revere.virago.client.modules.render.ESP;
+import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -353,6 +355,10 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
                 GlStateManager.alphaFunc(516, 0.003921569F);
             }
 
+            ESP esp = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(ESP.class);
+            if (entitylivingbaseIn instanceof EntityPlayer && esp.personProperty.getValue() && esp.isEnabled()) {
+                return;
+            }
             this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
 
             if (flag1)

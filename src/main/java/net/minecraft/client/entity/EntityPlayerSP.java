@@ -8,6 +8,7 @@ import dev.revere.virago.client.events.player.*;
 import dev.revere.virago.client.modules.player.NoSlow;
 import dev.revere.virago.client.services.CommandService;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.rotation.vec.Vector2f;
 import lombok.var;
 import net.minecraft.client.Minecraft;
