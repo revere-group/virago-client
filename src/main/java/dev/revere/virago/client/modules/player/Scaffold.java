@@ -18,6 +18,8 @@ import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
+import dev.revere.virago.util.rotation.RayCastUtil;
+import dev.revere.virago.util.rotation.vec.Vector2f;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -110,6 +112,8 @@ public class Scaffold extends AbstractModule {
 
     private TimerUtil placeTimer = new TimerUtil();
 
+    private Vector2f rotationsVec;
+
     private int blockCount = 0;
     private int airTicks;
 
@@ -142,7 +146,7 @@ public class Scaffold extends AbstractModule {
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null)
             return;
 
-        if (!firstJump) {
+        if (!firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (!mc.thePlayer.movementInput.jump) {
                 if (!yCoordinateUpdated)
                     yCoordinate = mc.thePlayer.posY - 1;
@@ -164,11 +168,11 @@ public class Scaffold extends AbstractModule {
             info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
         }
 
-        if (mc.thePlayer.posY < yCoordinate && !mc.gameSettings.keyBindJump.isKeyDown()) {
+        if (mc.thePlayer.posY < yCoordinate && !mc.gameSettings.keyBindJump.isKeyDown() && mode.getValue() == Mode.WATCHDOG_JUMP) {
             fuckedUp = true;
         }
 
-        if (firstJump) {
+        if (firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (!yCoordinateUpdated) {
                 mc.thePlayer.jump();
                 yCoordinate = mc.thePlayer.posY;
@@ -183,7 +187,7 @@ public class Scaffold extends AbstractModule {
             }
         }
 
-        if (!firstJump) {
+        if (!firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
                 if (info.pos != null) this.placeBlock();
@@ -192,7 +196,7 @@ public class Scaffold extends AbstractModule {
         }
 
 
-        if (fuckedUp) {
+        if (fuckedUp && mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (!fuckedUpAndJumped && !mc.gameSettings.keyBindJump.isKeyDown()) {
                 mc.thePlayer.jump();
                 fuckedUpAndJumped = true;
@@ -409,7 +413,7 @@ public class Scaffold extends AbstractModule {
     }
 
     private boolean sendPlace() {
-        boolean placed = mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, getPlacingItem(), info.getPos(), info.getFacing(), getVec3(info));
+        boolean placed = mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, getPlacingItem(), info.getPos(), info.getFacing(), getHitVec(info));
         if (placed) {
             if (mode.getValue() == Mode.VULCAN) {
                 if (!this.sneaking && !this.snuckThisTick) {
@@ -438,6 +442,48 @@ public class Scaffold extends AbstractModule {
 
     private ItemStack getPlacingItem() {
         return (itemMode.getValue() == ItemMode.SPOOF ? stackToPlace : (mc.thePlayer.getHeldItem() != null ? mc.thePlayer.getHeldItem() : null));
+    }
+
+    private Vec3 getHitVec(BlockInfo info) {
+        /* Correct HitVec */
+        Vec3 hitVec = new Vec3(info.getPos().getX() + Math.random(), info.getPos().getY() + Math.random(), info.getPos().getZ() + Math.random());
+
+        final MovingObjectPosition movingObjectPosition = RayCastUtil.rayCast(rotationsVec, mc.playerController.getBlockReachDistance());
+
+        EnumFacing enumFacing = info.getFacing();
+
+        switch (enumFacing) {
+            case DOWN:
+                hitVec.yCoord = info.getPos().getY();
+                break;
+
+            case UP:
+                hitVec.yCoord = info.getPos().getY() + 1;
+                break;
+
+            case NORTH:
+                hitVec.zCoord = info.getPos().getZ();
+                break;
+
+            case EAST:
+                hitVec.xCoord = info.getPos().getX() + 1;
+                break;
+
+            case SOUTH:
+                hitVec.zCoord = info.getPos().getZ() + 1;
+                break;
+
+            case WEST:
+                hitVec.xCoord = info.getPos().getX();
+                break;
+        }
+
+        if (movingObjectPosition != null && movingObjectPosition.getBlockPos().equals(info.getPos()) &&
+                movingObjectPosition.sideHit == enumFacing) {
+            hitVec = movingObjectPosition.hitVec;
+        }
+
+        return hitVec;
     }
 
     private Vec3 getVec3(BlockInfo info) {
@@ -553,6 +599,7 @@ public class Scaffold extends AbstractModule {
                 pitch = processRotation(rots[1]);
                 e.setYaw(mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = finalRotationYaw = yaw);
                 e.setPitch(mc.thePlayer.rotationPitchHead = finalRotationPitch = pitch);
+                rotationsVec = new Vector2f(yaw, pitch);
                 break;
             case AAC:
                 rots = getAACRotations();
@@ -560,6 +607,7 @@ public class Scaffold extends AbstractModule {
                 pitch = processRotation(rots[1]);
                 e.setYaw(mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = finalRotationYaw = yaw);
                 e.setPitch(mc.thePlayer.rotationPitchHead = finalRotationPitch = pitch);
+                rotationsVec = new Vector2f(yaw, pitch);
                 break;
             case BRUTE_FORCE:
                 rots = getBruteForceRotations(info);
@@ -567,6 +615,7 @@ public class Scaffold extends AbstractModule {
                 pitch = processRotation(rots[1]);
                 e.setYaw(mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = finalRotationYaw = yaw);
                 e.setPitch(mc.thePlayer.rotationPitchHead = finalRotationPitch = pitch);
+                rotationsVec = new Vector2f(yaw, pitch);
                 break;
             case SNAP:
                 if (isPlacing) {
@@ -575,6 +624,7 @@ public class Scaffold extends AbstractModule {
                     pitch = processRotation(rots[1]);
                     e.setYaw(mc.thePlayer.rotationYawHead = finalRotationYaw = yaw);
                     e.setPitch(mc.thePlayer.rotationPitchHead = finalRotationPitch = pitch);
+                    rotationsVec = new Vector2f(yaw, pitch);
                 } else {
                     e.setYaw(mc.thePlayer.rotationYawHead = finalRotationYaw = mc.thePlayer.rotationYaw);
                     e.setPitch(mc.thePlayer.rotationPitchHead = finalRotationPitch = mc.thePlayer.rotationPitch);
@@ -583,18 +633,24 @@ public class Scaffold extends AbstractModule {
             case WATCHDOG:
                 rots = getRotations(info);
                 //pitch = processRotation(rots[1]);
-                double xDiff = info.getPos().getX() - mc.thePlayer.posX;
+                /*double xDiff = info.getPos().getX() - mc.thePlayer.posX;
                 double yDiff = info.getPos().getY() - mc.thePlayer.posY - 1.7;
                 double zDiff = info.getPos().getZ() - mc.thePlayer.posZ;
                 double dist = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
                 yaw = (float) (Math.atan2(zDiff, xDiff) * 180.0D / Math.PI) - 90.0F;
-                //pitch = (float) -(Math.atan2(yDiff, dist) * 180.0D / Math.PI);
+                pitch = (float) -(Math.atan2(yDiff, dist) * 180.0D / Math.PI);
                 pitch = 82;
                 yaw = processRotation(mc.thePlayer.getDirection() - 150);
-                yaw = processRotation(yaw);
+                yaw = processRotation(mc.thePlayer.rotationYaw + 180.0F);
+                */
+
+                pitch = (float)(81.0 + Math.random() / 100.0);
+                yaw = processRotation(rots[0]);
                 pitch = processRotation((mc.thePlayer.movementInput.jump ? 90 : pitch));
-                e.setYaw(mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = finalRotationYaw = yaw);
+                mc.thePlayer.renderYawOffset = mc.thePlayer.getDirection() + 180.0F;
+                e.setYaw(mc.thePlayer.rotationYawHead = finalRotationYaw = yaw);
                 e.setPitch(mc.thePlayer.rotationPitchHead = finalRotationPitch = pitch);
+                rotationsVec = new Vector2f(yaw, pitch);
                 break;
         }
     }
