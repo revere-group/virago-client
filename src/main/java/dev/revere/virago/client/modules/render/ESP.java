@@ -123,6 +123,9 @@ public class ESP extends AbstractModule {
                     case NTDI:
                         mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/ntdi.png"));
                         break;
+                    case BRANDON:
+                        mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/brandon.png"));
+                        break;
                 }
 
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -450,6 +453,7 @@ public class ESP extends AbstractModule {
         ZIUE("ziue"),
         ZION("Zion"),
         NTDI("NTDI"),
+        BRANDON("Brandon")
 
         ;
 
