@@ -213,7 +213,7 @@ public class KillAura extends AbstractModule {
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
             return;
         if (target != null)  {
-            //this.targetAnimation(this.target);
+            this.targetAnimation(this.target);
         }
     };
 

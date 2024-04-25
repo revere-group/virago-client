@@ -143,7 +143,8 @@ public class Scaffold extends AbstractModule {
     @EventHandler
     private final Listener<UpdateEvent> updateEventListener = e -> {
         if (mc.thePlayer == null || mc.theWorld == null) this.toggle();
-        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null)
+        KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
+        if (killAura.getSingleTarget() != null && killAura.isEnabled())
             return;
 
         if (!firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
@@ -224,7 +225,10 @@ public class Scaffold extends AbstractModule {
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = e -> {
-        if (info == null || info.pos == null || Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class).getSingleTarget() != null)
+        KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
+        if (killAura.getSingleTarget() != null && killAura.isEnabled()) return;
+
+        if (info == null || info.pos == null)
             return;
         
         if (!isReplaceable(info)) return;
@@ -251,10 +255,10 @@ public class Scaffold extends AbstractModule {
 
         stackToPlace = setStackToPlace();
 
-        if (mode.getValue() == Mode.WATCHDOG_SPRINT) { // bps: 5.4
-            if (mc.thePlayer.ticksExisted % 2 == 0 && mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
-                e.setY(mc.thePlayer.posY + 0.000001);
-            }
+        if (mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.ticksExisted % 2 == 0 && !mc.gameSettings.keyBindJump.isKeyDown()) {
+            e.setY(mc.thePlayer.posY + 0.000001);
+        } else if (mc.gameSettings.keyBindJump.isKeyDown()) {
+            e.setY(mc.thePlayer.posY);
         }
 
         if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump/*mc.thePlayer.isMoving()*/) {
@@ -365,8 +369,12 @@ public class Scaffold extends AbstractModule {
             }
         }
 
-        if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.onGround) {
-            mc.thePlayer.setSpeed(e, 0.254);
+        if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
+            if(isGoingDiagonally()) {
+                mc.thePlayer.setSpeed(e, 0.26);
+            } else {
+                mc.thePlayer.setSpeed(e, 0.27);
+            }
         }
     };
 
@@ -645,7 +653,7 @@ public class Scaffold extends AbstractModule {
                 yaw = processRotation(mc.thePlayer.rotationYaw + 180.0F);
                 */
 
-                yaw = processRotation(mc.thePlayer.getDirection() - 150);
+                yaw = processRotation(mc.thePlayer.getDirection() + 180.0F);
                 pitch = (float)(81.0 + Math.random() / 100.0);
                 pitch = processRotation((mc.thePlayer.movementInput.jump ? 90 : pitch));
                 mc.thePlayer.renderYawOffset = mc.thePlayer.getDirection() + 180.0F;
