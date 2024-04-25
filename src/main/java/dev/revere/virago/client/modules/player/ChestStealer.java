@@ -35,7 +35,7 @@ public class ChestStealer extends AbstractModule {
 
     private final Setting<Boolean> ignoreTrash = new Setting<>("Ignore Trash", true).describedBy("Ignore trash items in containers");
 
-    private final TimerUtil timerUtil = new TimerUtil();
+    private final TimerUtil timer = new TimerUtil();
     private long nextClick;
     private int lastClick;
     private int lastSteal;
@@ -50,7 +50,7 @@ public class ChestStealer extends AbstractModule {
                 return;
             }
 
-            if (!this.timerUtil.hasTimeElapsed(this.nextClick)) {
+            if (!this.timer.hasTimeElapsed(this.nextClick)) {
                 return;
             }
 
@@ -69,7 +69,7 @@ public class ChestStealer extends AbstractModule {
 
                 this.nextClick = Math.round(MathUtils.randomNumber(this.maxDelay.getValue().intValue(), this.minDelay.getValue().intValue()));
                 mc.playerController.windowClick(container.windowId, i, 0, 1, mc.thePlayer);
-                this.timerUtil.reset();
+                this.timer.reset();
                 this.lastClick = 0;
                 return;
             }
