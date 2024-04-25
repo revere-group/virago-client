@@ -61,19 +61,16 @@ public class Virago {
         handleServices();
         handleManagers();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                if(SocketClient.jwt != null) {
-                    socket(URI.create(getURL("/auth/logout")), new SocketHelper.WebSocketHandler() {
-                        @Override
-                        public void onOpen(ServerHandshake serverHandshake) {
-                            send(new C2SUpdate(key));
-                        }
-                    });
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if(SocketClient.jwt != null) {
+                socket(URI.create(getURL("/auth/logout")), new SocketHelper.WebSocketHandler() {
+                    @Override
+                    public void onOpen(ServerHandshake serverHandshake) {
+                        send(new C2SUpdate(key));
+                    }
+                });
             }
-        });
+        }));
     }
 
     /**
