@@ -151,7 +151,6 @@ public class Scaffold extends AbstractModule {
                 if (!yCoordinateUpdated)
                     yCoordinate = mc.thePlayer.posY - 1;
 
-
                 if (mc.thePlayer.fallDistance > 0.8 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ));
                     if (info.pos != null) this.placeBlock();
@@ -172,20 +171,6 @@ public class Scaffold extends AbstractModule {
             fuckedUp = true;
         }
 
-        if (firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
-            if (!yCoordinateUpdated) {
-                mc.thePlayer.jump();
-                yCoordinate = mc.thePlayer.posY;
-                yCoordinateUpdated = true;
-            }
-            if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
-                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                if (info.pos != null) this.placeBlock();
-                Logger.addChatMessage("We are now placing block for the first jump.");
-                firstJump = false;
-                yCoordinateUpdated = false;
-            }
-        }
 
         if (!firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
@@ -195,6 +180,22 @@ public class Scaffold extends AbstractModule {
             }
         }
 
+        if (firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
+            if (!yCoordinateUpdated) {
+                mc.thePlayer.jump();
+                Logger.addChatMessage("We are now jumping for the first block");
+                yCoordinate = mc.thePlayer.posY;
+                yCoordinateUpdated = true;
+                placeTimer.reset();
+            }
+            if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                if (info.pos != null) this.placeBlock();
+                Logger.addChatMessage("We are now placing block for the first jump.");
+                firstJump = false;
+                yCoordinateUpdated = false;
+            }
+        }
 
         if (fuckedUp && mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (!fuckedUpAndJumped && !mc.gameSettings.keyBindJump.isKeyDown()) {
@@ -237,12 +238,13 @@ public class Scaffold extends AbstractModule {
                 yCoordinate = mc.thePlayer.posY;
             }
             if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving()) {
+                Logger.addChatMessage("We are now jumping for each block");
                 mc.thePlayer.jump();
             } else if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
 
         if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving()) {
-            mc.thePlayer.setSprinting(true);
+            mc.thePlayer.setSprinting(false);
         } else if (mode.getValue() != Mode.WATCHDOG) {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
         }
@@ -445,7 +447,6 @@ public class Scaffold extends AbstractModule {
     }
 
     private Vec3 getHitVec(BlockInfo info) {
-        /* Correct HitVec */
         Vec3 hitVec = new Vec3(info.getPos().getX() + Math.random(), info.getPos().getY() + Math.random(), info.getPos().getZ() + Math.random());
 
         final MovingObjectPosition movingObjectPosition = RayCastUtil.rayCast(rotationsVec, mc.playerController.getBlockReachDistance());

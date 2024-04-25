@@ -124,7 +124,7 @@ public class ESP extends AbstractModule {
                         mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/ntdi.png"));
                         break;
                     case BRANDON:
-                        mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/brandon.png"));
+                        mc.getTextureManager().bindTexture(new ResourceLocation("virago/textures/esp/brandon.jpg"));
                         break;
                 }
 
@@ -352,7 +352,7 @@ public class ESP extends AbstractModule {
                 maxY *= leftoverScale;
                 GL11.glScalef(scale, scale, 1);
                 if (entity != mc.thePlayer) {
-                    mc.fontRendererObj.drawStringWithShadow(entity.getDisplayName().getFormattedText(), minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(entity.getDisplayName().getFormattedText()) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? minY - mc.fontRendererObj.FONT_HEIGHT - 3 : minY - mc.fontRendererObj.FONT_HEIGHT / 2f, new Color(255, 255, 255, MathHelper.floor_float(opacity)).getRGB());
+                    mc.fontRendererObj.drawStringWithShadow(entity.getDisplayName().getFormattedText(), minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(entity.getDisplayName().getFormattedText()) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? minY - mc.fontRendererObj.FONT_HEIGHT - 3 : minY - mc.fontRendererObj.FONT_HEIGHT / 2f, new Color(255, 255, 255, 255).getRGB());
                 }
                 GL11.glScalef(leftoverScale, leftoverScale, 1);
                 minX *= scale;
