@@ -64,7 +64,7 @@ public class PlayerInsulter extends AbstractModule {
         }
 
         String insult = insults[RandomUtils.nextInt(0, insults.length)];
-        mc.thePlayer.sendChatMessage(insult);
+        mc.thePlayer.sendChatMessage("/ac " + insult);
         this.target = null;
     };
 
