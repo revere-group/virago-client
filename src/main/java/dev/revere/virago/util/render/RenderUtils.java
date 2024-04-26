@@ -53,7 +53,7 @@ public class RenderUtils {
             case RAINBOW:
                 return ColorUtil.rainbow(hud.rainbowSpeed.getValue().intValue() * hud.y);
             case RAINBOW_PULSE:
-                return ColorUtil.interpolateColorsBackAndForth(hud.fadeSpeed.getValue().intValue(), index, Color.WHITE, new Color(ColorUtil.rainbow(1000)), false).getRGB();
+                return ColorUtil.fadeBetween(hud.fadeSpeed.getValue().intValue(), hud.y * hud.colorSpacing.getValue().intValue(), new Color(ColorUtil.rainbow(1000)), Color.WHITE).getRGB();
         }
         return -1;
     }
