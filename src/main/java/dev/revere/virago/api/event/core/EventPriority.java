@@ -1,10 +1,13 @@
 package dev.revere.virago.api.event.core;
 
+import lombok.Getter;
+
 /**
  * @author Remi
  * @project nigger
  * @date 3/28/2024
  */
+@Getter
 public enum EventPriority {
     LOWEST(0),
     LOWER(1),
@@ -16,9 +19,5 @@ public enum EventPriority {
 
     EventPriority(int priority) {
         this.priority = priority;
-    }
-
-    public int getPriority() {
-        return priority;
     }
 }

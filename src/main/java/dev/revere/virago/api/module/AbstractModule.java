@@ -82,6 +82,9 @@ public abstract class AbstractModule {
         }
     }
 
+/**
+     * Toggles the module without notifications
+     */
     public void toggleSilent() {
         enabled = !enabled;
         if (enabled) {
@@ -165,8 +168,7 @@ public abstract class AbstractModule {
      * Called when the module is initialized.
      * Override this method to perform actions when the module is initialized.
      */
-    public void init() {
-    }
+    public void init() {}
 
     /**
      * Called when the module is enabled.
@@ -184,8 +186,13 @@ public abstract class AbstractModule {
         Virago.getInstance().getEventBus().unregister(this);
     }
 
+    /**
+     * Retrieves the display name of the module.
+     *
+     * @return The display name of the module.
+     */
     public String getDisplayName() {
-        return getName() + (!getMetaData().equals("") ? (" " + EnumChatFormatting.GRAY + getMetaData()) : "");
+        return getName() + (!getMetaData().isEmpty() ? (" " + EnumChatFormatting.GRAY + getMetaData()) : "");
     }
 
     /**

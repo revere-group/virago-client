@@ -33,6 +33,15 @@ public class PlayerInsulter extends AbstractModule {
             "You're not just a clown; you're the entire circus.",
             "Somewhere, there's a tree tirelessly producing oxygen for you. I think you owe it an apology.",
             "Your family tree must be a cactus because everyone on it is a prick.",
+            "You're the reason the gene pool needs a lifeguard.",
+            "You're the reason the average sperm count is dropping.",
+            "Seems like you lost, but you're used to that, aren't you?",
+            "Might want to buy Virago Client to help you out next time.",
+            "Virago Client seems to be the only thing that can help you.",
+            "You still keep losing? Maybe you should try Virago Client.",
+            "Jeez, you're bad. Maybe you should try Virago Client.",
+            "What client are you using? It's not working. Try Virago Client.",
+            "What are you doing man? Do you usually lose this much? Try Virago Client.",
     };
 
     @EventHandler
@@ -88,7 +97,6 @@ public class PlayerInsulter extends AbstractModule {
     @EventHandler
     private final Listener<AttackEvent> attackEventListener = event -> {
         Entity entity = event.getTarget();
-
         if(!(entity instanceof EntityLivingBase))
             return;
 

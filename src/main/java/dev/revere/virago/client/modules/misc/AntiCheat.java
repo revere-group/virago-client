@@ -12,8 +12,6 @@ import dev.revere.virago.api.module.ModuleData;
 @ModuleData(name = "AntiCheat", description = "Prevents you from getting banned", type = EnumModuleType.MISC)
 public class AntiCheat extends AbstractModule {
 
-
-
     @Override
     public void onEnable() {
         super.onEnable();

@@ -8,9 +8,9 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.player.window.WindowClickEvent;
 import dev.revere.virago.client.events.player.window.WindowClickRequest;
-import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.player.InventoryUtil;
@@ -45,10 +45,10 @@ public class InvManager extends AbstractModule {
 
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.WHILE_OPEN);
 
-    private final int[] bestArmorPieces = new int[4];
-    private final List<Integer> trash = new ArrayList<>();
-    private final int[] bestToolSlots = new int[3];
     private final List<Integer> gappleStackSlots = new ArrayList<>();
+    private final List<Integer> trash = new ArrayList<>();
+    private final int[] bestArmorPieces = new int[4];
+    private final int[] bestToolSlots = new int[3];
     private int bestSwordSlot;
     private int bestBowSlot;
 
@@ -57,15 +57,14 @@ public class InvManager extends AbstractModule {
     private boolean serverOpen;
     private boolean clientOpen;
 
-    private int ticksSinceLastClick;
-
     private boolean nextTickCloseInventory;
+    private int ticksSinceLastClick;
 
     @EventHandler
     private final Listener<PacketEvent> packetEventListener = e -> {
         final Packet<?> packet = e.getPacket();
         switch (e.getEventState()) {
-            case SENDING:{
+            case SENDING: {
                 if (packet instanceof C16PacketClientStatus) {
                     final C16PacketClientStatus clientStatus = (C16PacketClientStatus) packet;
 
@@ -83,7 +82,7 @@ public class InvManager extends AbstractModule {
                 }
                 break;
             }
-            case RECEIVING:{
+            case RECEIVING: {
                 if (packet instanceof S2DPacketOpenWindow) {
                     this.clientOpen = false;
                     this.serverOpen = false;
@@ -97,17 +96,6 @@ public class InvManager extends AbstractModule {
     private final Listener<WindowClickEvent> onWindowClick = event -> {
         this.ticksSinceLastClick = 0;
     };
-
-    private boolean dropItem(final List<Integer> listOfSlots) {
-        if (this.dropItems.getValue()) {
-            if (!listOfSlots.isEmpty()) {
-                int slot = listOfSlots.remove(0);
-                InventoryUtil.windowClick(mc, slot, 1, InventoryUtil.ClickType.DROP_ITEM);
-                return true;
-            }
-        }
-        return false;
-    }
 
     @EventHandler
     private final Listener<PreMotionEvent> onUpdate = event -> {
@@ -132,34 +120,28 @@ public class InvManager extends AbstractModule {
                 final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot).getStack();
 
                 if (stack != null) {
-                    if (this.ignoreCustomItems.getValue() &&
-                            stack.hasDisplayName())
+                    if (this.ignoreCustomItems.getValue() && stack.hasDisplayName())
                         continue;
 
                     if (stack.getItem() instanceof ItemSword && InventoryUtil.isBestSword(mc.thePlayer, stack)) {
                         this.bestSwordSlot = slot;
-                    }
-                    else if (stack.getItem() instanceof ItemTool && InventoryUtil.isBestTool(mc.thePlayer, stack)) {
+                    } else if (stack.getItem() instanceof ItemTool && InventoryUtil.isBestTool(mc.thePlayer, stack)) {
                         final int toolType = InventoryUtil.getToolType(stack);
                         if (toolType != -1 && slot != this.bestToolSlots[toolType])
                             this.bestToolSlots[toolType] = slot;
-                    }
-                    else if (stack.getItem() instanceof ItemArmor && InventoryUtil.isBestArmor(mc.thePlayer, stack)) {
+                    } else if (stack.getItem() instanceof ItemArmor && InventoryUtil.isBestArmor(mc.thePlayer, stack)) {
                         final ItemArmor armor = (ItemArmor) stack.getItem();
 
                         final int pieceSlot = this.bestArmorPieces[armor.armorType];
 
                         if (pieceSlot == -1 || slot != pieceSlot)
                             this.bestArmorPieces[armor.armorType] = slot;
-                    }
-                    else if (stack.getItem() instanceof ItemBow && InventoryUtil.isBestBow(mc.thePlayer, stack)) {
+                    } else if (stack.getItem() instanceof ItemBow && InventoryUtil.isBestBow(mc.thePlayer, stack)) {
                         if (slot != this.bestBowSlot)
                             this.bestBowSlot = slot;
-                    }
-                    else if (stack.getItem() instanceof ItemAppleGold) {
+                    } else if (stack.getItem() instanceof ItemAppleGold) {
                         this.gappleStackSlots.add(slot);
-                    }
-                    else if (!this.trash.contains(slot) && !isValidStack(stack)) {
+                    } else if (!this.trash.contains(slot) && !isValidStack(stack)) {
                         this.trash.add(slot);
                     }
                 }
@@ -199,6 +181,29 @@ public class InvManager extends AbstractModule {
         }
     };
 
+    /**
+     * Drops the items in the list of slots
+     *
+     * @param listOfSlots The list of slots to drop
+     * @return If the items were dropped
+     */
+    private boolean dropItem(final List<Integer> listOfSlots) {
+        if (this.dropItems.getValue()) {
+            if (!listOfSlots.isEmpty()) {
+                int slot = listOfSlots.remove(0);
+                InventoryUtil.windowClick(mc, slot, 1, InventoryUtil.ClickType.DROP_ITEM);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Sorts the items in the inventory
+     *
+     * @param moveItems If the items should be moved
+     * @return If the items were sorted
+     */
     private boolean sortItems(final boolean moveItems) {
         if (this.autoSort.getValue()) {
             if (this.bestSwordSlot != -1) {
@@ -257,6 +262,12 @@ public class InvManager extends AbstractModule {
         return false;
     }
 
+    /**
+     * Equips the best armor in the inventory
+     *
+     * @param moveItems If the items should be moved
+     * @return If the armor was equipped
+     */
     private boolean equipArmor(boolean moveItems) {
         if (this.autoArmor.getValue()) {
             for (int i = 0; i < this.bestArmorPieces.length; i++) {
@@ -279,12 +290,24 @@ public class InvManager extends AbstractModule {
         return false;
     }
 
+    /**
+     * Puts the item in the slot
+     *
+     * @param slot   The slot to put the item in
+     * @param slotIn The slot to take the item from
+     */
     private void putItemInSlot(final int slot, final int slotIn) {
         InventoryUtil.windowClick(mc, slotIn,
                 slot - 36,
                 InventoryUtil.ClickType.SWAP_WITH_HOT_BAR_SLOT);
     }
 
+    /**
+     * Puts the tools in the slot
+     *
+     * @param tool      The tool to put in the slot
+     * @param toolSlots The slots to take the tools from
+     */
     private void putToolsInSlot(final int tool, final int[] toolSlots) {
         final int toolSlot = toolSlots[tool];
 
@@ -294,6 +317,12 @@ public class InvManager extends AbstractModule {
         this.bestToolSlots[tool] = toolSlot;
     }
 
+    /**
+     * Checks if the stack is valid
+     *
+     * @param stack The stack to check
+     * @return If the stack is valid
+     */
     private static boolean isValidStack(final ItemStack stack) {
         if (stack.getItem() instanceof ItemBlock && InventoryUtil.isStackValidToPlace(stack)) {
             return true;
@@ -328,7 +357,7 @@ public class InvManager extends AbstractModule {
         Arrays.fill(this.bestArmorPieces, -1);
         Arrays.fill(this.bestToolSlots, -1);
     }
-    
+
     @Override
     public void onEnable() {
         this.ticksSinceLastClick = 0;
@@ -352,6 +381,11 @@ public class InvManager extends AbstractModule {
 
         private final String name;
 
+        /**
+         * Constructor for the mode
+         *
+         * @param name The name of the mode
+         */
         Mode(String name) {
             this.name = name;
         }

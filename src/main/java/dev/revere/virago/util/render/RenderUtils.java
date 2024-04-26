@@ -20,7 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.glu.GLU;
 
 import java.awt.*;
@@ -34,7 +33,7 @@ import java.nio.IntBuffer;
  */
 public class RenderUtils {
     public static Minecraft mc = Minecraft.getMinecraft();
-    private static final Frustum frustrum = new Frustum();
+    private static final Frustum frustum = new Frustum();
 
     /**
      * Gets the client color
@@ -53,6 +52,8 @@ public class RenderUtils {
                 return ColorUtil.interpolateColorsBackAndForth(hud.fadeSpeed.getValue().intValue(), index, new Color(255, 11, 82), new Color(-1), false).getRGB();
             case RAINBOW:
                 return ColorUtil.rainbow(hud.rainbowSpeed.getValue().intValue() * hud.y);
+            case RAINBOW_PULSE:
+                return ColorUtil.interpolateColorsBackAndForth(hud.fadeSpeed.getValue().intValue(), index, hud.customColor1.getValue(), new Color(ColorUtil.rainbow(1000)), false).getRGB();
         }
         return -1;
     }
@@ -60,19 +61,17 @@ public class RenderUtils {
     /**
      * Draws a gradient rect
      *
-     * @param left      left
-     * @param top       top
-     * @param right     right
-     * @param bottom    bottom
-     * @param time      time
+     * @param left       left
+     * @param top        top
+     * @param right      right
+     * @param bottom     bottom
+     * @param time       time
      * @param difference difference
-     * @param delay     delay
-     * @param direction direction
-     * @return delay
+     * @param delay      delay
+     * @param direction  direction
      */
-    public static long renderGradientRect(int left, int top, int right, int bottom, double time, long difference, long delay, Direction direction) {
+    public static void renderGradientRect(int left, int top, int right, int bottom, double time, long difference, long delay, Direction direction) {
         int i;
-        long endDelay = 0L;
         if (direction == Direction.RIGHT) {
             for (i = 0; i < right - left; ++i) {
                 Gui.drawRect(left + i, top, right, bottom, getColor(i));
@@ -93,7 +92,6 @@ public class RenderUtils {
                 Gui.drawRect(left, top + i, right, bottom, getColor(i));
             }
         }
-        return endDelay;
     }
 
     /**
@@ -133,8 +131,8 @@ public class RenderUtils {
      * @param entity the entity
      * @return if the entity is in the view frustrum
      */
-    public static boolean isInViewFrustrum(Entity entity) {
-        return isInViewFrustrum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck;
+    public static boolean isInViewFrustum(Entity entity) {
+        return isInViewFrustum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck;
     }
 
     /**
@@ -143,10 +141,10 @@ public class RenderUtils {
      * @param bb the bounding box
      * @return if the bounding box is in the view frustrum
      */
-    private static boolean isInViewFrustrum(AxisAlignedBB bb) {
+    private static boolean isInViewFrustum(AxisAlignedBB bb) {
         Entity current = Minecraft.getMinecraft().getRenderViewEntity();
-        frustrum.setPosition(current.posX, current.posY, current.posZ);
-        return frustrum.isBoundingBoxInFrustum(bb);
+        frustum.setPosition(current.posX, current.posY, current.posZ);
+        return frustum.isBoundingBoxInFrustum(bb);
     }
 
     /**
@@ -471,24 +469,15 @@ public class RenderUtils {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glShadeModel(GL11.GL_SMOOTH);
-
         GL11.glBegin(GL11.GL_QUADS);
-
         ColorUtil.glColor(top.getRGB());
-
         GL11.glVertex2f(x, y);
-
         ColorUtil.glColor(bottom.getRGB());
-
         GL11.glVertex2f(x, y + height);
         GL11.glVertex2f(x + width, y + height);
-
         ColorUtil.glColor(top.getRGB());
-
         GL11.glVertex2f(x + width, y);
-
         GL11.glEnd();
-
         GL11.glShadeModel(GL11.GL_FLAT);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_BLEND);
@@ -521,7 +510,7 @@ public class RenderUtils {
         GL11.glVertex2d((x + size / widthDiv), (y + size));
         GL11.glVertex2d(x, y);
         GL11.glEnd();
-        GL11.glColor4f((float)0.0f, (float)0.0f, (float)0.0f, (float)0.8f);
+        GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
         GL11.glBegin(2);
         GL11.glVertex2d(x, y);
         GL11.glVertex2d((x - size / widthDiv), (y + size));

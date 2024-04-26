@@ -262,6 +262,12 @@ public class ColorUtil {
                 } else {
                     return new Color(255, 11, 82).getRGB();
                 }
+            case RAINBOW_PULSE:
+                if (animate) {
+                    return ColorUtil.fadeBetween(hud.fadeSpeed.getValue().intValue(), hud.y * hud.colorSpacing.getValue().intValue(), hud.customColor1.getValue(), new Color(rainbow(1000))).getRGB();
+                } else {
+                    return hud.customColor1.getValue().getRGB();
+                }
             case RAINBOW:
                 return animate ? ColorUtil.rainbow(hud.rainbowSpeed.getValue().intValue() * hud.y) : ColorUtil.rainbow(hud.rainbowSpeed.getValue().intValue());
         }
@@ -274,8 +280,7 @@ public class ColorUtil {
         return Color.getHSBColor((float) (rainbowState / 360.0f), 0.5f, 1f).getRGB();
     }
 
-    // thanks tena
-
+    // thanks tena <3
     public static Color interpolateColorsBackAndForth(int speed, int index, Color start, Color end, boolean trueColor) {
         int angle = (int)((System.currentTimeMillis() / (long)speed + (long)index) % 360L);
         angle = (angle >= 180 ? 360 - angle : angle) * 2;
@@ -306,5 +311,4 @@ public class ColorUtil {
     public static int interpolateInt(int oldValue, int newValue, double interpolationValue) {
         return interpolate(oldValue, newValue, (float)interpolationValue).intValue();
     }
-
 }

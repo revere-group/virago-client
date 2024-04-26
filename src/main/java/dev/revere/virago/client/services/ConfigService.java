@@ -3,7 +3,6 @@ package dev.revere.virago.client.services;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.api.setting.Setting;
-import dev.revere.virago.util.misc.AES256;
 import dev.revere.virago.util.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -81,8 +80,8 @@ public class ConfigService implements IService {
                                 ((Setting<Double>) setting).setValue(moduleData.getDouble(setting.getPath()));
                             } else if (setting.getValue() instanceof Enum<?>) {
                                 try {
-                                    Enum<?> enumuration = (Enum<?>) setting.getValue();
-                                    Enum<?> value = Enum.valueOf(enumuration.getClass(), moduleData.getString(setting.getPath()));
+                                    Enum<?> enumeration = (Enum<?>) setting.getValue();
+                                    Enum<?> value = Enum.valueOf(enumeration.getClass(), moduleData.getString(setting.getPath()));
 
                                     ((Setting<Enum<?>>) setting).setValue(value);
                                 } catch (IllegalArgumentException exception) {

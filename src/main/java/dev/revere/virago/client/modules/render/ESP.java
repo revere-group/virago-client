@@ -14,6 +14,7 @@ import dev.revere.virago.util.render.RoundedUtils;
 import lombok.AllArgsConstructor;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
@@ -82,7 +83,7 @@ public class ESP extends AbstractModule {
                 .filter(entity -> entity.getDistanceToEntity(mc.thePlayer) < 200).collect(Collectors.toList());
 
         for (EntityLivingBase entity : livingEntities) {
-            if (!RenderUtils.isInViewFrustrum(entity)) continue;
+            if (!RenderUtils.isInViewFrustum(entity)) continue;
             final double diffX = entity.posX - entity.lastTickPosX;
             final double diffY = entity.posY - entity.lastTickPosY;
             final double diffZ = entity.posZ - entity.lastTickPosZ;
@@ -407,15 +408,11 @@ public class ESP extends AbstractModule {
         }
     };
 
-    private double interpret(double newPosition, double oldPosition) {
-        return oldPosition + (newPosition - oldPosition) * mc.timer.renderPartialTicks;
-    }
-
     private void convertTo2D(AxisAlignedBB interpolatedBB, double[][] vectors, float[] coords) {
         if (coords == null || vectors == null || interpolatedBB == null) return;
-        double x = mc.getRenderManager().viewerPosX;
-        double y = mc.getRenderManager().viewerPosY;
-        double z = mc.getRenderManager().viewerPosZ;
+        double x = RenderManager.viewerPosX;
+        double y = RenderManager.viewerPosY;
+        double z = RenderManager.viewerPosZ;
 
         vectors[0] = RenderUtils.project2D(interpolatedBB.minX - x, interpolatedBB.minY - y,
                 interpolatedBB.minZ - z);

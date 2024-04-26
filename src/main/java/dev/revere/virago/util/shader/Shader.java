@@ -1,5 +1,6 @@
 package dev.revere.virago.util.shader;
 
+import dev.revere.virago.util.Logger;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
@@ -132,7 +133,6 @@ public class Shader {
         else glUniform1i(loc, args[0]);
     }
 
-
     /**
      * Read resource location
      *
@@ -149,7 +149,7 @@ public class Shader {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            Logger.err("Error reading resource location: " + loc, getClass());
         }
         return stringBuilder.toString();
     }
@@ -177,7 +177,7 @@ public class Shader {
         }
         catch (Exception e) {
             ARBShaderObjects.glDeleteObjectARB(shader);
-            e.printStackTrace();
+            Logger.err("Error creating shader: " + shader + ":" + type, getClass());
             throw e;
         }
     }

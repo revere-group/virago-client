@@ -14,9 +14,6 @@ public final class Vector2d {
 
     public double x, y;
 
-    public Vector2d() {
-    }
-
     public Vector2d(final double x, final double y) {
         this.x = x;
         this.y = y;

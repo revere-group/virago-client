@@ -29,12 +29,11 @@ public class Teams extends AbstractModule {
 
         if (armor.getValue() && entity instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) entity;
+            ItemStack myHead = mc.thePlayer.inventory.armorInventory[3];
+            ItemStack entityHead = player.inventory.armorInventory[3];
 
-            if (mc.thePlayer.inventory.armorInventory[3] != null && player.inventory.armorInventory[3] != null) {
-                ItemStack myHead = mc.thePlayer.inventory.armorInventory[3];
+            if (myHead != null && entityHead != null) {
                 ItemArmor myItemArmor = (ItemArmor) myHead.getItem();
-
-                ItemStack entityHead = player.inventory.armorInventory[3];
                 ItemArmor entityItemArmor = (ItemArmor) entityHead.getItem();
 
                 if (myItemArmor.getColor(myHead) == entityItemArmor.getColor(entityHead)) {
@@ -42,6 +41,7 @@ public class Teams extends AbstractModule {
                 }
             }
         }
+
         if (prefix.getValue() && mc.thePlayer.getDisplayName() != null && entity.getDisplayName() != null) {
             String targetPrefix = entity.getDisplayName().getFormattedText().substring(0, 5);
             String clientPrefix = mc.thePlayer.getDisplayName().getFormattedText().substring(0, 5);

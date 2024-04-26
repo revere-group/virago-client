@@ -21,9 +21,7 @@ public class ClientSpoofer extends AbstractModule {
     @EventHandler
     private final Listener<PacketEvent> onPacketEvent = event -> {
         C17PacketCustomPayload payload;
-        if (event.getPacket() instanceof C17PacketCustomPayload &&
-                (payload = event.getPacket()).getChannelName().equalsIgnoreCase("MC|Brand")) {
-
+        if (event.getPacket() instanceof C17PacketCustomPayload && (payload = event.getPacket()).getChannelName().equalsIgnoreCase("MC|Brand")) {
             ByteBuf message = Unpooled.buffer();
 
             switch(mode.getValue()) {
@@ -31,16 +29,15 @@ public class ClientSpoofer extends AbstractModule {
                     message.writeBytes("Lunar-Client".getBytes());
                     break;
                 }
-
                 case FORGE: {
                     message.writeBytes("FML".getBytes());
+                    break;
                 }
-
                 case GEYSER: {
-                    message.writeBytes("eyser".getBytes());                }
-
+                    message.writeBytes("eyser".getBytes());
+                    break;
+                }
             }
-
             event.setPacket(new C17PacketCustomPayload("REGISTER", new PacketBuffer(message)));
         }
     };
@@ -58,5 +55,4 @@ public class ClientSpoofer extends AbstractModule {
     private enum Mode {
         LUNAR, GEYSER, FORGE
     }
-
 }

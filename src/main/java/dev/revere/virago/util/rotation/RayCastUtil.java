@@ -15,7 +15,8 @@ import java.util.List;
  * @date 4/12/2024
  */
 public final class RayCastUtil {
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
+
     public static MovingObjectPosition rayCast(final Vector2f rotation, final double range) {
         return rayCast(rotation, range, 0);
     }
@@ -70,7 +71,7 @@ public final class RayCastUtil {
                 d1 = objectMouseOver.hitVec.distanceTo(vec3);
             }
 
-            final Vec3 vec31 = mc.thePlayer.getVectorForRotation(rotation.y, rotation.x);
+            final Vec3 vec31 = Entity.getVectorForRotation(rotation.y, rotation.x);
             final Vec3 vec32 = vec3.addVector(vec31.xCoord * range, vec31.yCoord * range, vec31.zCoord * range);
             Entity pointedEntity = null;
             Vec3 vec33 = null;

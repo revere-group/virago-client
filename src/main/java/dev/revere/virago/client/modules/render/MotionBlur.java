@@ -14,19 +14,19 @@ import org.lwjgl.opengl.GL11;
 @ModuleData(name = "Motion Blur", description = "Adds motion blur to the game", type = EnumModuleType.RENDER)
 public class MotionBlur extends AbstractModule {
 
-    public static Setting<Integer> amount = new Setting<>("Amount", 6)
+    public final Setting<Integer> amount = new Setting<>("Amount", 6)
             .minimum(1)
             .maximum(10)
             .incrementation(1)
             .describedBy("The amount of motion blur to apply");
 
-    public static float value;
+    public float value;
 
-    public static float getMultiplier() {
+    public float getMultiplier() {
         return amount.getValue() * 10;
     }
 
-    public static float getAccumulationValue() {
+    public float getAccumulationValue() {
         value = getMultiplier() * 10.0F;
         long lastTimestampInGame = System.currentTimeMillis();
 
@@ -50,7 +50,6 @@ public class MotionBlur extends AbstractModule {
             return value / 1000.0F;
         }
     }
-
 
     public void createAccumulation() {
         if (!isEnabled()) return;

@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.protection.ViragoUser;
 import dev.revere.virago.api.protection.rank.Rank;
-import dev.revere.virago.api.socket.SocketClient;
+import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import lombok.var;
@@ -31,9 +31,9 @@ import java.util.Scanner;
  * @date 3/20/2024
  */
 public class Safelock {
-    private String productKey;
-    private String server;
-    private String authorization;
+    private final String productKey;
+    private final String server;
+    private final String authorization;
 
     private static final String UNKNOWN = "unknown";
     private static String OS = System.getProperty("os.name").toLowerCase();
@@ -63,10 +63,8 @@ public class Safelock {
         con.setDoInput(true);
         con.setDoOutput(true);
         con.setUseCaches(false);
-        String hwid = getMac();
 
         String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"version\":\"dogpoop\"}";
-        //Align HWID again here if someone tries to spoof it
         outString = outString
                 .replaceAll("password", getHWID())
                 .replaceAll("avain", productKey)
@@ -74,15 +72,9 @@ public class Safelock {
                 .replaceAll("dogpoop", Virago.getInstance().getVersion());
 
         byte[] out = outString.getBytes(StandardCharsets.UTF_8);
-        //int length = out.length;
-
-        // # %%__USER_ID__%%
-
-        //con.setFixedLengthStreamingMode(length);
         con.setRequestProperty("Authorization", this.authorization);
         con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         con.connect();
-
 
         try (OutputStream os = con.getOutputStream()) {
             os.write(out);
@@ -110,10 +102,8 @@ public class Safelock {
         con.setDoInput(true);
         con.setDoOutput(true);
         con.setUseCaches(false);
-        String hwid = getMac();
 
         String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"version\":\"dogpoop\"}";
-        //Align HWID again here if someone tries to spoof it
         outString = outString
                 .replaceAll("password", getHWID())
                 .replaceAll("avain", productKey)
@@ -227,9 +217,7 @@ public class Safelock {
             Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
             if (valid) {
                 SocketClient.init(productKey);
-
                 Virago.getInstance().getDiscordRPC().start();
-
                 Virago.getInstance().getDiscordRPC().getActivity()
                         .setDetails(
                                 Virago.getInstance().getName()

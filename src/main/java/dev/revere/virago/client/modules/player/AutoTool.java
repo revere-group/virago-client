@@ -41,6 +41,9 @@ public class AutoTool extends AbstractModule {
         }
     };
 
+    /**
+     * Updates the player's current item to the best sword in their inventory
+     */
     private void updateSword() {
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = mc.thePlayer.inventory.mainInventory[i];
@@ -51,6 +54,11 @@ public class AutoTool extends AbstractModule {
         }
     }
 
+    /**
+     * Updates the player's current item to the best tool for the block at the given position
+     *
+     * @param pos the position of the block
+     */
     private void updateTool(BlockPos pos) {
         int itemToUse = this.getBestToolSlot(pos);
         if (itemToUse == -1) {
@@ -60,6 +68,12 @@ public class AutoTool extends AbstractModule {
         mc.thePlayer.inventory.currentItem = itemToUse;
     }
 
+    /**
+     * Gets the best tool slot for the block at the given position
+     *
+     * @param pos the position of the block
+     * @return the best tool slot
+     */
     private int getBestToolSlot(BlockPos pos) {
         Block block = mc.theWorld.getBlockState(pos).getBlock();
         float bestStr = 1.0f;

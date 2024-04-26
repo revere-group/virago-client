@@ -28,6 +28,11 @@ public class BloomUtil {
     private static Framebuffer framebuffer = new Framebuffer(1, 1, true);
     private static int currentIterations;
 
+    /**
+     * Initializes the framebuffers for the bloom effect
+     *
+     * @param iterations the amount of iterations
+     */
     private static void initFramebuffers(float iterations) {
         for (Framebuffer framebuffer : framebufferList) {
             framebuffer.deleteFramebuffer();
@@ -49,7 +54,13 @@ public class BloomUtil {
         }
     }
 
-
+    /**
+     * Renders the bloom effect
+     *
+     * @param framebufferTexture the texture to render
+     * @param iterations         the amount of iterations
+     * @param offset             the offset
+     */
     public static void renderBlur(int framebufferTexture, int iterations, int offset) {
         if (currentIterations != iterations || (framebuffer.framebufferWidth != Minecraft.getMinecraft().displayWidth || framebuffer.framebufferHeight != Minecraft.getMinecraft().displayHeight)) {
             initFramebuffers(iterations);
@@ -115,6 +126,14 @@ public class BloomUtil {
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
+    /**
+     * Renders the framebuffer
+     *
+     * @param framebuffer         the framebuffer
+     * @param framebufferTexture  the framebuffer texture
+     * @param shader              the shader
+     * @param offset              the offset
+     */
     private static void renderFBO(Framebuffer framebuffer, int framebufferTexture, Shader shader, float offset) {
         framebuffer.framebufferClear();
         framebuffer.bindFramebuffer(false);
@@ -152,5 +171,4 @@ public class BloomUtil {
         GL11.glVertex2f(width, 0);
         GL11.glEnd();
     }
-
 }

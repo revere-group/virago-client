@@ -81,7 +81,4 @@ public class KillEffect extends AbstractModule {
     public void onDisable() {
         super.onDisable();
     }
-
-
-
 }

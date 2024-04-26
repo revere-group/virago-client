@@ -1,4 +1,4 @@
-package dev.revere.virago.api.socket;
+package dev.revere.virago.api.network.socket;
 
 import com.google.gson.Gson;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 
 public class SocketHelper {
-    public static void socket(URI uri, WebSocketHandler handler) {
+    public static void createSocketConnection(URI uri, WebSocketHandler handler) {
         WebSocketClient client = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {

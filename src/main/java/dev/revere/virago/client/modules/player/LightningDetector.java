@@ -23,9 +23,6 @@ public class LightningDetector extends AbstractModule {
         if (event.getPacket() instanceof S29PacketSoundEffect &&
                 Objects.equals((packet = event.getPacket()).getSoundName(), "ambient.weather.thunder")) {
 
-            // fix it calling this packet twice??
-            // not sure why? minecraft bullshit.
-
             Virago.getInstance().getServiceManager().getService(NotificationService.class)
                     .notify(NotificationType.INFO, "Lightning", String.format("Struck at: %s, %s, %s", Math.round(packet.getX()), Math.round(packet.getY()), Math.round(packet.getZ())), 3000L);
         }

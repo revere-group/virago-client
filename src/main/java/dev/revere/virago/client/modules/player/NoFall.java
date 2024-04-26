@@ -91,7 +91,6 @@ public class NoFall extends AbstractModule {
             }
             case POSITION: {
                 if (distance > 3.5 && !(relativeBlock(0, predictedMotion(mc.thePlayer.motionY), 0) instanceof BlockAir) && mc.thePlayer.ticksSinceTeleport > 50) {
-                    Logger.addChatMessage("Teleporting to prevent fall damage.");
                     mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 50 - Math.random(), mc.thePlayer.posZ, false));
                     distance = 0;
                 }
@@ -137,6 +136,11 @@ public class NoFall extends AbstractModule {
         }
     };
 
+    /**
+     * Checks if there is a block under the player
+     *
+     * @return if there is a block under the player
+     */
     private boolean isBlockUnder() {
         for (int offset = 0; offset < mc.thePlayer.posY + mc.thePlayer.getEyeHeight(); offset += 2) {
             BlockPos blockPos = new BlockPos(mc.thePlayer.posX, offset, mc.thePlayer.posZ);
@@ -148,14 +152,33 @@ public class NoFall extends AbstractModule {
         return false;
     }
 
+    /**
+     * Gets the block at the relative position
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @return the block at the relative position
+     */
     private Block relativeBlock(double x, double y, double z) {
         return mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(x, y, z)).getBlock();
     }
 
+    /**
+     * Checks if the player can fall
+     *
+     * @return if the player can fall
+     */
     private boolean canFall() {
         return mc.thePlayer.isEntityAlive() && isBlockUnder() && mc.theWorld != null && !mc.thePlayer.isOnLadder() && !mc.thePlayer.isInWater() && !mc.thePlayer.isInLava();
     }
 
+    /**
+     * Predicts the player's motion
+     *
+     * @param motion the motion
+     * @return the predicted motion
+     */
     public double predictedMotion(final double motion) {
         return (motion - 0.08) * 0.98F;
     }

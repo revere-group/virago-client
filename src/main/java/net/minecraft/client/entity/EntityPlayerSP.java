@@ -1,14 +1,12 @@
 package net.minecraft.client.entity;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.api.event.handler.EventHandler;
-import dev.revere.virago.api.packet.C2SChat;
-import dev.revere.virago.api.socket.SocketHelper;
+import dev.revere.virago.api.network.packet.client.C2SChat;
+import dev.revere.virago.api.network.socket.SocketHelper;
 import dev.revere.virago.client.events.player.*;
 import dev.revere.virago.client.modules.player.NoSlow;
 import dev.revere.virago.client.services.CommandService;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.rotation.vec.Vector2f;
 import lombok.var;
 import net.minecraft.client.Minecraft;
@@ -60,9 +58,9 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 
-import static dev.revere.virago.api.socket.SocketClient.getURL;
-import static dev.revere.virago.api.socket.SocketClient.jwt;
-import static dev.revere.virago.api.socket.SocketHelper.socket;
+import static dev.revere.virago.api.network.socket.SocketClient.getURL;
+import static dev.revere.virago.api.network.socket.SocketClient.jwt;
+import static dev.revere.virago.api.network.socket.SocketHelper.createSocketConnection;
 
 public class EntityPlayerSP extends AbstractClientPlayer
 {
@@ -294,7 +292,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 }
             };
 
-            socket(URI.create(getURL("/chat/post")), socketHandler);
+            createSocketConnection(URI.create(getURL("/chat/post")), socketHandler);
 
             return;
         }

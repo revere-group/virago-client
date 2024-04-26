@@ -31,10 +31,6 @@ import java.awt.*;
 @Getter
 @ModuleData(name = "Jump Circles", type = EnumModuleType.RENDER, description = "Draws circles around jumpable blocks")
 public class JumpCircles extends AbstractModule {
-    public Setting<Boolean> customColor = new Setting<>("Fading color", false).describedBy("Whether the color should fade between 2 colors on jump");
-    public Setting<Color> singleColor = new Setting<>("Static Color", new Color(-1)).visibleWhen(() -> !customColor.getValue()).describedBy("Color 1");
-    public Setting<Color> customColor1 = new Setting<>("Color", new Color(-1)).visibleWhen(() -> customColor.getValue()).describedBy("Color 1");
-    public Setting<Color> customColor2 = new Setting<>("Color2", new Color(-1)).visibleWhen(() -> customColor.getValue()).describedBy("Color 2");
 
     /**
      * Updates the circles around the player
@@ -95,7 +91,7 @@ public class JumpCircles extends AbstractModule {
      * @param circle The circle to render the vertices for
      */
     private void renderCircleVertices(Circle circle) {
-        Color color = customColor.getValue() ? ColorUtil.fadeBetween(10, 4, customColor1.getValue(), customColor2.getValue()) : singleColor.getValue();
+        Color color = new Color(ColorUtil.getColor(true));
 
         for (int i = 0; i <= 360; i += 5) {
             Vec3 pos = circle.pos();

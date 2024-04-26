@@ -13,12 +13,7 @@ import dev.revere.virago.client.events.player.PostMotionEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
-import net.minecraft.block.BlockChest;
-import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemSword;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 
 /**
@@ -29,19 +24,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange;
 @ModuleData(name = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.PLAYER)
 public class NoSlow extends AbstractModule {
 
-    public final Setting<Boolean> cancelEating = new Setting<>("Cancel Eating", false);
     public final Setting<Boolean> cancelBlocking = new Setting<>("Cancel Blocking", true);
-
-    private boolean isUsingItem;
-
-    @EventHandler
-    private final Listener<PreMotionEvent> preMotionEventListener = event -> {
-        if (!cancelEating.getValue()) return;
-        if (mc.thePlayer.isUsingItem() && !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) && !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBow)) {
-            event.setPitch(90);
-            mc.thePlayer.rotationPitchHead = 90;
-        }
-    };
 
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
@@ -50,18 +33,12 @@ public class NoSlow extends AbstractModule {
         if (mc.thePlayer.isUsingItem() && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword && killAura.getSingleTarget() == null) {
             mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
             mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-            isUsingItem = false;
         }
     };
 
     @EventHandler
-    private final Listener<TeleportEvent> teleportEventListener = event -> {
-        isUsingItem = false;
-    };
-
-    @EventHandler
     private final Listener<PacketEvent> packetEventListener = event -> {
-        if (event.getEventState() == PacketEvent.EventState.SENDING && mc.thePlayer != null) {
+        /*if (event.getEventState() == PacketEvent.EventState.SENDING && mc.thePlayer != null) {
             if (event.getPacket() instanceof C08PacketPlayerBlockPlacement) {
                 KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
                 if (event.getPacket() instanceof C08PacketPlayerBlockPlacement && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword && (mc.objectMouseOver.getBlockPos() != null && mc.theWorld.getBlockState(mc.objectMouseOver.getBlockPos()) instanceof BlockChest)) {
@@ -72,7 +49,7 @@ public class NoSlow extends AbstractModule {
                         isUsingItem = true;
                 }
             }
-        }
+        }*/
     };
 
     @Override

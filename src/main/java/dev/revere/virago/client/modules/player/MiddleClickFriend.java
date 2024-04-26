@@ -21,7 +21,7 @@ import net.minecraft.util.StringUtils;
 @ModuleData(name = "MCF", description = "Middle click to add friends", type = EnumModuleType.PLAYER)
 public class MiddleClickFriend extends AbstractModule {
 
-    private boolean wasDown;
+    private boolean pressed;
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
@@ -31,7 +31,7 @@ public class MiddleClickFriend extends AbstractModule {
         NotificationService notificationService = Virago.getInstance().getServiceManager().getService(NotificationService.class);
         FriendService friendService = Virago.getInstance().getServiceManager().getService(FriendService.class);
 
-        if(down && !wasDown) {
+        if(down && !pressed) {
             if(mc.objectMouseOver == null || !(mc.objectMouseOver.entityHit instanceof EntityPlayer)) return;
 
             EntityPlayer player = (EntityPlayer) mc.objectMouseOver.entityHit;
@@ -45,9 +45,9 @@ public class MiddleClickFriend extends AbstractModule {
 
             friendService.getFriends().add(name);
             notificationService.notify(NotificationType.INFO, "Friend Manager", "You have added " + name + " to your friend list.");
-            wasDown = true;
+            pressed = true;
         } else if(!down) {
-            wasDown = false;
+            pressed = false;
         }
     };
 

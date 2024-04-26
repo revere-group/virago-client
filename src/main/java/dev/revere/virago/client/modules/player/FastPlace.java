@@ -17,8 +17,7 @@ import dev.revere.virago.client.events.player.UpdateEvent;
 public class FastPlace extends AbstractModule {
     @EventHandler
     private final Listener<UpdateEvent> onUpdate = event -> {
-      if(!event.isPre()) return;
-      mc.rightClickDelayTimer = 0;
+        if (!event.isPre()) return;
+        mc.rightClickDelayTimer = 0;
     };
-
 }

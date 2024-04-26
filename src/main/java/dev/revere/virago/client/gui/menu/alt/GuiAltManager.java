@@ -233,8 +233,8 @@ public class GuiAltManager extends GuiScreen {
 
     @Override
     public void handleMouseInput() throws IOException {
-        list.handleMouseInput();
         super.handleMouseInput();
+        list.handleMouseInput();
     }
 
     @Override

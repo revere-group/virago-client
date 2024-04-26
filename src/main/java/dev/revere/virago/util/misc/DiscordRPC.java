@@ -4,6 +4,9 @@ import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
 import dev.revere.virago.Virago;
+import dev.revere.virago.api.network.socket.SocketClient;
+import dev.revere.virago.api.protection.auth.Safelock;
+import dev.revere.virago.util.Logger;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -40,19 +43,17 @@ public class DiscordRPC {
                     System.err.println("Failed to download Discord SDK.");
                     System.exit(-1);
                 }
-                // Initialize the Core
                 Core.init(discordLibrary);
                 canLoad = true;
 
                 start();
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.err("Failed to load Discord SDK: " + e.getMessage(), getClass());
             }
         }
     }
 
     public static File downloadNativeLibrary() throws IOException {
-        // Find out which name Discord's library has (.dll for Windows, .so for Linux)
         String name = "discord_game_sdk";
         String suffix;
 
@@ -69,50 +70,35 @@ public class DiscordRPC {
             throw new RuntimeException("Cannot determine OS type: " + osName);
         }
 
-        /*
-        Some systems report "amd64" (e.g. Windows and Linux), some "x86_64" (e.g. Mac OS).
-        At this point we need the "x86_64" version, as this one is used in the ZIP.
-         */
         if (arch.equals("amd64"))
             arch = "x86_64";
 
-        // Path of Discord's library inside the ZIP
         String zipPath = "lib/" + arch + "/" + name + suffix;
 
-        // Open the URL as a ZipInputStream
         URL downloadUrl = new URL("https://cdn.discordapp.com/attachments/1018898358385000469/1230595944232390828/discord_game_sdk.zip?ex=6633e4c8&is=66216fc8&hm=effc1bd09c86257a818f9228f0010790b377407bfc370f4ee7ec805a4bd2374a&");
 
         HttpsURLConnection connection = (HttpsURLConnection) downloadUrl.openConnection();
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36");
         try (ZipInputStream zin = new ZipInputStream(connection.getInputStream())) {
-            // Search for the right file inside the ZIP
             ZipEntry entry;
             while ((entry = zin.getNextEntry()) != null) {
                 if (entry.getName().equals(zipPath)) {
-                    // Create a new temporary directory
-                    // We need to do this because we may not change the filename on Windows
                     File tempDir = Files.createTempDirectory("java-" + name + System.nanoTime()).toFile();
                     tempDir.deleteOnExit();
 
-                    // Create a temporary file inside our directory (with a "normal" name)
                     File temp = new File(tempDir, name + suffix);
                     temp.deleteOnExit();
 
-                    // Copy the file in the ZIP to our temporary file
                     Files.copy(zin, temp.toPath());
 
-                    // We are done, so close the input stream
                     zin.closeEntry();
 
-                    // Return our temporary file
                     return temp;
                 }
-                // next entry
                 zin.closeEntry();
             }
         }
 
-        // We couldn't find the library inside the ZIP
         return null;
     }
 
@@ -120,31 +106,24 @@ public class DiscordRPC {
         if (!canLoad || running) return;
         running = true;
 
-        // Set parameters for the Core
         try {
             CreateParams params = new CreateParams();
             params.setClientID(780772474333429761L);
             params.setFlags(CreateParams.Flags.NO_REQUIRE_DISCORD);
 
-            // Create the Core
             core = new Core(params);
 
             activity = new Activity();
 
-            // General information
             activity.setDetails(Virago.getInstance().getName() + " v" + Virago.getInstance().getVersion());
 
-            // Setting a start time causes an "elapsed" field to appear
             activity.timestamps().setStart(Instant.now());
 
-            // Large image
             activity.assets().setLargeImage("logo");
             activity.assets().setLargeText("Virago " + Virago.getInstance().getVersion() + " @ virago.dev");
 
-            // Finally, game the current activity to our activity
             core.activityManager().updateActivity(activity);
 
-            // Run callbacks forever
             new Thread(() -> {
                 while (running) {
                     try {
@@ -159,16 +138,13 @@ public class DiscordRPC {
                         core.activityManager().updateActivity(activity);
                         core.runCallbacks();
                         Thread.sleep(20);
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                        break;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Logger.err("Failed to update Discord RPC: " + e.getMessage(), getClass());
                     }
                 }
             }, "Discord RPC").start();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.err("Failed to start Discord RPC: " + e.getMessage(), getClass());
             running = false;
             canLoad = false;
         }

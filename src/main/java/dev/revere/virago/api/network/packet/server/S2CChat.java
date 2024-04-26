@@ -1,4 +1,4 @@
-package dev.revere.virago.api.packet;
+package dev.revere.virago.api.network.packet.server;
 
 import lombok.var;
 

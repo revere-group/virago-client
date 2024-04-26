@@ -30,7 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @ModuleData(name = "Speed", description = "Increases your movement speed", type = EnumModuleType.MOVEMENT)
 public class Speed extends AbstractModule {
 
-    public final Setting<WatchdogMode> watchdogMode = new Setting<>("Watchdog Mode", WatchdogMode.NO_STRAFE)
+    private final Setting<WatchdogMode> watchdogMode = new Setting<>("Watchdog Mode", WatchdogMode.NO_STRAFE)
             .describedBy("How to control speed on Hypixel");
 
     private final Setting<Double> speedNoStrafe = new Setting<>("Speed (nostrafe)", 2.1)
@@ -40,12 +40,11 @@ public class Speed extends AbstractModule {
             .describedBy("The speed you will go.")
             .visibleWhen(() -> watchdogMode.getValue() == WatchdogMode.NO_STRAFE);
 
-    private double speed, lastDist;
+    private double speed;
+    private double lastDist;
 
     private boolean prevOnGround;
     private double lastMotionX, lastMotionZ;
-
-    private final LinkedBlockingQueue<Packet<?>> packets = new LinkedBlockingQueue<>();
 
     public Speed() {
         setKey(Keyboard.KEY_V);
@@ -59,8 +58,6 @@ public class Speed extends AbstractModule {
                 else mc.timer.timerSpeed = 1.0f;
                 break;
         }
-        if(mc.thePlayer.ticksExisted <= 5)
-            this.packets.clear();
     };
 
     @EventHandler
@@ -82,13 +79,9 @@ public class Speed extends AbstractModule {
                         speed = lastDist - lastDist / 159D;
                     }
 
-                    /*if (mc.thePlayer.hurtTime > 0) {
-                        speed = Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ) + 0.0245F;
-                    }*/
                     if(mc.thePlayer.onGround || prevOnGround) {
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
                     } else if (mc.thePlayer.hurtTime == 9) {
-                        Logger.addChatMessage("Attempting to disable strafe check!");
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
                     } else {
                         mc.thePlayer.setSpeedWithCorrection(event, Math.max(mc.thePlayer.getSpeed(), speed), lastMotionX, lastMotionZ, 0.1);

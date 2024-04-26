@@ -20,7 +20,11 @@ import java.util.Map;
  */
 public class ItemUtil
 {
-
+    /**
+     * Find the best sword in the player's inventory.
+     *
+     * @return the best sword
+     */
     public static ItemStack findBestSword() {
         ItemStack best = null;
         float swordDamage = 0.0f;
@@ -82,6 +86,6 @@ public class ItemUtil
             }
         }
 
-        return ItemUtil.compareDamage(stack, ItemUtil.findBestSword()) != null && ItemUtil.compareDamage(stack, ItemUtil.findBestSword()) == stack || stack.getItem() instanceof ItemBlock || stack.getItem() instanceof ItemPotion && InventoryUtil.isBuffPotion(stack) || stack.getItem() instanceof ItemArmor || stack.getItem() instanceof ItemAppleGold || stack.getItem() instanceof ItemFood || stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemBow || stack.getItem().getUnlocalizedName().contains("arrow");
+        return ItemUtil.compareDamage(stack, ItemUtil.findBestSword()) != null && ItemUtil.compareDamage(stack, ItemUtil.findBestSword()) == stack || stack.getItem() instanceof ItemBlock || stack.getItem() instanceof ItemPotion && InventoryUtil.isBuffPotion(stack) || stack.getItem() instanceof ItemArmor || stack.getItem() instanceof ItemAppleGold || stack.getItem() instanceof ItemFood || stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemBow || stack.getItem() instanceof ItemEnderPearl || stack.getItem().getUnlocalizedName().contains("arrow");
     }
 }

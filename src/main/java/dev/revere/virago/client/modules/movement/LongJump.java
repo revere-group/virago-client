@@ -33,25 +33,9 @@ public class LongJump extends AbstractModule {
 
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.WATCHDOG);
 
-    private final Setting<Float> posY = new Setting<>("Y-Position", 0.48f)
-            .minimum(0.10f)
-            .maximum(1.00f)
-            .incrementation(0.01f);
-
-    private final Setting<Float> speed = new Setting<>("Speed", 0.172f)
-            .minimum(0.10f)
-            .maximum(1.00f)
-            .incrementation(0.01f);
-
     private boolean spartanCanLongJump = false;
     private boolean spartanCheck = false;
     private int spartanJumps;
-
-    private boolean canLongJump = false;
-    private boolean check = false;
-
-    private double moveSpeed = 0;
-    private float yawAtDamage;
     private int tick;
 
     private final TimerUtil timer = new TimerUtil();
@@ -115,7 +99,6 @@ public class LongJump extends AbstractModule {
                 if (!this.spartanCheck && spartanCanLongJump) {
                     boolean doubleJump = timer.hasTimeElapsed(1000L) && !this.timer.hasTimeElapsed(2000L);
                     if (doubleJump) {
-                        Logger.addChatMessage("jump");
                         spartanJumps++;
 
                         if (mc.thePlayer.onGround) {
@@ -124,21 +107,17 @@ public class LongJump extends AbstractModule {
 
                         if (spartanJumps == 0) {
                             mc.thePlayer.motionY = 1.02f;
-                            Logger.addChatMessage("Stage 1");
                         }
                         if (spartanJumps == 1) {
                             mc.thePlayer.motionY = 0.43;
-                            Logger.addChatMessage("Stage 2");
                         }
                         if (spartanJumps == 2) {
-                            Logger.addChatMessage("Stage 3");
                             mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1;
                             spartanJumps = -1;
                         }
                     }
                     if (this.timer.hasTimeElapsed(2000L)) {
                         timer.reset();
-                        Logger.addChatMessage("Toggle");
                         toggleSilent();
                     }
                 }
@@ -178,7 +157,6 @@ public class LongJump extends AbstractModule {
                     if (event.getPacket() instanceof C03PacketPlayer) {
                         C03PacketPlayer packet = event.getPacket();
                         if (spartanJumps >= 3) {
-                            Logger.addChatMessage("damage");
                             packet.setOnGround(true);
                             this.spartanJumps = 0;
                             this.spartanCheck = false;
@@ -213,7 +191,6 @@ public class LongJump extends AbstractModule {
         ScaledResolution sr = new ScaledResolution(mc);
     };
 
-
     @EventHandler
     private final Listener<Render3DEvent> render3DEventListener = event -> {
         switch (mode.getValue()) {
@@ -239,7 +216,6 @@ public class LongJump extends AbstractModule {
                 break;
             case SPARTAN:
                 if (!spartanCheck && spartanCanLongJump) {
-                    Logger.addChatMessage("set speed");
                     mc.thePlayer.setSpeed(event, 1.2);
                 } else if (spartanCheck) {
                     event.setX(0);
@@ -266,8 +242,6 @@ public class LongJump extends AbstractModule {
     public void onEnable() {
         this.spartanJumps = 0;
         this.spartanCheck = true;
-        this.canLongJump = false;
-        this.check = false;
         this.tick = 0;
         this.timer.reset();
         super.onEnable();
@@ -281,6 +255,12 @@ public class LongJump extends AbstractModule {
         return (mc.thePlayer == null || mc.thePlayer.inventoryContainer == null ? null : mc.thePlayer.inventoryContainer.getSlot(getItemIndex() + 36).getStack());
     }
 
+    /**
+     * Strafes the player
+     *
+     * @param speed the speed to strafe
+     * @param yaw   the yaw to strafe
+     */
     public void strafe(final double speed, float yaw) {
         if (!mc.thePlayer.isMoving()) {
             return;

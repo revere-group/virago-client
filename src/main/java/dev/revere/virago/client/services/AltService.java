@@ -32,25 +32,7 @@ public class AltService implements IService {
 
     public AltService() {
         Path altManagerFolder = Paths.get(Virago.getInstance().getClientDir().toString(), "altmanager");
-
         dataFile = Paths.get(altManagerFolder.toString(), "alts.txt");
-
-        /*if(!altManagerFolder.toFile().exists() && altManagerFolder.toFile().mkdir())
-            Logger.info("Created altmanager folder.", getClass());
-
-        if (!altManagerFolder.toFile().exists()) {
-            altManagerFolder.toFile().mkdir();
-        }*/
-
-        /*if (!dataFile.toFile().exists()) {
-            try {
-                if (dataFile.toFile().createNewFile()) {
-                    Logger.info("Created alts file.", getClass());
-                }
-            } catch (Exception e) {
-                Logger.err("Failed to create alts file.", getClass());
-            }
-        }*/
     }
 
     @Override

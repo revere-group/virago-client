@@ -19,9 +19,7 @@ import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
@@ -57,7 +55,7 @@ public class HUD extends AbstractModule {
     public Setting<WatermarkMode> watermarkMode = new Setting<>("Watermark Type", WatermarkMode.CSGO).describedBy("The watermark mode to use for the HUD");
     public Setting<ColorMode> colorMode = new Setting<>("Color", ColorMode.CLIENT).describedBy("The color mode to use for the HUD");
     public Setting<FontType> fontType = new Setting<>("Font", FontType.SF_PRO).describedBy("The font type to use for the HUD");
-    public Setting<Outline> arrayListOutline = new Setting<>("Outline", Outline.TOP_RIGHT)
+    public Setting<OutlineMode> arrayListOutline = new Setting<>("Outline", OutlineMode.TOP_RIGHT)
             .visibleWhen(arraylist::getValue)
             .describedBy("How to outline the arraylist");
 
@@ -468,14 +466,8 @@ public class HUD extends AbstractModule {
         CLIENT,
         CUSTOM,
         RAINBOW,
+        RAINBOW_PULSE,
         STATIC,
-    }
-
-    public enum BarMode {
-        TOP,
-        TOP_RIGHT,
-        RIGHT,
-        FULL
     }
 
     public enum FontType {
@@ -491,7 +483,7 @@ public class HUD extends AbstractModule {
         LOGO,
     }
 
-    public enum Outline {
+    public enum OutlineMode {
         TOP, RIGHT, TOP_RIGHT, LEFT, FULL, NONE
     }
 

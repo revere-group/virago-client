@@ -101,7 +101,7 @@ public class ModuleService implements IService {
                     }
 
                 } catch (IllegalArgumentException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    Logger.err("Failed to add setting " + field.getName() + " to module " + module.getName(), getClass());
                 }
             });
         });

@@ -28,7 +28,6 @@ import java.awt.*;
 @ModuleData(name = "Session Info", description = "Modify the scoreboard aesthetics.", type = EnumModuleType.RENDER)
 public class SessionInfo extends AbstractModule {
 
-    private final Setting<Boolean> shadow = new Setting<>("Text Shadow", true);
     public Setting<FontType> fontType = new Setting<>("Font", FontType.PRODUCT_SANS).describedBy("The font type to use.");
     private final Setting<Integer> opacity = new Setting<>("Opacity", 180)
             .minimum(0)
@@ -36,9 +35,9 @@ public class SessionInfo extends AbstractModule {
             .incrementation(1)
             .describedBy("The opacity for background");
 
-    private Draggable draggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "Session Info", 200, 200));
+    private final Draggable draggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "Session Info", 200, 200));
 
-    FontRenderer fontRenderer;
+    private FontRenderer fontRenderer;
     private int kills = 0;
     private int wins = 0;
     private long sessionTime;
@@ -52,7 +51,6 @@ public class SessionInfo extends AbstractModule {
         RenderUtils.rect(draggable.getX(), draggable.getY() - 1, 115, 50, new Color(0,0,0, opacity.getValue()));
         RoundedUtils.shadowGradient(draggable.getX(), draggable.getY() - 1, 115, 50, 1, 5, 5, new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), new Color(0,0,0, 100), false);
         RenderUtils.renderGradientRect((int) draggable.getX(), (int) draggable.getY() + 14, (int) (115 + draggable.getX()), (int) (draggable.getY() + 15), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
-        //RoundedUtils.round(draggable.getX(), draggable.getY() - 1, 113, 52, 4, new Color(20,20,20, 200));
 
         fontRenderer.drawStringWithShadow("Session Stats", draggable.getX() + 25, draggable.getY() + 2, -1);
 

@@ -91,6 +91,13 @@ public class Draggable {
         }
     }
 
+    /**
+     * Checks if the mouse is hovering over the draggable.
+     *
+     * @param mouseX The x position of the mouse.
+     * @param mouseY The y position of the mouse.
+     * @return True if the mouse is hovering over the draggable.
+     */
     public boolean hovered(float mouseX, float mouseY) {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }

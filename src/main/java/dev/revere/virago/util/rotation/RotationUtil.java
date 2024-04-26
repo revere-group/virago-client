@@ -16,7 +16,7 @@ import java.security.SecureRandom;
  */
 @UtilityClass
 public class RotationUtil {
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
 
     public double getSensitivity() {
         final float sens = mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;

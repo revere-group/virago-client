@@ -40,7 +40,6 @@ import java.awt.*;
  */
 @ModuleData(name = "Breaker", description = "Automatically break blocks for you.", type = EnumModuleType.PLAYER)
 public class Breaker extends AbstractModule {
-
     private final Setting<Boolean> instantBreak = new Setting<>("Instant Break", false);
     private final Setting<Boolean> throughWalls = new Setting<>("Through Walls", true);
     private final Setting<Boolean> emptySurroundings = new Setting<>("Empty Surroundings", true).visibleWhen(throughWalls::getValue);
@@ -136,6 +135,8 @@ public class Breaker extends AbstractModule {
                             continue;
                         }
                     } else if (emptySurroundings.getValue()) {
+                        BlockPos bedPos = new BlockPos(position.getX(), position.getY(), position.getZ());
+                        BlockPos blockAboveBedPos = bedPos.up();
                         Vector3d addVec = position;
                         double hardness = Double.MAX_VALUE;
                         boolean empty = false;
@@ -149,7 +150,9 @@ public class Breaker extends AbstractModule {
                                     if (Math.abs(addX) + Math.abs(addY) + Math.abs(addZ) != 1) {
                                         continue;
                                     }
-
+                                    if (!mc.theWorld.isAirBlock(blockAboveBedPos)) {
+                                        return new Vector3d(blockAboveBedPos.getX(), blockAboveBedPos.getY(), blockAboveBedPos.getZ());
+                                    }
                                     Block possibleBlock = PlayerUtil.block(position.getX() + addX, position.getY() + addY, position.getZ() + addZ);
 
                                     if (possibleBlock instanceof BlockBed) {

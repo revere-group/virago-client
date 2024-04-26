@@ -59,8 +59,6 @@ public class NotificationService implements IService {
         notifications.add(new Notification(scaledResolution.getScaledWidth() - 205, scaledResolution.getScaledHeight() - 30 * notifications.size(), type, title, message, duration));
     }
 
-
-
     /**
      * Renders all the notifications in the list.
      *

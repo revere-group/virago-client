@@ -21,7 +21,6 @@ public class EventObject {
         this.eventExecutables = new ArrayList<>();
     }
 
-
     public Object getObject() {
         return object;
     }

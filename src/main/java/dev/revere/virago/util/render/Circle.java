@@ -1,6 +1,7 @@
 package dev.revere.virago.util.render;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.Vec3;
 
 public class Circle {
@@ -44,6 +45,6 @@ public class Circle {
      * @return the position
      */
     public Vec3 pos() {
-        return new Vec3(this.vector.xCoord - Minecraft.getMinecraft().getRenderManager().renderPosX, this.vector.yCoord - Minecraft.getMinecraft().getRenderManager().renderPosY, this.vector.zCoord - Minecraft.getMinecraft().getRenderManager().renderPosZ);
+        return new Vec3(this.vector.xCoord - RenderManager.renderPosX, this.vector.yCoord - RenderManager.renderPosY, this.vector.zCoord - RenderManager.renderPosZ);
     }
 }

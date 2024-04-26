@@ -17,5 +17,4 @@ public class ViragoUser {
     private final String username;
     private final String uid;
     private final Rank rank;
-
 }

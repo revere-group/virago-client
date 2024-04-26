@@ -34,7 +34,6 @@ public class AutoHead extends AbstractModule {
             .minimum(0)
             .incrementation(5);
 
-
     @EventHandler
     private final Listener<UpdateEvent> onUpdate = event -> {
       if(mc.thePlayer.getHealth() < minHealth.getValue() && timer.hasTimeElapsed(delay.getValue())) {

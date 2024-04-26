@@ -1,10 +1,10 @@
-package dev.revere.virago.api.socket;
+package dev.revere.virago.api.network.socket;
 
-import dev.revere.virago.Virago;
-import dev.revere.virago.api.event.handler.EventHandler;
-import dev.revere.virago.api.packet.*;
+import dev.revere.virago.api.network.packet.client.C2SLogin;
+import dev.revere.virago.api.network.packet.client.C2SUpdate;
+import dev.revere.virago.api.network.packet.server.S2CChat;
+import dev.revere.virago.api.network.packet.server.S2CLogin;
 import dev.revere.virago.api.protection.rank.Rank;
-import dev.revere.virago.client.events.player.IRCEvent;
 import dev.revere.virago.util.Logger;
 import lombok.var;
 import net.minecraft.client.Minecraft;
@@ -13,26 +13,20 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 
-import static dev.revere.virago.api.socket.SocketHelper.socket;
+import static dev.revere.virago.api.network.socket.SocketHelper.createSocketConnection;
 
 public class SocketClient {
     public static String jwt;
     private static final String URL = "ws://89.168.45.104:7376";
     private static final String DEV = "ws://localhost:7376";
     public static String key = "";
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("MMM/dd/yyyy HH:mm");
-
-    public static String getURL(String path) {
-        return String.format("%s%s", URL, path);
-    }
 
     public static void init(String licenseKey) {
         key = licenseKey;
 
-        socket(URI.create(getURL("/auth/login")), new SocketHelper.WebSocketHandler() {
+        createSocketConnection(URI.create(getURL("/auth/login")), new SocketHelper.WebSocketHandler() {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 send(new C2SLogin(licenseKey));
@@ -51,12 +45,11 @@ public class SocketClient {
             }
         });
 
-
         refresh();
     }
 
     public static void refresh() {
-        socket(URI.create(getURL("/chat/update")), new SocketHelper.WebSocketHandler() {
+        createSocketConnection(URI.create(getURL("/chat/update")), new SocketHelper.WebSocketHandler() {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 send(new C2SUpdate(key));
@@ -87,5 +80,9 @@ public class SocketClient {
                 refresh();
             }
         });
+    }
+
+    public static String getURL(String path) {
+        return String.format("%s%s", URL, path);
     }
 }

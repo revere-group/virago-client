@@ -24,7 +24,6 @@ public class Logger {
     public static void info(String message, Class<?> type) {
         String date = new SimpleDateFormat("hh:mm:ss").format(new Date());
         LogManager.getLogger(Virago.getInstance().getName()).info("[VIRAGO] [" + date + "] INFO " + type.getSimpleName() + ": " + message);
-        //System.out.println("[" + date + "] INFO " + type.getSimpleName() + ": " + message);
     }
 
     /**
@@ -36,7 +35,6 @@ public class Logger {
     public static void warn(String message, Class<?> type) {
         String date = new SimpleDateFormat("hh:mm:ss").format(new Date());
         LogManager.getLogger(Virago.getInstance().getName()).warn("[VIRAGO] [" + date + "] WARN " + type.getSimpleName() + ": " + message);
-        //System.out.println("[" + date + "] WARN " + type.getSimpleName() + ": " + message);
     }
 
     /**
@@ -48,7 +46,6 @@ public class Logger {
     public static void err(String message, Class<?> type) {
         String date = new SimpleDateFormat("hh:mm:ss").format(new Date());
         LogManager.getLogger(Virago.getInstance().getName()).fatal("[VIRAGO] [" + date + "] ERROR " + type.getSimpleName() + ": " + message);
-        //System.out.println("[" + date + "] ERROR " + type.getSimpleName() + ": " + message);
     }
 
     /**

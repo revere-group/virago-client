@@ -23,8 +23,7 @@ import java.util.List;
 @ModuleData(name = "Anti Void", description = "Prevents you from falling into the void.", type = EnumModuleType.PLAYER)
 public class AntiVoid extends AbstractModule {
 
-    private List<Packet> packets = new ArrayList<>();
-    private BlockPos lastGroundPosition;
+    private final List<Packet> packets = new ArrayList<>();
     private boolean worldLoaded;
     private Vec3 position;
 
@@ -93,10 +92,23 @@ public class AntiVoid extends AbstractModule {
         packets.clear();
     }
 
+    /**
+     * Checks if there is a block under the player
+     *
+     * @param height The height to check
+     * @return If there is a block under the player
+     */
     public boolean isBlockUnder(final double height) {
         return isBlockUnder(height, true);
     }
 
+    /**
+     * Checks if there is a block under the player
+     *
+     * @param height       The height to check
+     * @param boundingBox  If the bounding box should be used
+     * @return If there is a block under the player
+     */
     public boolean isBlockUnder(final double height, final boolean boundingBox) {
         if (!worldLoaded) {
             return true;

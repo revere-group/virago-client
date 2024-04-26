@@ -13,7 +13,6 @@ public class MathConst {
     public static final float TO_RADIANS = PI / 180.0F;
     public static final float TO_DEGREES = 180.0F / PI;
 
-    // stores sin/cos values from 0-360°
     public static final float[] COSINE = new float[361];
     public static final float[] SINE = new float[361];
 

@@ -1,13 +1,13 @@
-package dev.revere.virago.api.packet;
+package dev.revere.virago.api.network.packet.client;
 
 import lombok.var;
 
 import java.util.Objects;
 
-public final class C2SLogin {
+public final class C2SUpdate {
     private final String licenseKey;
 
-    public C2SLogin(
+    public C2SUpdate(
             String licenseKey
     ) {
         this.licenseKey = licenseKey;
@@ -21,7 +21,7 @@ public final class C2SLogin {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (C2SLogin) obj;
+        var that = (C2SUpdate) obj;
         return Objects.equals(this.licenseKey, that.licenseKey);
     }
 
@@ -32,7 +32,8 @@ public final class C2SLogin {
 
     @Override
     public String toString() {
-        return "C2SLogin[" +
+        return "C2SUpdateC[" +
                 "licenseKey=" + licenseKey + ']';
     }
+
 }

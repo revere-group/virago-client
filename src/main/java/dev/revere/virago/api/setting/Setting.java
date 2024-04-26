@@ -44,6 +44,12 @@ public class Setting<T> {
         }
     }
 
+    /**
+     * Get the mode of the setting.
+     *
+     * @param previous If the mode should be the previous mode.
+     * @return The mode.
+     */
     public T getMode(boolean previous) {
         if (getValue() instanceof Enum<?>) {
             Enum<?> enumeration = (Enum<?>) getValue();
@@ -62,31 +68,67 @@ public class Setting<T> {
         return null;
     }
 
+    /**
+     * Set the minimum value of the setting.
+     *
+     * @param minimum The minimum value.
+     * @return The setting.
+     */
     public Setting<T> minimum(T minimum) {
         this.minimum = minimum;
         return this;
     }
 
+    /**
+     * Set the maximum value of the setting.
+     *
+     * @param maximum The maximum value.
+     * @return The setting.
+     */
     public Setting<T> maximum(T maximum) {
         this.maximum = maximum;
         return this;
     }
 
+    /**
+     * Set the incrementation value of the setting.
+     *
+     * @param incrementation The incrementation value.
+     * @return The setting.
+     */
     public Setting<T> incrementation(T incrementation) {
         this.incrementation = incrementation;
         return this;
     }
 
+    /**
+     * Set the description of the setting.
+     *
+     * @param description The description.
+     * @return The setting.
+     */
     public Setting<T> describedBy(String description) {
         this.description = description;
         return this;
     }
 
+    /**
+     * Set the visibility of the setting.
+     *
+     * @param visibility The visibility.
+     * @return The setting.
+     */
     public Setting<T> visibleWhen(Supplier<Boolean> visibility) {
         this.visibility = visibility;
         return this;
     }
 
+    /**
+     * Set the parent of the setting.
+     *
+     * @param parent The parent.
+     * @return The setting.
+     */
     public Setting<T> childOf(Setting<?> parent) {
         this.parent = parent;
         this.parent.children.add(this);
@@ -112,5 +154,4 @@ public class Setting<T> {
     public boolean isVisible() {
         return visibility.get();
     }
-
 }

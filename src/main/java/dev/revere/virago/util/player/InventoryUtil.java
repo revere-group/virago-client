@@ -140,6 +140,13 @@ public class InventoryUtil {
                 getToolEfficiency(itemStack) > bestTool.getEfficiency();
     }
 
+    /**
+     * Check if the item is the best bow in the player's inventory
+     *
+     * @param player    The player to check
+     * @param itemStack The item to check
+     * @return True if the item is the best bow in the player's inventory
+     */
     public static boolean isBestBow(final EntityPlayerSP player,
                                     final ItemStack itemStack) {
         double bestBowDmg = -1.0;
@@ -160,6 +167,12 @@ public class InventoryUtil {
         return itemStack == bestBow || getBowDamage(itemStack) > bestBowDmg;
     }
 
+    /**
+     * Get the damage reduction of the item
+     *
+     * @param stack The item to check
+     * @return The damage reduction of the item
+     */
     public static double getDamageReduction(final ItemStack stack) {
         double reduction = 0.0;
 

@@ -29,29 +29,40 @@ public class AntiBot extends AbstractModule {
     private final Listener<UpdateEvent> playerUpdateEvent = event -> {
         List<EntityPlayer> playerEntities = mc.theWorld.playerEntities;
 
-        int i = 0;
-        int playerEntitiesSize = playerEntities.size();
-        while (i < playerEntitiesSize) {
-            EntityPlayer player = playerEntities.get(i);
+        for (EntityPlayer player : playerEntities) {
             if (player == null) {
                 return;
             }
             if (player.getName().startsWith("\u00a7") && player.getName().contains("\u00a7c") || this.isEntityBot(player) && !player.getDisplayName().getFormattedText().contains("NPC")) {
                 mc.theWorld.removeEntity(player);
             }
-            ++i;
         }
     };
 
-
+    /**
+     * Method to check if the entity is a bot.
+     *
+     * @param entity the entity to check
+     * @return true if the entity is a bot, false otherwise
+     */
     private boolean isEntityBot(Entity entity) {
         if (!(entity instanceof EntityPlayer)) {
             return false;
         }
-        if (mc.getCurrentServerData() != null) return AntiBot.mc.getCurrentServerData().serverIP.toLowerCase().contains("hypixel") && entity.getDisplayName().getFormattedText().startsWith("&") || !this.isOnTab(entity) && AntiBot.mc.thePlayer.ticksExisted > 100;
+
+        if (mc.getCurrentServerData() != null) {
+            String serverIP = mc.getCurrentServerData().serverIP.toLowerCase();
+            return serverIP.contains("hypixel") && entity.getDisplayName().getFormattedText().startsWith("&") || (!this.isOnTab(entity) && mc.thePlayer.ticksExisted > 100);
+        }
         return false;
     }
 
+    /**
+     * Method to check if the entity is on the tab list.
+     *
+     * @param entity the entity to check
+     * @return true if the entity is on the tab list, false otherwise
+     */
     private boolean isOnTab(Entity entity) {
         Iterator<NetworkPlayerInfo> iterator = mc.getNetHandler().getPlayerInfoMap().iterator();
         do {

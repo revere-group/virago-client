@@ -82,9 +82,10 @@ public class MathUtil {
 
     /**
      * Clamps a number, n, to be within a specified range
+     *
      * @param min The minimum permitted value of the input
      * @param max The maximum permitted value of the input
-     * @param n The input number to clamp
+     * @param n   The input number to clamp
      * @return The input, bounded by the specified minimum and maximum values
      */
     public double clamp(double min, double max, double n) {
