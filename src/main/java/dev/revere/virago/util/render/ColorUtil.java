@@ -264,7 +264,7 @@ public class ColorUtil {
                 }
             case RAINBOW_PULSE:
                 if (animate) {
-                    return ColorUtil.fadeBetween(hud.fadeSpeed.getValue().intValue(), hud.y * hud.colorSpacing.getValue().intValue(), hud.customColor1.getValue(), new Color(rainbow(1000))).getRGB();
+                    return ColorUtil.fadeBetween(hud.fadeSpeed.getValue().intValue(), hud.y * hud.colorSpacing.getValue().intValue(), Color.WHITE, new Color(rainbow(1000))).getRGB();
                 } else {
                     return hud.customColor1.getValue().getRGB();
                 }
