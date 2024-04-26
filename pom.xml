@@ -28,6 +28,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
+                                    <include>com.github.JnCrMx:discord-game-sdk4j</include>
                                     <include>org.projectlombok:lombok</include>
                                     <include>org.reflections:reflections</include>
                                     <include>org.json:json</include>
@@ -57,6 +58,10 @@
         <repository>
             <id>central</id>
             <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -262,17 +267,16 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.jncrmx</groupId>
+            <groupId>com.github.JnCrMx</groupId>
             <artifactId>discord-game-sdk4j</artifactId>
             <version>0.5.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/discord-game-sdk4j-0.5.5.jar</systemPath>
         </dependency>
 
         <dependency>
             <groupId>org.java-websocket</groupId>
             <artifactId>Java-WebSocket</artifactId>
             <version>1.5.6</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
