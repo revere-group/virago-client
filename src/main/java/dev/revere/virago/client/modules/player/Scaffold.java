@@ -165,10 +165,9 @@ public class Scaffold extends AbstractModule {
             info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
         }
 
-        if (mc.thePlayer.posY < yCoordinate && !mc.gameSettings.keyBindJump.isKeyDown() && mode.getValue() == Mode.WATCHDOG_JUMP) {
+        if (mc.thePlayer.posY <= yCoordinate && !mc.gameSettings.keyBindJump.isKeyDown() && mode.getValue() == Mode.WATCHDOG_JUMP) {
             fuckedUp = true;
         }
-
 
         if (!firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
@@ -182,7 +181,6 @@ public class Scaffold extends AbstractModule {
                 mc.thePlayer.jump();
                 yCoordinate = mc.thePlayer.posY;
                 yCoordinateUpdated = true;
-                placeTimer.reset();
             }
             if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
@@ -232,13 +230,12 @@ public class Scaffold extends AbstractModule {
                 yCoordinate = mc.thePlayer.posY;
             }
             if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving()) {
-                Logger.addChatMessage("We are now jumping for each block");
                 mc.thePlayer.jump();
             } else if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
 
         if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving()) {
-            mc.thePlayer.setSprinting(false);
+            mc.thePlayer.setSprinting(true);
         } else if (mode.getValue() != Mode.WATCHDOG) {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
         }
@@ -347,12 +344,10 @@ public class Scaffold extends AbstractModule {
 
         if (mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (firstJump) {
-                mc.thePlayer.setSpeed(e, 0.05);
+                mc.thePlayer.setSpeed(e, 0.02);
             } else {
                 if (!mc.gameSettings.keyBindJump.isKeyDown()) {
-                    //mc.thePlayer.setSpeed(e, 0.26);
-                    //mc.thePlayer.motionX *= 0.99;
-                    //mc.thePlayer.motionZ *= 0.99;
+                    mc.thePlayer.setSpeed(e, mc.thePlayer.getSpeed());
                 } else {
                     mc.thePlayer.setSpeed(e, 0.3);
                 }
@@ -361,7 +356,7 @@ public class Scaffold extends AbstractModule {
 
         if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
             if (isGoingDiagonally()) {
-                mc.thePlayer.setSpeed(e, 0.26);
+                mc.thePlayer.setSpeed(e, 0.25);
             } else {
                 mc.thePlayer.setSpeed(e, 0.27);
             }
@@ -412,6 +407,7 @@ public class Scaffold extends AbstractModule {
     }
 
     private boolean sendPlace() {
+        isPlacing = true;
         return mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, getPlacingItem(), info.getPos(), info.getFacing(), getHitVec(info));
     }
 

@@ -23,6 +23,7 @@ import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
+import dev.revere.virago.util.render.RoundedUtils;
 import dev.revere.virago.util.rotation.RotationUtil;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.ScaledResolution;
@@ -659,33 +660,35 @@ public class KillAura extends AbstractModule {
             float width = Math.max(75.0f, fontRenderer.getStringWidth(playerName) + 45.0f);
 
             GL11.glTranslatef(x, y, 0.0f);
-            RenderUtils.drawRoundedRect(0.0f, 0.0f, 28.0f + width, 28.0f, 2.0f, ColorUtil.reAlpha(-16777216, 0.5f));
+            RoundedUtils.glRound(0.0f, 0.0f, 28f + width, 36.0f, 6.0f, new Color(0, 0, 0, 150).getRGB());
+            RoundedUtils.shadowGradient(0.0f, 0.0f, 28.0f + width, 36.0f, 5f, 10f, 10f, new Color(ColorUtil.reAlpha(-16777216, 0.5f)), new Color(ColorUtil.reAlpha(-16777216, 0.5f)), new Color(ColorUtil.reAlpha(-16777216, 0.5f)), new Color(ColorUtil.reAlpha(-16777216, 0.5f)), false);
 
-            fontRenderer.drawString(playerName, 30.0f, 3.0f, -1);
-            fontRenderer.drawString(healthStr, 26.0f + width - fontRenderer.getStringWidth(healthStr) - 2.0f, 4.0f, -3355444);
-
-            RenderUtils.drawRect(37.0f, 14.5f, 26.0f + width - 2.0f, 17.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
+            fontRenderer.drawString(playerName, 32.0f, 7.0f, -1);
+            fontRenderer.drawString(healthStr, 28.0f + width - fontRenderer.getStringWidth(healthStr) - 2.0f, 8.0f, -3355444);
 
             float health = target.getHealth();
             double hpPercentage = health / target.getMaxHealth();
             hpPercentage = MathHelper.clamp_double(hpPercentage, 0.0, 1.0);
             float barWidth = 26.0f + width - 2.0f - 37.0f;
             float drawPercent = (float) (37.0 + (double) (barWidth / 100.0f) * (hpPercentage * 100.0));
-            RenderUtils.renderGradientRect(37, 14, (int) drawPercent, 17, 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
 
-            font.getIcon10().drawString("s", 30.0f, 16.0f, -1);
-            font.getIcon10().drawString("r", 30.0f, 23.0f, -1);
+            RenderUtils.drawRect(38.0f, 17.5f, 26.0f + width - 2.0f, 22.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
+            RenderUtils.renderGradientRect(38, 17, (int) drawPercent, 22, 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
+
+            font.getIcon10().drawString("s", 32.0f, 19f, -1);
+            font.getIcon10().drawString("r", 32.0f, 27.5f, -1);
 
             float f3 = 37.0f + barWidth / 100.0f * (float) (this.ent.getTotalArmorValue() * 5);
-            RenderUtils.drawRect(37.0f, 21.5f, 26.0f + width - 2.0f, 24.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
-            RenderUtils.drawRect(37.0f, 21.5f, f3, 24.5f, -12417291);
+            RenderUtils.drawRect(38.0f, 24.5f, 26.0f + width - 2.0f, 29.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
+            RenderUtils.drawRect(38.0f, 24.5f, f3, 29.5f, -12417291);
+
             GlStateManager.resetColor();
             for (NetworkPlayerInfo info : GuiPlayerTabOverlay.field_175252_a.sortedCopy(mc.getNetHandler().getPlayerInfoMap())) {
                 if (mc.theWorld.getPlayerEntityByUUID(info.getGameProfile().getId()) != this.ent) continue;
                 mc.getTextureManager().bindTexture(info.getLocationSkin());
-                this.drawScaledCustomSizeModalRect(2.0f, 2.0f, 8.0f, 8.0f, 8.0f, 8.0f, 24.0f, 24.0f, 64.0f, 64.0f);
+                this.drawScaledCustomSizeModalRect(5.0f, 6.0f, 8.0f, 8.0f, 8.0f, 8.0f, 24.0f, 24.0f, 64.0f, 64.0f);
                 if (this.ent.isWearing(EnumPlayerModelParts.HAT)) {
-                    this.drawScaledCustomSizeModalRect(2.0f, 2.0f, 40.0f, 8.0f, 8.0f, 8.0f, 24.0f, 24.0f, 64.0f, 64.0f);
+                    this.drawScaledCustomSizeModalRect(5.0f, 6.0f, 40.0f, 8.0f, 8.0f, 8.0f, 24.0f, 24.0f, 64.0f, 64.0f);
                 }
                 GlStateManager.bindTexture(0);
                 break;

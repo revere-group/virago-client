@@ -286,24 +286,24 @@ public class GuiAltManager extends GuiScreen {
                 altmgr.save();
                 break;
             case 0: {
-                MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
                 try {
-                    CompletableFuture<MicrosoftAuthResult> result = authenticator.loginWithAsyncWebview();
+                    MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
+                    MicrosoftAuthResult result = authenticator.loginWithWebview();
+
                     if (result == null) {
                         altmgr.setStatus(EnumChatFormatting.RED + "Failed to login.");
-                        return;
+                        break;
                     }
-                    MinecraftProfile profile = result.get().getProfile();
-                    Logger.info("Logged in as " + profile.getName() + " with UUID " + profile.getId() + " and access token " + result.get().getAccessToken() + ".", getClass());
-                    mc.session = new Session(profile.getName(), profile.getId(), result.get().getAccessToken(), "microsoft");
+
+                    MinecraftProfile profile = result.getProfile();
+                    Logger.info("Logged in as " + profile.getName() + " with UUID " + profile.getId() + " and access token " + result.getAccessToken() + ".", getClass());
+                    mc.session = new Session(profile.getName(), profile.getId(), result.getAccessToken(), "microsoft");
                     altmgr.setStatus(EnumChatFormatting.GREEN + "Logged in as " + profile.getName() + ".");
-                    altmgr.addAlt(new Alt(profile.getName(), profile.getName(), result.get().getAccessToken(), "cookie", profile.getId()));
+                    altmgr.addAlt(new Alt(profile.getName(), profile.getName(), result.getAccessToken(), "cookie", profile.getId()));
                     combo.setText("");
                     altmgr.save();
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    Logger.err("Failed to login with Microsoft account: " + e.getMessage(), getClass());
                 }
                 break;
             }
