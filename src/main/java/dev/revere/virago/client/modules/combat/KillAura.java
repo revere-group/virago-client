@@ -7,12 +7,14 @@ import dev.revere.virago.api.font.FontRenderer;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
+import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.player.StrafeEvent;
+import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import dev.revere.virago.client.modules.misc.Teams;
 import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.modules.render.HUD;
@@ -122,6 +124,10 @@ public class KillAura extends AbstractModule {
         setMetaData("R: " + range.getValue().floatValue() + " APS: " + aps.getValue().floatValue());
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
             return;
+
+        if (SocketClient.jwt == null && (!(mc.currentScreen instanceof GuiLicenceKey))) {
+            System.exit(0);
+        }
 
         this.target = this.getSingleTarget();
 
