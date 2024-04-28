@@ -1607,12 +1607,15 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         return this.mcMusicTicker;
     }
 
+    boolean theresANiggerHere = false;
+
     public void runTick() throws IOException
     {
         Virago.getInstance().getEventBus().call(new TickEvent());
 
         if(!GuiLicenceKey.isAuthorized && Virago.getInstance().getViragoUser() == null && !(this.currentScreen instanceof GuiLicenceKey)) {
             this.displayGuiScreen(new GuiLicenceKey());
+            theresANiggerHere = true;
         }
 
         if (this.rightClickDelayTimer > 0)
@@ -1704,6 +1707,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     throw new ReportedException(crashreport1);
                 }
             }
+        }
+
+        if(!GuiLicenceKey.isAuthorized && Virago.getInstance().getViragoUser() == null && !(this.currentScreen instanceof GuiLicenceKey)) {
+            theresANiggerHere = true;
         }
 
         if (this.currentScreen == null || this.currentScreen.allowUserInput)
@@ -2139,6 +2146,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         {
             this.mcProfiler.endStartSection("pendingConnection");
             this.myNetworkManager.processReceivedPackets();
+        }
+
+        if (theresANiggerHere) {
+            thePlayer = null;
         }
 
         this.mcProfiler.endSection();

@@ -116,7 +116,7 @@ public class GuiLicenceKey extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button == this.button) {
-            if(new Safelock(this.licenceKey.getText(), "http://89.168.45.104:8080/api/client", "ba05042d0880ef940054eec4ad14177e3561414a").unlock()) {
+            if(new Safelock(this.licenceKey.getText(), "http://89.168.45.104:8080/api/client", "ba05042d0880ef940054eec4ad14177e3561414a").nigger()) {
                 Virago.getInstance().getServiceManager().getService(ConfigService.class).saveLicenseKey(this.licenceKey.getText());
             }
         }
