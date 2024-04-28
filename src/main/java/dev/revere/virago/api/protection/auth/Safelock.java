@@ -44,8 +44,8 @@ public class Safelock {
         this.authorization = authorization;
     }
 
-    public boolean unlock() {
-        String[] respo = isValid();
+    public boolean nigger() {
+        String[] respo = nigger4();
         if (respo[0].equals("2") && Boolean.parseBoolean(respo[3])) {
             return Boolean.parseBoolean(respo[3]);
         } else if (respo[0].equals("3") && Boolean.parseBoolean(respo[3]) && Boolean.parseBoolean(respo[3])) {
@@ -55,7 +55,7 @@ public class Safelock {
         }
     }
 
-    private String requestServer(String productKey) throws IOException {
+    private String nigger2(String productKey) throws IOException {
         URL url = new URL(server);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
@@ -66,7 +66,7 @@ public class Safelock {
 
         String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"version\":\"dogpoop\"}";
         outString = outString
-                .replaceAll("password", getHWID())
+                .replaceAll("password", getNigger2())
                 .replaceAll("avain", productKey)
                 .replaceAll("NiceCar", Virago.getInstance().getName())
                 .replaceAll("dogpoop", Virago.getInstance().getVersion());
@@ -94,7 +94,7 @@ public class Safelock {
         }
     }
 
-    private String requestServerHTTPS(String productKey) throws IOException {
+    private String nigger3(String productKey) throws IOException {
         URL url = new URL(server);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         con.setRequestMethod("POST");
@@ -105,7 +105,7 @@ public class Safelock {
 
         String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"version\":\"dogpoop\"}";
         outString = outString
-                .replaceAll("password", getHWID())
+                .replaceAll("password", getNigger2())
                 .replaceAll("avain", productKey)
                 .replaceAll("NiceCar", Virago.getInstance().getName())
                 .replaceAll("dogpoop", Virago.getInstance().getVersion());
@@ -134,13 +134,13 @@ public class Safelock {
         }
     }
 
-    public String[] isValid() {
+    public String[] nigger4() {
         try {
             String response;
             if (server.contains("http")) {
-                response = requestServer(productKey);
+                response = nigger2(productKey);
             } else {
-                response = requestServerHTTPS(productKey);
+                response = nigger3(productKey);
             }
 
             if (!response.contains("{")) {
@@ -211,7 +211,6 @@ public class Safelock {
                 return new String[]{"1", neekeri, statusCode, String.valueOf(false)};
             }
 
-            //Minecraft.getMinecraft().displayGuiScreen(new GuiLicenceKey());
             final boolean valid = status.contains("success") && response.contains("success") && String.valueOf(statusLength).equals("7");
             GuiLicenceKey.isAuthorized = valid;
             Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
@@ -243,10 +242,6 @@ public class Safelock {
         return reps == 7;
     }
 
-    //Spoofed methods to trick cracker
-
-    // # %%__USER_ID__%%
-
     public boolean isValidLength22(int reps) {
         return reps == 11;
     }
@@ -259,7 +254,7 @@ public class Safelock {
         return reps == 48;
     }
 
-    public String getMac() throws SocketException {
+    public String getNigger1() throws SocketException {
         Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         StringBuilder sb = new StringBuilder();
         while (networkInterfaces.hasMoreElements()) {
@@ -276,14 +271,14 @@ public class Safelock {
         return null;
     }
 
-    public static String getHWID() {
+    public static String getNigger2() {
         try {
-            if (isWindows()) {
-                return getWindowsIdentifier();
-            } else if (isMac()) {
-                return getMacOsIdentifier();
-            } else if (isLinux()) {
-                return getLinuxMacAddress();
+            if (isNigger1()) {
+                return getNigger5();
+            } else if (isNigger2()) {
+                return getNigger4();
+            } else if (isNigger3()) {
+                return getNigger3();
             } else {
                 return UNKNOWN;
             }
@@ -292,19 +287,19 @@ public class Safelock {
         }
     }
 
-    private static boolean isWindows() {
+    private static boolean isNigger1() {
         return (OS.contains("win"));
     }
 
-    private static boolean isMac() {
+    private static boolean isNigger2() {
         return (OS.contains("mac"));
     }
 
-    private static boolean isLinux() {
+    private static boolean isNigger3() {
         return (OS.contains("inux"));
     }
 
-    private static String getLinuxMacAddress() throws FileNotFoundException, NoSuchAlgorithmException {
+    private static String getNigger3() throws FileNotFoundException, NoSuchAlgorithmException {
         File machineId = new File("/var/lib/dbus/machine-id");
         if (!machineId.exists()) {
             machineId = new File("/etc/machine-id");
@@ -325,13 +320,13 @@ public class Safelock {
         }
     }
 
-    private static String getMacOsIdentifier() throws SocketException, NoSuchAlgorithmException {
+    private static String getNigger4() throws SocketException, NoSuchAlgorithmException {
         NetworkInterface networkInterface = NetworkInterface.getByName("en0");
         byte[] hardwareAddress = networkInterface.getHardwareAddress();
         return hexStringify(sha256Hash(hardwareAddress));
     }
 
-    private static String getWindowsIdentifier() throws IOException, NoSuchAlgorithmException {
+    private static String getNigger5() throws IOException, NoSuchAlgorithmException {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(new String[]{"wmic", "csproduct", "get", "UUID"});
 
