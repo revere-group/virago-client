@@ -110,9 +110,6 @@ public class Speed extends AbstractModule {
 
                         double randomFactor = lowerBound + Math.random() * (upperBound - lowerBound);
                         double difference = (randomFactor * (lastDist - mc.thePlayer.getBaseMoveSpeed()));
-                        if (randomFactor > 1.276) {
-                            Logger.addChatMessage("[Debug] Boosted by " + randomFactor);
-                        }
                         speed = lastDist - difference;
                     } else {
                         speed = lastDist - lastDist / 159D;
