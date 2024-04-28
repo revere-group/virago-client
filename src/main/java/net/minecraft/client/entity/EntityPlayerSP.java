@@ -4,6 +4,7 @@ import dev.revere.virago.Virago;
 import dev.revere.virago.api.network.packet.client.C2SChat;
 import dev.revere.virago.api.network.socket.SocketHelper;
 import dev.revere.virago.client.events.player.*;
+import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import dev.revere.virago.client.modules.player.NoSlow;
 import dev.revere.virago.client.services.CommandService;
 import dev.revere.virago.client.services.ModuleService;
@@ -265,6 +266,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public EntityItem dropOneItem(boolean dropAll)
     {
+        if(!GuiLicenceKey.isAuthorized && !(Minecraft.getMinecraft().currentScreen instanceof GuiLicenceKey)) {
+            System.exit(0);
+        }
+
         C07PacketPlayerDigging.Action c07packetplayerdigging$action = dropAll ? C07PacketPlayerDigging.Action.DROP_ALL_ITEMS : C07PacketPlayerDigging.Action.DROP_ITEM;
         this.sendQueue.addToSendQueue(new C07PacketPlayerDigging(c07packetplayerdigging$action, BlockPos.ORIGIN, EnumFacing.DOWN));
         return null;
@@ -276,6 +281,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void sendChatMessage(String message)
     {
+        if (Virago.getInstance().getViragoUser() == null) {
+            System.exit(0);
+        }
+
         if (message.startsWith(".")) {
             Virago.getInstance().getServiceManager().getService(CommandService.class).executeCommand(message);
             return;
