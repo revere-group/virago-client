@@ -19,8 +19,8 @@ import static dev.revere.virago.api.network.socket.SocketHelper.createSocketConn
 
 public class SocketClient {
     public static String jwt;
-    private static final String URL = "ws://89.168.45.104:7376";
-    private static final String DEV = "ws://localhost:7376";
+    private static String URL = "ws://89.168.45.104:7376";
+    private static String DEV = "ws://localhost:7376";
     public static String key = "";
 
     public static void init(String licenseKey) {
