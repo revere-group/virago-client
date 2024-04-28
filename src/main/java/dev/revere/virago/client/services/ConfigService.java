@@ -26,13 +26,13 @@ import java.util.Map;
 @Setter
 public class ConfigService implements IService {
 
-    private final HashMap<String, File> directories = new HashMap(){{
-        put("virago", new File("virago"));
-        put("configs", new File("virago/configs"));
-        put("altmanager", new File("virago/altmanager"));
-    }};;
-
+    private File clientDir = Virago.getInstance().getClientDir();
     private File altDataFile;
+
+    private final HashMap<String, File> directories = new HashMap(){{
+        put("configs", new File(clientDir, "configs"));
+        put("altmanager", new File(clientDir, "altmanager"));
+    }};;
 
     @Override
     public void initService() {
@@ -232,7 +232,7 @@ public class ConfigService implements IService {
      * @param key the license key
      */
     public void saveLicenseKey(String key) {
-        File file = new File(directories.get("virago"), "license.txt");
+        File file = new File(clientDir, "license.txt");
         try {
             if (!file.exists()) {
                 file.createNewFile();
@@ -255,7 +255,7 @@ public class ConfigService implements IService {
      */
     public String loadLicenseKey() {
         String result = "";
-        File file = new File(directories.get("virago"), "license.txt");
+        File file = new File(clientDir, "license.txt");
         try {
             if (!file.exists()) return result;
 
