@@ -309,9 +309,8 @@ public class GuiIngame extends Gui
 
         ScoreObjective scoreobjective1 = scoreobjective != null ? scoreobjective : scoreboard.getObjectiveInDisplaySlot(1);
 
-        if (scoreobjective1 != null)
-        {
-            //this.renderScoreboard(scoreobjective1, scaledresolution);
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(dev.revere.virago.client.modules.render.Scoreboard.class).isEnabled()) {
+            this.renderScoreboard(scoreobjective1, scaledresolution);
         }
 
         GlStateManager.enableBlend();
