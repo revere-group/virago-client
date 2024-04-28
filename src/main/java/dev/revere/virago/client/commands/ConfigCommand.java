@@ -23,13 +23,13 @@ public class ConfigCommand extends AbstractCommand {
         ConfigService service = Virago.getInstance().getServiceManager().getService(ConfigService.class);
 
         if (args.length < 2) {
-            notificationService.notify(NotificationType.NO, "Command Manager", "Please provide an option! " + getSyntax());
+            notificationService.notify(NotificationType.NO, "Config Manager", "Please provide an option! " + getSyntax());
             return;
         }
 
         if (args.length < 3 && !"list".equals(args[1])) {
             if ("load".equals(args[1]) || "delete".equals(args[1]) || "save".equals(args[1])) {
-                notificationService.notify(NotificationType.NO, "Command Manager", "Please provide a config name!");
+                notificationService.notify(NotificationType.NO, "Config Manager", "Please provide a config name!");
                 return;
             }
             return;
@@ -48,21 +48,21 @@ public class ConfigCommand extends AbstractCommand {
             case "load":
                 if (service.configExists(name)) {
                     service.loadConfig(name);
-                    notificationService.notify(NotificationType.YES, "Command Manager", "Successfully loaded config " + name);
+                    notificationService.notify(NotificationType.YES, "Config Manager", "Successfully loaded config " + name);
                 } else {
-                    notificationService.notify(NotificationType.NO, "Command Manager", "Config " + name + " does not exist");
+                    notificationService.notify(NotificationType.NO, "Config Manager", "Config " + name + " does not exist");
                 }
                 break;
             case "save":
                 service.saveConfig(name);
-                notificationService.notify(NotificationType.YES, "Command Manager", "Successfully saved config " + name);
+                notificationService.notify(NotificationType.YES, "Config Manager", "Successfully saved config " + name);
                 break;
             case "delete":
                 if (service.configExists(name)) {
                     service.deleteConfig(name);
-                    notificationService.notify(NotificationType.YES, "Command Manager", "Successfully deleted config " + name);
+                    notificationService.notify(NotificationType.YES, "Config Manager", "Successfully deleted config " + name);
                 } else {
-                    notificationService.notify(NotificationType.NO, "Command Manager", "Config " + name + " does not exist");
+                    notificationService.notify(NotificationType.NO, "Config Manager", "Config " + name + " does not exist");
                 }
                 break;
         }
@@ -81,7 +81,7 @@ public class ConfigCommand extends AbstractCommand {
             message.delete(message.length() - 2, message.length());
             Logger.addChatMessage(message.toString().replace(".json", ""));
         } else {
-            notificationService.notify(NotificationType.NO, "Command Manager", "No configs found");
+            notificationService.notify(NotificationType.NO, "Config Manager", "No configs found");
         }
     }
 }
