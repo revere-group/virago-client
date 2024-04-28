@@ -213,8 +213,8 @@ public class Safelock {
 
             final boolean valid = status.contains("success") && response.contains("success") && String.valueOf(statusLength).equals("7");
             GuiLicenceKey.isAuthorized = valid;
-            Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
             if (valid) {
+                Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
                 SocketClient.init(productKey);
                 Virago.getInstance().getDiscordRPC().start();
                 Virago.getInstance().getDiscordRPC().getActivity()

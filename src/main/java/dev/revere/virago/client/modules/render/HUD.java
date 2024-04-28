@@ -144,7 +144,6 @@ public class HUD extends AbstractModule {
         ScaledResolution sr = new ScaledResolution(mc);
         getFont(font);
 
-
         if (watermark.getValue())
             renderWatermark(true);
 
