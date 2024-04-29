@@ -4,8 +4,6 @@ import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
 import dev.revere.virago.Virago;
-import dev.revere.virago.api.network.socket.SocketClient;
-import dev.revere.virago.api.protection.auth.Safelock;
 import dev.revere.virago.util.Logger;
 import lombok.Getter;
 import lombok.Setter;

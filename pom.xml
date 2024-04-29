@@ -98,6 +98,11 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>marcloud-development-repository</id>
+            <name>marCloud-Repository</name>
+            <url>https://repo.marcloud.net/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -110,11 +115,6 @@
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
-        </dependency>
-        <dependency>
-            <artifactId>discord-rpc</artifactId>
-            <groupId>com.github.Vatuu</groupId>
-            <version>1.6.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -311,6 +311,11 @@
             <artifactId>Java-WebSocket</artifactId>
             <version>1.5.6</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.JnCrMx</groupId>
+            <artifactId>discord-game-sdk4j</artifactId>
+            <version>0.5.5</version>
         </dependency>
     </dependencies>
 

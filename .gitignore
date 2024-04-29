@@ -57,3 +57,4 @@ buildNumber.properties
 MavenMCP.iml
 .idea/
 
+/src/main/resources/assets/minecraft/virago/
