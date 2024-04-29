@@ -21,7 +21,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange;
  * @project Virago-Client
  * @date 4/7/2024
  */
-@ModuleData(name = "No Slow", displayName = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.PLAYER)
+@ModuleData(name = "NoSlow", displayName = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.PLAYER)
 public class NoSlow extends AbstractModule {
 
     public final Setting<Boolean> cancelBlocking = new Setting<>("Cancel Blocking", true);
