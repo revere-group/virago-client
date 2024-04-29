@@ -200,7 +200,7 @@ public class HUD extends AbstractModule {
     private void renderWatermark(boolean shader) {
         String clientText = Virago.getInstance().getName().toLowerCase() + "\u00A7fclient v";
         String versionText = Virago.getInstance().getVersion() + " | ";
-        String usernameText = Virago.getInstance().getViragoUser().getUsername().toLowerCase() + "\u00A7f | ";
+        String usernameText = Virago.getInstance().getViragoUser().getUsername() + "\u00A7f | ";
         String serverText = mc.getCurrentServerData() != null ? mc.getCurrentServerData().serverIP : "singleplayer";
 
         String finalText = clientText + versionText + usernameText + serverText;
