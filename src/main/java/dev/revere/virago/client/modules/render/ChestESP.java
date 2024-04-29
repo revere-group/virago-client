@@ -39,7 +39,7 @@ import java.util.Map;
  * @project Virago-Client
  * @date 4/3/2024
  */
-@ModuleData(name = "Chest ESP", description = "Highlights chests", type = EnumModuleType.RENDER)
+@ModuleData(name = "ChestESP", displayName = "Chest ESP", description = "Highlights chests", type = EnumModuleType.RENDER)
 public class ChestESP extends AbstractModule {
     public Setting<Mode> mode = new Setting<>("Box Mode", Mode.HOLLOW)
             .describedBy("The mode of ESP");

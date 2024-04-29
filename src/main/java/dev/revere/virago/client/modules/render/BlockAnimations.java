@@ -10,7 +10,7 @@ import dev.revere.virago.api.setting.Setting;
  * @project Virago
  * @date 3/25/2024
  */
-@ModuleData(name = "Animation", description = "Allows you to animate blocks", type = EnumModuleType.RENDER)
+@ModuleData(name = "Animation", displayName = "Animation", description = "Allows you to animate blocks", type = EnumModuleType.RENDER)
 public class BlockAnimations extends AbstractModule {
 
     public final Setting<Animation> animation = new Setting<>("Animation", Animation.EXHI_TAP)

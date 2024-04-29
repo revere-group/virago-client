@@ -28,7 +28,7 @@ public class BindCommand extends AbstractCommand {
         }
 
         String action = args[1];
-        String moduleName = args[2].replace("&", " ");
+        String moduleName = args[2];
 
         if (moduleService.getModuleByName(moduleName) == null) {
             notificationService.notify(NotificationType.NO, "Command Manager", "Module not found!");

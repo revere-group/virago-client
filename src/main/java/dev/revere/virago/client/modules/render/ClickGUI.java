@@ -13,7 +13,7 @@ import org.lwjgl.input.Keyboard;
  * @date 3/20/2024
  */
 
-@ModuleData(name = "GUI", description = "The GUI for the client.", type = EnumModuleType.MISC)
+@ModuleData(name = "GUI", displayName = "GUI", description = "The GUI for the client.", type = EnumModuleType.MISC)
 public class ClickGUI extends AbstractModule {
 
     public ClickGUI() {

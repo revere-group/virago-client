@@ -31,7 +31,7 @@ import java.util.List;
  * @project Virago-Client
  * @date 4/2/2024
  */
-@ModuleData(name = "Inventory Manager", description = "Manages your inventory", type = EnumModuleType.PLAYER)
+@ModuleData(name = "InventoryManager", displayName = "Inventory Manager", description = "Manages your inventory", type = EnumModuleType.PLAYER)
 public class InvManager extends AbstractModule {
 
     private final Setting<Boolean> ignoreCustomItems = new Setting<>("Ignore Custom Items", true);

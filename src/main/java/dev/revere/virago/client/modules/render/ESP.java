@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * @project Virago-Client
  * @date 4/2/2024
  */
-@ModuleData(name = "ESP", description = "Draws a box around entities", type = EnumModuleType.RENDER)
+@ModuleData(name = "ESP", displayName = "ESP", description = "Draws a box around entities", type = EnumModuleType.RENDER)
 public class ESP extends AbstractModule {
 
     private final Setting<Boolean> nameTagsProperty = new Setting<>("NameTags", true);

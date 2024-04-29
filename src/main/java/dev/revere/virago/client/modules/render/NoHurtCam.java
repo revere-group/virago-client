@@ -5,7 +5,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 
 
-@ModuleData(name = "No Hurt Cam", description = "Disable hurt camera", type = EnumModuleType.RENDER)
+@ModuleData(name = "NoHurtCam", displayName = "No Hurt Cam", description = "Disable hurt camera", type = EnumModuleType.RENDER)
 public class NoHurtCam extends AbstractModule {
 
     @Override

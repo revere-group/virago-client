@@ -5,10 +5,8 @@ import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.client.gui.components.InteractionComponent;
 import dev.revere.virago.client.gui.components.RenderableComponent;
-import dev.revere.virago.client.modules.render.HUD;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.animation.Animation;
 import dev.revere.virago.util.animation.Easing;
 import dev.revere.virago.util.render.ColorUtil;
@@ -159,7 +157,7 @@ public class Panel extends RenderableComponent {
         ModuleService moduleService = Virago.getInstance().getServiceManager().getService(ModuleService.class);
 
         List<AbstractModule> modules = moduleService.getModulesByType(type);
-        modules.sort(Comparator.comparing(AbstractModule::getName));
+        modules.sort(Comparator.comparing(AbstractModule::getDisplayName));
 
         modules.forEach(module -> elements.add(new ModuleElement(module, -2000, -2000, getWidth(), getHeight())));
     }

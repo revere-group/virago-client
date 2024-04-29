@@ -12,7 +12,7 @@ import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.entity.EntityPlayerSP;
 
-@ModuleData(name = "Sprint", description = "Keep you sprinting", type = EnumModuleType.MOVEMENT)
+@ModuleData(name = "Sprint", displayName = "Sprint", description = "Keep you sprinting", type = EnumModuleType.MOVEMENT)
 public class Sprint extends AbstractModule {
     private final Setting<Boolean> omniDirectional = new Setting<>("Omni", false);
 

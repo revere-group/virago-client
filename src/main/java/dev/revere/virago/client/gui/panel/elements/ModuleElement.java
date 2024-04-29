@@ -98,7 +98,7 @@ public class ModuleElement extends RenderableComponent {
             }
         }
         // Draw the module name.
-        font.getProductSans().drawString(module.getName(), getX() + 4, (getY() + getHeight() / 2f) - (font.getProductSans().getHeight() / 2f), module.isEnabled() ? (color == Color.BLACK.getRGB() ? Color.BLACK.getRGB() : new Color(-1).getRGB()) : new Color(0xff5b5b5b).getRGB(), false);
+        font.getProductSans().drawString(module.getDisplayName(), getX() + 4, (getY() + getHeight() / 2f) - (font.getProductSans().getHeight() / 2f), module.isEnabled() ? (color == Color.BLACK.getRGB() ? Color.BLACK.getRGB() : new Color(-1).getRGB()) : new Color(0xff5b5b5b).getRGB(), false);
     }
 
     /**

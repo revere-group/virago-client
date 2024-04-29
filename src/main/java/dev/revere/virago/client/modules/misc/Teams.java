@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
  * @project Virago-Client
  * @date 4/13/2024
  */
-@ModuleData(name = "Teams", description = "Prevent yourself from attacking your teammates", type = EnumModuleType.MISC)
+@ModuleData(name = "Teams", displayName = "Teams", description = "Prevent yourself from attacking your teammates", type = EnumModuleType.MISC)
 public class Teams extends AbstractModule {
 
     public final Setting<Boolean> scoreboard = new Setting<>("Scoreboard", false).describedBy("Check the scoreboard for team members");

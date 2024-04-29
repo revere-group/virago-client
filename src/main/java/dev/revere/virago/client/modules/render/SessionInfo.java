@@ -25,7 +25,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.awt.*;
 
-@ModuleData(name = "Session Info", description = "Modify the scoreboard aesthetics.", type = EnumModuleType.RENDER)
+@ModuleData(name = "SessionInfo", displayName = "Session Info", description = "Modify the scoreboard aesthetics.", type = EnumModuleType.RENDER)
 public class SessionInfo extends AbstractModule {
 
     public Setting<FontType> fontType = new Setting<>("Font", FontType.PRODUCT_SANS).describedBy("The font type to use.");

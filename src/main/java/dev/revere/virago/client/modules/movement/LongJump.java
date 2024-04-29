@@ -28,7 +28,7 @@ import net.minecraft.util.MathHelper;
  * @project Virago-Client
  * @date 4/7/2024
  */
-@ModuleData(name = "Long Jump", description = "Jump further", type = EnumModuleType.MOVEMENT)
+@ModuleData(name = "LongJump", displayName = "Long Jump", description = "Jump further", type = EnumModuleType.MOVEMENT)
 public class LongJump extends AbstractModule {
 
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.WATCHDOG);

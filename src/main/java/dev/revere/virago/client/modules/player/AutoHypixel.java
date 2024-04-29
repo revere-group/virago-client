@@ -15,7 +15,7 @@ import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.StringUtils;
 
-@ModuleData(name = "Auto Hypixel", description = "All your hypixel needs", type = EnumModuleType.PLAYER)
+@ModuleData(name = "AutoHypixel", displayName = "Auto Hypixel", description = "All your hypixel needs", type = EnumModuleType.PLAYER)
 public class AutoHypixel extends AbstractModule {
 
 

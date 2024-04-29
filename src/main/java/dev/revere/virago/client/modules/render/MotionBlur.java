@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
  * @project Virago
  * @date 3/26/2024
  */
-@ModuleData(name = "Motion Blur", description = "Adds motion blur to the game", type = EnumModuleType.RENDER)
+@ModuleData(name = "MotionBlur", displayName = "Motion Blur", description = "Adds motion blur to the game", type = EnumModuleType.RENDER)
 public class MotionBlur extends AbstractModule {
 
     public final Setting<Integer> amount = new Setting<>("Amount", 6)

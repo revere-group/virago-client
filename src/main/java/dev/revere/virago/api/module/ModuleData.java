@@ -16,6 +16,8 @@ public @interface ModuleData {
 
     String name();
 
+    String displayName();
+
     String description();
 
     EnumModuleType type();

@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @project Virago-Client
  * @date 4/7/2024
  */
-@ModuleData(name = "No Fall", description = "Prevents fall damage", type = EnumModuleType.PLAYER)
+@ModuleData(name = "NoFall", displayName = "No Fall", description = "Prevents fall damage", type = EnumModuleType.PLAYER)
 public class NoFall extends AbstractModule {
 
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.BLINK);

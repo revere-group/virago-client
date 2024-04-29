@@ -18,7 +18,7 @@ import net.minecraft.entity.projectile.EntityFireball;
  * @project Virago-Client
  * @date 4/17/2024
  */
-@ModuleData(name = "Anti Fireball", description = "Prevents fireballs from hitting you", type = EnumModuleType.COMBAT)
+@ModuleData(name = "AntiFireball", displayName = "Anti Fireball", description = "Prevents fireballs from hitting you", type = EnumModuleType.COMBAT)
 public class AntiFireball extends AbstractModule {
 
     private final Setting<Float> range = new Setting<>("Range", 3.0F)

@@ -45,7 +45,7 @@ import java.awt.*;
  * @project Virago
  * @date 3/28/2024
  */
-@ModuleData(name = "Scaffold", description = "Automatically places blocks under you", type = EnumModuleType.PLAYER)
+@ModuleData(name = "Scaffold", displayName = "Scaffold", description = "Automatically places blocks under you", type = EnumModuleType.PLAYER)
 public class Scaffold extends AbstractModule {
 
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.NORMAL)

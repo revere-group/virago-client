@@ -13,7 +13,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
 
 
-@ModuleData(name = "Client Spoofer", description = "Fake which client you are on", type = EnumModuleType.MISC)
+@ModuleData(name = "ClientSpoofer", displayName = "Client Spoofer", description = "Fake which client you are on", type = EnumModuleType.MISC)
 public class ClientSpoofer extends AbstractModule {
 
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.LUNAR);

@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-@ModuleData(name = "China Hat", description = "Renders a hat above players heads", type = EnumModuleType.RENDER)
+@ModuleData(name = "ChinaHat", displayName = "China Hat", description = "Renders a hat above players heads", type = EnumModuleType.RENDER)
 public class ChinaHat extends AbstractModule {
     @EventHandler
     private final Listener<Render3DEvent> render3DEvent = event -> {

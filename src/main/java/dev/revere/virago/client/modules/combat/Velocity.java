@@ -23,7 +23,7 @@ import org.lwjgl.input.Keyboard;
  * @project Virago
  * @date 3/18/2024
  */
-@ModuleData(name = "Velocity", type = EnumModuleType.COMBAT, description = "Avoid taking knockback from other players")
+@ModuleData(name = "Velocity", displayName = "Velocity", type = EnumModuleType.COMBAT, description = "Avoid taking knockback from other players")
 public class Velocity extends AbstractModule {
     
     private final Setting<Float> horizontal = new Setting<>("Horizontal", 0.0f)

@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
  * @project Virago
  * @date 3/25/2024
  */
-@ModuleData(name = "Kill Aura", description = "Automatically attacks entities around you", type = EnumModuleType.COMBAT)
+@ModuleData(name = "KillAura", displayName = "Kill Aura", description = "Automatically attacks entities around you", type = EnumModuleType.COMBAT)
 public class KillAura extends AbstractModule {
 
     private final Setting<AttackStage> attackStage = new Setting<>("Attack Stage", AttackStage.PRE).describedBy("The attack stage.");

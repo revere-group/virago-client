@@ -13,7 +13,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.network.play.server.S03PacketTimeUpdate;
 
-@ModuleData(name = "Ambience", description = "Change ambience", type = EnumModuleType.RENDER)
+@ModuleData(name = "Ambience", displayName = "Ambience", description = "Change ambience", type = EnumModuleType.RENDER)
 public class Ambience extends AbstractModule {
 
     private final Setting<Integer> time = new Setting<>("Time", 1000)

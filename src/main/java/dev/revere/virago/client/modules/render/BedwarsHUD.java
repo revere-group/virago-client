@@ -24,7 +24,7 @@ import net.minecraft.util.StringUtils;
 import java.awt.*;
 import java.util.ArrayList;
 
-@ModuleData(name = "Bedwars Hud", description = "Add a bedwars HUD", type = EnumModuleType.RENDER)
+@ModuleData(name = "BedwarsHUD", displayName = "Bedwars HUD", description = "Add a bedwars HUD", type = EnumModuleType.RENDER)
 public class BedwarsHUD extends AbstractModule {
 
     public Setting<FontType> fontType = new Setting<>("Font", FontType.PRODUCT_SANS).describedBy("The font type to use.");

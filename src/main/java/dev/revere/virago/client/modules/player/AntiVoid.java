@@ -20,7 +20,7 @@ import net.minecraft.util.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
-@ModuleData(name = "Anti Void", description = "Prevents you from falling into the void.", type = EnumModuleType.PLAYER)
+@ModuleData(name = "AntiVoid", displayName = "Anti Void", description = "Prevents you from falling into the void.", type = EnumModuleType.PLAYER)
 public class AntiVoid extends AbstractModule {
 
     private final List<Packet> packets = new ArrayList<>();

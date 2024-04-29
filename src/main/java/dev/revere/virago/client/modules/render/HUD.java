@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @date 3/17/2024
  */
 
-@ModuleData(name = "HUD", type = EnumModuleType.RENDER, description = "Displays information on your screen", isHidden = true)
+@ModuleData(name = "HUD", displayName = "HUD", type = EnumModuleType.RENDER, description = "Displays information on your screen", isHidden = true)
 public class HUD extends AbstractModule {
 
     private final Draggable watermarkDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "Watermark", 3, 3));
@@ -371,7 +371,7 @@ public class HUD extends AbstractModule {
 
     private String generateModuleData(AbstractModule module) {
         StringBuilder text = new StringBuilder()
-                .append(module.getName());
+                .append(module.getDisplayName());
 
         if (!(Objects.equals(module.getMetaData(), ""))) {
             switch (arrayListMetaData.getValue()) {

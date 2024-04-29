@@ -9,7 +9,7 @@ import dev.revere.virago.api.module.ModuleData;
  * @project Virago-Client
  * @date 4/21/2024
  */
-@ModuleData(name = "AntiCheat", description = "Prevents you from getting banned", type = EnumModuleType.MISC)
+@ModuleData(name = "AntiCheat", displayName = "Anti Cheat", description = "Prevents you from getting banned", type = EnumModuleType.MISC)
 public class AntiCheat extends AbstractModule {
 
     @Override

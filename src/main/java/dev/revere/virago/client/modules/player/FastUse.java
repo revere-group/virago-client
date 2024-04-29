@@ -20,7 +20,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
  */
 
 
-@ModuleData(name = "FastUse", description = "Use potions and food faster.", type = EnumModuleType.PLAYER)
+@ModuleData(name = "FastUse", displayName = "Fast Use", description = "Use potions and food faster.", type = EnumModuleType.PLAYER)
 public class FastUse extends AbstractModule {
 
     private final Setting<Boolean> stopMoving = new Setting<>("Stop Moving", false);

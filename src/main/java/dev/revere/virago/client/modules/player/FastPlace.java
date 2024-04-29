@@ -13,7 +13,7 @@ import dev.revere.virago.client.events.player.UpdateEvent;
  * @date 25/04/2024
  */
 
-@ModuleData(name = "FastPlace", description = "Place blocks instantly", type = EnumModuleType.PLAYER)
+@ModuleData(name = "FastPlace", displayName = "Fast Place", description = "Place blocks instantly", type = EnumModuleType.PLAYER)
 public class FastPlace extends AbstractModule {
     @EventHandler
     private final Listener<UpdateEvent> onUpdate = event -> {

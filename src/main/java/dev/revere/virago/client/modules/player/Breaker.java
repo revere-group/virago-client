@@ -38,7 +38,7 @@ import java.awt.*;
  * @project Virago-Client
  * @date 4/19/2024
  */
-@ModuleData(name = "Breaker", description = "Automatically break blocks for you.", type = EnumModuleType.PLAYER)
+@ModuleData(name = "Breaker", displayName = "Breaker", description = "Automatically break blocks for you.", type = EnumModuleType.PLAYER)
 public class Breaker extends AbstractModule {
     private final Setting<Boolean> instantBreak = new Setting<>("Instant Break", false);
     private final Setting<Boolean> throughWalls = new Setting<>("Through Walls", true);

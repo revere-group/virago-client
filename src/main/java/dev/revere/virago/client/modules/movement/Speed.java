@@ -27,7 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @date 3/17/2024
  */
 
-@ModuleData(name = "Speed", description = "Increases your movement speed", type = EnumModuleType.MOVEMENT)
+@ModuleData(name = "Speed", displayName = "Speed", description = "Increases your movement speed", type = EnumModuleType.MOVEMENT)
 public class Speed extends AbstractModule {
 
     private final Setting<WatchdogMode> watchdogMode = new Setting<>("Watchdog Mode", WatchdogMode.NO_STRAFE)

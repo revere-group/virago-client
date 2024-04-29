@@ -13,7 +13,7 @@ import net.minecraft.network.play.server.S29PacketSoundEffect;
 
 import java.util.Objects;
 
-@ModuleData(name = "Lightning Detector", description = "Detects kill lightning", type = EnumModuleType.PLAYER)
+@ModuleData(name = "LightningDetector", displayName = "Lightning Detector", description = "Detects kill lightning", type = EnumModuleType.PLAYER)
 public class LightningDetector extends AbstractModule {
 
     @EventHandler

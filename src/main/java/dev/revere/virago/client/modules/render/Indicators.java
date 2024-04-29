@@ -31,7 +31,7 @@ import java.util.Map;
  * @date 3/23/2024
  */
 @Getter
-@ModuleData(name = "Indicators", description = "Displays various indicators", type = EnumModuleType.RENDER)
+@ModuleData(name = "Indicators", displayName = "Indicators", description = "Displays various indicators", type = EnumModuleType.RENDER)
 public class Indicators extends AbstractModule {
 
     private final Setting<Float> scale = new Setting<>("Scale", 7.0F)

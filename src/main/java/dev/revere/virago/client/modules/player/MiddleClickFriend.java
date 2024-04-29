@@ -18,7 +18,7 @@ import net.minecraft.util.StringUtils;
  * @project Virago-Client
  * @date 4/7/2024
  */
-@ModuleData(name = "MCF", description = "Middle click to add friends", type = EnumModuleType.PLAYER)
+@ModuleData(name = "MCF", displayName = "MCF", description = "Middle click to add friends", type = EnumModuleType.PLAYER)
 public class MiddleClickFriend extends AbstractModule {
 
     private boolean pressed;

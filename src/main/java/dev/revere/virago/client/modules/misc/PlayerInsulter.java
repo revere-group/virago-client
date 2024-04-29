@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.server.S02PacketChat;
 import org.apache.commons.lang3.RandomUtils;
 
-@ModuleData(name = "Insults", description = "Insult players that you kill", type = EnumModuleType.MISC)
+@ModuleData(name = "Insults", displayName = "Insults", description = "Insult players that you kill", type = EnumModuleType.MISC)
 public class PlayerInsulter extends AbstractModule {
 
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.MSG)

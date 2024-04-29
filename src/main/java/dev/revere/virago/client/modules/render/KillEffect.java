@@ -22,7 +22,7 @@ import org.lwjgl.input.Keyboard;
 
 @Getter
 @Setter
-@ModuleData(name = "Kill Effect", type = EnumModuleType.RENDER, description = "Displays an effect when a player is killed")
+@ModuleData(name = "KillEffect", displayName = "Kill Effect", type = EnumModuleType.RENDER, description = "Displays an effect when a player is killed")
 public class KillEffect extends AbstractModule {
 
     public Setting<Boolean> lightning = new Setting<>("Lightning", true).describedBy("Whether lightning should be enabled.");

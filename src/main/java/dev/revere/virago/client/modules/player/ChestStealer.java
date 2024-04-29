@@ -19,7 +19,7 @@ import net.optifine.util.MathUtils;
  * @project Virago-Client
  * @date 3/28/2024
  */
-@ModuleData(name = "Chest Stealer", description = "Steals items from players", type = EnumModuleType.PLAYER)
+@ModuleData(name = "ChestStealer", displayName = "Chest Stealer", description = "Steals items from players", type = EnumModuleType.PLAYER)
 public class ChestStealer extends AbstractModule {
 
     private final Setting<Long> maxDelay = new Setting<>("Max Delay", 50L)

@@ -34,6 +34,7 @@ public abstract class AbstractModule {
 
     // The name, description, and type of the module.
     private final String name = getClass().getAnnotation(ModuleData.class).name();
+    private final String displayName = getClass().getAnnotation(ModuleData.class).displayName();
     private final String description = getClass().getAnnotation(ModuleData.class).description();
     private final EnumModuleType type = getClass().getAnnotation(ModuleData.class).type();
     private boolean isHidden = getClass().getAnnotation(ModuleData.class).isHidden();
@@ -70,13 +71,13 @@ public abstract class AbstractModule {
             Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
 
             if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
-                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getName());
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getDisplayName());
             }
             onEnable();
         } else {
             Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
             if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
-                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getName());
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getDisplayName());
             }
             onDisable();
         }
@@ -106,13 +107,13 @@ public abstract class AbstractModule {
             Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
 
             if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
-                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getName());
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.YES, "Enabled Module", this.getDisplayName());
             }
             onEnable();
         } else {
             Notifications notifications = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Notifications.class);
             if (notifications.isEnabled() && notifications.moduleNotifications.getValue()) {
-                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getName());
+                Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.NO, "Disabled Module", this.getDisplayName());
             }
             onDisable();
         }
@@ -191,7 +192,7 @@ public abstract class AbstractModule {
      *
      * @return The display name of the module.
      */
-    public String getDisplayName() {
+    public String getHUDDisplayName() {
         return getName() + (!getMetaData().isEmpty() ? (" " + EnumChatFormatting.GRAY + getMetaData()) : "");
     }
 

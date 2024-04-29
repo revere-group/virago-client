@@ -29,7 +29,7 @@ import java.awt.*;
 
 @Setter
 @Getter
-@ModuleData(name = "Jump Circles", type = EnumModuleType.RENDER, description = "Draws circles around jumpable blocks")
+@ModuleData(name = "JumpCircles", displayName = "Jump Circles", type = EnumModuleType.RENDER, description = "Draws circles around jumpable blocks")
 public class JumpCircles extends AbstractModule {
 
     /**

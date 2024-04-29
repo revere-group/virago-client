@@ -10,7 +10,7 @@ import dev.revere.virago.api.setting.Setting;
  * @project Virago-Client
  * @date 4/1/2024
  */
-@ModuleData(name = "Scoreboard", description = "Renders a scoreboard", type = EnumModuleType.RENDER)
+@ModuleData(name = "Scoreboard", displayName = "Scoreboard", description = "Renders a scoreboard", type = EnumModuleType.RENDER)
 public class Scoreboard extends AbstractModule {
 
     public final Setting<Boolean> numbers = new Setting<>("Numbers", false)

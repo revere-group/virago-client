@@ -10,7 +10,7 @@ import dev.revere.virago.client.events.packet.PacketEvent;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.util.ChatComponentText;
 
-@ModuleData(name = "Name Hider", description = "Hide your name.", type = EnumModuleType.RENDER)
+@ModuleData(name = "NameHider", displayName = "Name Hider", description = "Hide your name.", type = EnumModuleType.RENDER)
 public class NameHider extends AbstractModule {
     @EventHandler
     private final Listener<PacketEvent> onPacket = event -> {

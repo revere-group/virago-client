@@ -16,7 +16,7 @@ import net.minecraft.client.shader.Framebuffer;
  * @project Virago-Client
  * @date 4/6/2024
  */
-@ModuleData(name = "Bloom", description = "Adds a bloom effect to the game", type = EnumModuleType.RENDER)
+@ModuleData(name = "Bloom", displayName = "Bloom", description = "Adds a bloom effect to the game", type = EnumModuleType.RENDER)
 public class Bloom extends AbstractModule {
 
     private final Setting<Integer> bloomIterations = new Setting<>("Bloom Iterations", 1)

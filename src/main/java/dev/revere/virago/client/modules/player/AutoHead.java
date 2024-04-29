@@ -17,9 +17,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
-
-
-@ModuleData(name = "AutoHead", description = "Use golden heads and golden apples automatically", type = EnumModuleType.PLAYER)
+@ModuleData(name = "AutoHead" ,displayName = "Auto Head", description = "Use golden heads and golden apples automatically", type = EnumModuleType.PLAYER)
 public class AutoHead extends AbstractModule {
 
     private final TimerUtil timer = new TimerUtil();
