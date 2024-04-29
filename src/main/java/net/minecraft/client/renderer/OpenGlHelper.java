@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLContext;
 import oshi.SystemInfo;
-import oshi.hardware.Processor;
+import oshi.hardware.CentralProcessor;
 
 public class OpenGlHelper
 {
@@ -50,7 +50,17 @@ public class OpenGlHelper
     public static int GL_VERTEX_SHADER;
     public static int GL_FRAGMENT_SHADER;
     private static boolean arbMultitexture;
+
+    /**
+     * An OpenGL constant corresponding to GL_TEXTURE0, used when setting data pertaining to auxiliary OpenGL texture
+     * units.
+     */
     public static int defaultTexUnit;
+
+    /**
+     * An OpenGL constant corresponding to GL_TEXTURE1, used when setting data pertaining to auxiliary OpenGL texture
+     * units.
+     */
     public static int lightmapTexUnit;
     public static int GL_TEXTURE2;
     private static boolean arbTextureEnvCombine;
@@ -93,6 +103,9 @@ public class OpenGlHelper
     public static final int GL_QUADS = 7;
     public static final int GL_TRIANGLES = 4;
 
+    /**
+     * Initializes the texture constants to be used when rendering lightmap values
+     */
     public static void initializeTextures()
     {
         Config.initDisplay();
@@ -330,12 +343,11 @@ public class OpenGlHelper
 
         try
         {
-            Processor[] aprocessor = (new SystemInfo()).getHardware().getProcessors();
-            cpu = String.format("%dx %s", new Object[] {Integer.valueOf(aprocessor.length), aprocessor[0]}).replaceAll("\\s+", " ");
+            CentralProcessor[] aprocessor = new CentralProcessor[]{(new SystemInfo()).getHardware().getProcessor()};
+            cpu = String.format("%dx %s", Integer.valueOf(aprocessor.length), aprocessor[0]).replaceAll("\\s+", " ");
         }
         catch (Throwable var5)
         {
-            ;
         }
     }
 
@@ -378,6 +390,9 @@ public class OpenGlHelper
         }
     }
 
+    /**
+     * creates a shader with the given mode and returns the GL id. params: mode
+     */
     public static int glCreateShader(int type)
     {
         return arbShaders ? ARBShaderObjects.glCreateShaderObjectARB(type) : GL20.glCreateShader(type);
@@ -743,6 +758,9 @@ public class OpenGlHelper
         }
     }
 
+    /**
+     * Calls the appropriate glGenFramebuffers method and returns the newly created fbo, or returns -1 if not supported.
+     */
     public static int glGenFramebuffers()
     {
         if (!framebufferSupported)
@@ -878,6 +896,9 @@ public class OpenGlHelper
         }
     }
 
+    /**
+     * Sets the current lightmap texture to the specified OpenGL constant
+     */
     public static void setActiveTexture(int texture)
     {
         if (arbMultitexture)
@@ -890,6 +911,9 @@ public class OpenGlHelper
         }
     }
 
+    /**
+     * Sets the current lightmap texture to the specified OpenGL constant
+     */
     public static void setClientActiveTexture(int texture)
     {
         if (arbMultitexture)
@@ -902,6 +926,9 @@ public class OpenGlHelper
         }
     }
 
+    /**
+     * Sets the current coordinates of the given lightmap texture
+     */
     public static void setLightmapTextureCoords(int target, float p_77475_1_, float p_77475_2_)
     {
         if (arbMultitexture)

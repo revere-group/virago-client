@@ -9,15 +9,10 @@ import dev.revere.virago.client.modules.render.Notifications;
 import dev.revere.virago.client.notification.Notification;
 import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.util.Logger;
-import dev.revere.virago.util.animation.Animation;
-import dev.revere.virago.util.animation.Easing;
-import javafx.scene.transform.Scale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class NotificationService implements IService {

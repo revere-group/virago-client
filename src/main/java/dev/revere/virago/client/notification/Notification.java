@@ -9,7 +9,6 @@ import dev.revere.virago.util.animation.Easing;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
-import javafx.scene.effect.ColorInput;
 import lombok.Getter;
 import net.minecraft.util.MathHelper;
 
