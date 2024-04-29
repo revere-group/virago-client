@@ -89,6 +89,8 @@ public class ModuleService implements IService {
             }
         }
 
+        Logger.info("Loaded " + modules.size() + " modules!", getClass());
+
         getModuleList().forEach(module -> {
             Arrays.stream(module.getClass().getDeclaredFields()).filter(field -> Setting.class.isAssignableFrom(field.getType())).forEach(field -> {
                 field.setAccessible(true);
