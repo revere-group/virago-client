@@ -309,7 +309,7 @@ public class GuiIngame extends Gui
 
         ScoreObjective scoreobjective1 = scoreobjective != null ? scoreobjective : scoreboard.getObjectiveInDisplaySlot(1);
 
-        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(dev.revere.virago.client.modules.render.Scoreboard.class).isEnabled()) {
+        if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(dev.revere.virago.client.modules.render.Scoreboard.class).isEnabled() && scoreobjective1 != null) {
             this.renderScoreboard(scoreobjective1, scaledresolution);
         }
 
@@ -575,6 +575,7 @@ public class GuiIngame extends Gui
         for (Score score1 : collection)
         {
             ++j;
+            dev.revere.virago.client.modules.render.Scoreboard scoreboardModule = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(dev.revere.virago.client.modules.render.Scoreboard.class);
             ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
             String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
             String s2 = EnumChatFormatting.RED + "" + score1.getScorePoints();
@@ -582,7 +583,9 @@ public class GuiIngame extends Gui
             int l = scaledRes.getScaledWidth() - k1 + 2;
             drawRect(l1 - 2, k, l, k + this.getFontRenderer().FONT_HEIGHT, 1342177280);
             this.getFontRenderer().drawString(s1, l1, k, 553648127);
-            this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
+            if (scoreboardModule.numbers.getValue()) {
+                this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
+            }
             if (j == collection.size())
             {
                 String s3 = objective.getDisplayName();
