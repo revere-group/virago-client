@@ -295,7 +295,6 @@ public class Scaffold extends AbstractModule {
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
             if (info.pos != null) this.placeBlock();
         } else if (placeMode.getValue() == PlaceMode.PRE && mode.getValue().equals(Mode.WATCHDOG_JUMP)) {
-
             if (!firstJump) {
                 if (mc.thePlayer.movementInput.jump) {
                     yCoordinate = mc.thePlayer.posY;
@@ -337,7 +336,11 @@ public class Scaffold extends AbstractModule {
                 if (!mc.gameSettings.keyBindJump.isKeyDown()) {
                     mc.thePlayer.setSpeed(e, 0.2085);
                 } else {
-                    mc.thePlayer.setSpeed(e, 0.3); // havent tested any higher than this
+                    if (isGoingDiagonally()) {
+                        mc.thePlayer.setSpeed(e, 0.24);
+                    } else {
+                        mc.thePlayer.setSpeed(e, 0.3);
+                    }
                 }
             }
         }
@@ -346,9 +349,7 @@ public class Scaffold extends AbstractModule {
             if (firstJump) {
                 mc.thePlayer.setSpeed(e, 0.02);
             } else {
-                if (!mc.gameSettings.keyBindJump.isKeyDown()) {
-                    mc.thePlayer.setSpeed(e, mc.thePlayer.getSpeed());
-                } else {
+                if (mc.gameSettings.keyBindJump.isKeyDown()) {
                     mc.thePlayer.setSpeed(e, 0.3);
                 }
             }
@@ -624,7 +625,7 @@ public class Scaffold extends AbstractModule {
                 */
 
                 yaw = processRotation(mc.thePlayer.getDirection() + 180.0F);
-                if (towerMode.getValue() == TowerMode.NONE) {
+                if (towerMode.getValue() == TowerMode.NONE && mode.getValue() != Mode.WATCHDOG_JUMP) {
                     pitch = processRotation(rots[1]);
                 } else {
                     pitch = (float) (81.0 + Math.random() / 100.0);
