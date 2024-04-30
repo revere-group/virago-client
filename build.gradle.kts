@@ -6,6 +6,11 @@ plugins {
 group = "dev.revere"
 version = "1.0-SNAPSHOT"
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.compilerArgs.addAll(listOf("-parameters"))
+}
+
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
@@ -59,7 +64,6 @@ dependencies {
     shadow("org.java-websocket:Java-WebSocket:1.5.6")
     implementation("org.java-websocket:Java-WebSocket:1.5.6")
 }
-
 
 tasks.register<JavaExec>("run") {
     group = "gradle-mcp"
