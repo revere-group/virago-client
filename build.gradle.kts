@@ -48,7 +48,7 @@ dependencies {
     /**
      * Client Dependencies
      */
-    shadow("org.projectlombok:lombok:1.18.30")
+    implementation("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     shadow("org.reflections:reflections:0.10.2")
     implementation("org.reflections:reflections:0.10.2")
