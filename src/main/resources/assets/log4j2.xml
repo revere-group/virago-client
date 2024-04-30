@@ -20,7 +20,7 @@
             <filters>
                 <MarkerFilter marker="NETWORK_PACKETS" onMatch="DENY" onMismatch="NEUTRAL" />
             </filters>
-            <AppenderRef ref="SysOut"/>
+            <AppenderRef  ref="SysOut"/>
             <AppenderRef ref="File"/>
             <AppenderRef ref="ServerGuiConsole"/>
         </Root>
