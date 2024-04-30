@@ -27,7 +27,7 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry
         {
             dynamictexture = new DynamicTexture(this.field_148320_d.getPackImage());
         }
-        catch (IOException var4)
+        catch (Exception var4)
         {
             dynamictexture = TextureUtil.missingTexture;
         }
