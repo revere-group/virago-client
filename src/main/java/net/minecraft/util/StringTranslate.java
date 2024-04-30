@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.util.IllegalFormatException;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import lombok.SneakyThrows;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 
@@ -19,6 +21,7 @@ public class StringTranslate
     private final Map<String, String> languageList = Maps.<String, String>newHashMap();
     private long lastUpdateTimeInMilliseconds;
 
+    @SneakyThrows
     public StringTranslate()
     {
         InputStream inputstream = StringTranslate.class.getResourceAsStream("/assets/minecraft/lang/en_US.lang");
