@@ -382,7 +382,8 @@ public class HUD extends AbstractModule {
                     break;
                 }
                 case SQUARE: {
-                    text.append(" ")
+                    text.append(EnumChatFormatting.GRAY)
+                            .append(" ")
                             .append(EnumChatFormatting.GRAY)
                             .append("[")
                             .append(EnumChatFormatting.WHITE)
