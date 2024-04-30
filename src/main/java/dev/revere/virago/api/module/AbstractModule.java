@@ -188,15 +188,6 @@ public abstract class AbstractModule {
     }
 
     /**
-     * Retrieves the display name of the module.
-     *
-     * @return The display name of the module.
-     */
-    public String getHUDDisplayName() {
-        return getName() + (!getMetaData().isEmpty() ? (" " + EnumChatFormatting.GRAY + getMetaData()) : "");
-    }
-
-    /**
      * Checks if the module is bound to a key.
      *
      * @return true if the module is bound, false otherwise.

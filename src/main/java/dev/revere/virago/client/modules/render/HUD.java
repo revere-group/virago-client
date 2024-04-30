@@ -370,8 +370,7 @@ public class HUD extends AbstractModule {
     }
 
     private String generateModuleData(AbstractModule module) {
-        StringBuilder text = new StringBuilder()
-                .append(module.getDisplayName());
+        StringBuilder text = new StringBuilder().append(module.getDisplayName());
 
         if (!(Objects.equals(module.getMetaData(), ""))) {
             switch (arrayListMetaData.getValue()) {

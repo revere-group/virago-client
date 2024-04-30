@@ -45,6 +45,7 @@ public class Velocity extends AbstractModule {
      */
     @EventHandler
     private final Listener<PacketEvent> packetEventListener = event -> {
+        setMetaData("H: " + horizontal.getValue() + " V: " + vertical.getValue());
         LongJump longJump = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(LongJump.class);
         if (event.getEventState() == PacketEvent.EventState.RECEIVING) {
             Packet<INetHandlerPlayClient> packet = event.getPacket();
