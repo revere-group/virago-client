@@ -24,10 +24,8 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -138,6 +136,11 @@ public class HUD extends AbstractModule {
         if (arraylist.getValue()) renderModules(sr, modules, false);
     };
 
+    /**
+     * Renders the shader
+     *
+     * @param event The event to render the shader for
+     */
     @EventHandler
     private final Listener<ShaderEvent> shaderEventListener = event -> {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
@@ -157,6 +160,11 @@ public class HUD extends AbstractModule {
         if (arraylist.getValue()) renderModules(sr, modules, true);
     };
 
+    /**
+     * Renders the FPS
+     *
+     * @param shader If the shader should be rendered
+     */
     private void renderFPS(boolean shader) {
         String fps = Minecraft.getDebugFPS() + " FPS";
         int width = fontRenderer.getStringWidth(fps) + 4;
@@ -173,6 +181,11 @@ public class HUD extends AbstractModule {
         fpsDraggable.setHeight(height);
     }
 
+    /**
+     * Renders the BPS
+     *
+     * @param shader If the shader should be rendered
+     */
     private void renderBPS(boolean shader) {
         String bps = getSpeed() + " BPS";
         int width = fontRenderer.getStringWidth(bps) + 4;
@@ -197,6 +210,11 @@ public class HUD extends AbstractModule {
         return Math.round(bps * 100.0) / 100.0;
     }
 
+    /**
+     * Renders the watermark
+     *
+     * @param shader If the shader should be rendered
+     */
     private void renderWatermark(boolean shader) {
         String clientText = Virago.getInstance().getName().toLowerCase() + "\u00A7fclient v";
         String versionText = Virago.getInstance().getVersion() + " | ";
@@ -241,6 +259,18 @@ public class HUD extends AbstractModule {
             case PRODUCT_SANS:
                 fontRenderer = font.getProductSans();
                 break;
+            case ENCHANTMENT:
+                fontRenderer = font.getEnchantment();
+                break;
+            case GREYCLIFF:
+                fontRenderer = font.getGreyCliffCfMedium();
+                break;
+            case URBANIST:
+                fontRenderer = font.getUrbanistSemiBold();
+                break;
+            case MANROPE:
+                fontRenderer = font.getManropeSemiBold();
+                break;
             case POPPINS:
                 fontRenderer = font.getPoppinsMedium();
                 break;
@@ -252,7 +282,6 @@ public class HUD extends AbstractModule {
                 break;
         }
     }
-
 
     /**
      * Gets the sorted modules
@@ -271,6 +300,25 @@ public class HUD extends AbstractModule {
         Collections.reverse(modules);
         return modules;
     }
+
+    /**
+     * Gets the sorted enabled modules
+     *
+     * @return The sorted enabled modules
+     */
+    private List<AbstractModule> getSortedEnabledModules() {
+        List<AbstractModule> modules = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModuleList().stream().filter(mod -> !mod.isHidden() && mod.isEnabled()).collect(Collectors.toList());
+        modules.sort((module1, module2) -> {
+            String moduleData1 = generateModuleData(module1);
+            String moduleData2 = generateModuleData(module2);
+            int width1 = fontRenderer.getStringWidth(moduleData1);
+            int width2 = fontRenderer.getStringWidth(moduleData2);
+            return Float.compare(width1, width2);
+        });
+        Collections.reverse(modules);
+        return modules;
+    }
+
 
     /**
      * Renders the modules
@@ -307,7 +355,7 @@ public class HUD extends AbstractModule {
         }
         int padding = 3;
         if (fontType.getValue() == FontType.POPPINS) padding -= 1;
-        fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6) - moduleWidth, y + padding, ColorUtil.getColor(true));
+        fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6.5f) - moduleWidth, y + padding, ColorUtil.generateColor(index + 1));
     }
 
     /**
@@ -322,45 +370,42 @@ public class HUD extends AbstractModule {
         int moduleWidth = fontRenderer.getStringWidth(moduleData);
         int height = elementHeight.getValue().intValue();
         float x = sr.getScaledWidth() - moduleWidth - 8;
-        int color = ColorUtil.getColor(true);
+        int color = ColorUtil.generateColor(index);
+        int nextColor = ColorUtil.generateColor(index + 1);
 
         switch (arrayListOutline.getValue()) {
             case TOP: {
                 if (index == 0) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 4f, y - 1, x, y, color);
+                    RenderUtils.drawRect(sr.getScaledWidth() - 3f, y - 1, x, y, color);
                 }
                 break;
             }
             case RIGHT:
-                RenderUtils.drawRect(x + moduleWidth + 4f, y, x + moduleWidth + 5f, y + height, color);
+                RenderUtils.drawVerticalGradient(x + moduleWidth + 4f, y, 1, height, new Color(color), new Color(nextColor));
                 break;
             case TOP_RIGHT:
                 if (index == 0) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 4f, y - 1, x, y, color);
+                    RenderUtils.drawRect(sr.getScaledWidth() - 3f, y - 1, x, y, color);
                 }
-                RenderUtils.drawRect(x + moduleWidth + 4f, y - 1f, x + moduleWidth + 5f, y + height, color);
+                RenderUtils.drawVerticalGradient(x + moduleWidth + 4f, y, 1, height, new Color(color), new Color(nextColor));
                 break;
             case LEFT:
-                RenderUtils.drawRect(x - 1f, y, x, y + height, color);
+                RenderUtils.drawVerticalGradient(x - 1f, y, 1, height, new Color(color), new Color(nextColor));
                 break;
             case FULL:
-                RenderUtils.drawRect(x + moduleWidth + 4f, y - 1f, x + moduleWidth + 5f, y + height - 1f, color);
-                RenderUtils.drawRect(x - 1f, y, x, y + height, color);
+                RenderUtils.drawVerticalGradient(x + moduleWidth + 4f, y, 1, height, new Color(color), new Color(nextColor));
+                RenderUtils.drawVerticalGradient(x - 1f, y, 1, height, new Color(color), new Color(nextColor));
 
                 if (index == 0) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 4f, y - 1, x - 1, y, color);
-                } else if (index == getSortedModules().size() - 1f) {
-                    RenderUtils.drawRect(sr.getScaledWidth() - 1f, y + height - 1f, x, y + height, color);
+                    RenderUtils.drawRect(sr.getScaledWidth() - 3f, y - 1, x - 1, y, color);
+                } else if (index == getSortedEnabledModules().size() - 1f) {
+                    RenderUtils.drawRect(sr.getScaledWidth() - 3f, y + height - 1f, x, y + height, color);
                 }
 
-                /*if (index < getSortedModules().size() - 1f) {
-                    int nextModuleWidth = calculateNextModuleWidth(getSortedModules(), index);
-                    int nextModuleX = sr.getScaledWidth() - nextModuleWidth - 1;
-
-                    int startX = (int) Math.min(x, nextModuleX);
-
-                    RenderUtils.drawRect(startX, y + height, nextModuleWidth + startX, y + height + 1, color);
-                }*/
+                if (index < getSortedEnabledModules().size() - 1f) {
+                    int nextModuleWidth = calculateModuleWidth(getSortedEnabledModules().get(index + 1).getDisplayName());
+                    RenderUtils.verticalGradient(x - 1f, (float) (height + y), moduleWidth - nextModuleWidth, 1f, new Color(color), new Color(nextColor));
+                }
                 break;
         }
     }
@@ -471,7 +516,11 @@ public class HUD extends AbstractModule {
 
     public enum FontType {
         PRODUCT_SANS,
+        ENCHANTMENT,
+        GREYCLIFF,
         JETBRAINS,
+        URBANIST,
+        MANROPE,
         POPPINS,
         SF_PRO
     }

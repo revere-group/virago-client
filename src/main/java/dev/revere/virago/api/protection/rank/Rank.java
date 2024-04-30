@@ -13,6 +13,7 @@ public enum Rank {
 
     USER("User", EnumChatFormatting.WHITE),
     TESTER("Tester", EnumChatFormatting.YELLOW),
+    MEDIA("Media", EnumChatFormatting.GOLD),
     STAFF("Staff", EnumChatFormatting.LIGHT_PURPLE),
     DEVELOPER("Developer", EnumChatFormatting.AQUA),
     CONSOLE("#", EnumChatFormatting.DARK_RED)
@@ -52,6 +53,15 @@ public enum Rank {
      */
     public boolean isTester() {
         return this == TESTER;
+    }
+
+    /**
+     * Is media boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isMedia() {
+        return this == MEDIA;
     }
 
     /**

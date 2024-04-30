@@ -245,6 +245,23 @@ public class ColorUtil {
         return color & 0xFF;
     }
 
+    public static int generateColor(int index) {
+        HUD hud = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class);
+        switch (hud.colorMode.getValue()) {
+            case CUSTOM:
+                return ColorUtil.fadeBetween(hud.fadeSpeed.getValue().intValue(), hud.colorSpacing.getValue().intValue() * index * 10, hud.customColor1.getValue(), hud.customColor2.getValue()).getRGB();
+            case STATIC:
+                return hud.customColor1.getValue().getRGB();
+            case CLIENT:
+                return ColorUtil.fadeBetween(hud.fadeSpeed.getValue().intValue(), hud.colorSpacing.getValue().intValue() * index * 10, new Color(255, 11, 82), new Color(-1)).getRGB();
+            case RAINBOW_PULSE:
+                return ColorUtil.fadeBetween(hud.fadeSpeed.getValue().intValue(), hud.colorSpacing.getValue().intValue() * index * 10, new Color(rainbow(1000)), Color.WHITE).getRGB();
+            case RAINBOW:
+                return ColorUtil.rainbow(hud.rainbowSpeed.getValue().intValue() * index * 10);
+        }
+        return -1;
+    }
+
     public static int getColor(boolean animate) {
         HUD hud = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class);
         switch (hud.colorMode.getValue()) {

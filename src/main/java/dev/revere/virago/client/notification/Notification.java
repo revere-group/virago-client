@@ -28,6 +28,15 @@ public class Notification extends RenderableComponent {
     private long initTime = 0L;
     private long duration = 1500L;
 
+    /**
+     * Instantiates a new Notification.
+     *
+     * @param x       the x position
+     * @param y       the y position
+     * @param type    the type of notification
+     * @param title   the title of the notification
+     * @param message the message of the notification
+     */
     public Notification(float x, float y, NotificationType type, String title, String message) {
         super(x, y, 125, 30);
 
@@ -38,6 +47,16 @@ public class Notification extends RenderableComponent {
         animation.resetToDefault();
     }
 
+    /**
+     * Instantiates a new Notification.
+     *
+     * @param x        the x position
+     * @param y        the y position
+     * @param type     the type of notification
+     * @param title    the title of the notification
+     * @param message  the message of the notification
+     * @param duration the duration of the notification
+     */
     public Notification(float x, float y, NotificationType type, String title, String message, long duration) {
         super(x, y, 125, 30);
 
@@ -49,6 +68,13 @@ public class Notification extends RenderableComponent {
         animation.resetToDefault();
     }
 
+    /**
+     * Draw the notification.
+     *
+     * @param mouseX     the mouse x
+     * @param mouseY     the mouse y
+     * @param mouseDelta the mouse delta
+     */
     @Override
     public void draw(float mouseX, float mouseY, int mouseDelta) {
         if (initTime == 0L && animation.getFactor() >= 1) {
@@ -80,12 +106,32 @@ public class Notification extends RenderableComponent {
         }
     }
 
+    /**
+     * Called when the mouse is clicked.
+     *
+     * @param mouseX the mouse x
+     * @param mouseY the mouse y
+     * @param click  the click
+     * @return the boolean
+     */
     @Override
     public boolean mouseClicked(float mouseX, float mouseY, InteractionComponent click) { return false; }
 
+    /**
+     * Called when the mouse is released.
+     *
+     * @param mouseX the mouse x
+     * @param mouseY the mouse y
+     * @param click  the click
+     */
     @Override
     public void mouseReleased(float mouseX, float mouseY, InteractionComponent click) {}
 
+    /**
+     * Gets the width of the notification.
+     *
+     * @return the width
+     */
     @Override
     public float getWidth() {
         float titleWidth = fontService.getSfProTextRegular().getStringWidth(this.title);
@@ -94,9 +140,20 @@ public class Notification extends RenderableComponent {
         return Math.max(titleWidth, descWidth) + 47;
     }
 
+    /**
+     * Should notification be hidden.
+     *
+     * @return the boolean
+     */
     public boolean shouldNotificationHide() {
         return !animation.getState();
     }
 
+    /**
+     * Called when a key is typed.
+     *
+     * @param typedChar the typed char
+     * @param keyCode   the key code
+     */
     public void keyTyped(char typedChar, int keyCode) {}
 }
