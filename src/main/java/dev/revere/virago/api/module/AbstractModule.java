@@ -53,7 +53,7 @@ public abstract class AbstractModule {
 
     private String metaData = "";
 
-    private final Animation animation = new Animation(() -> Float.valueOf(250.0f), false, () -> Easing.CUBIC_IN_OUT);
+    private final Animation animation = new Animation(() -> 250.0f, false, () -> Easing.CUBIC_IN_OUT);
 
     /**
      * AbstractModule constructor to initialize the module.

@@ -11,7 +11,6 @@ import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.NotificationService;
 import net.minecraft.network.play.client.C01PacketChatMessage;
-import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.StringUtils;
 
@@ -22,7 +21,9 @@ public class AutoHypixel extends AbstractModule {
     private final Setting<Boolean> rejoin = new Setting<>("Rejoin", true);
     private final Setting<Boolean> autoGG = new Setting<>("AutoGG", false);
 
-    private final Setting<GameMode> gameMode = new Setting<>("GameMode", GameMode.SW_SOLO_NORMAL).visibleWhen(rejoin::getValue);
+    private final Setting<GameType> gameTypeProperty = new Setting<>("Game Type", GameType.SKYWARS);
+    private final Setting<SkywarsTypes> skywarsTypes = new Setting<>("Skywars", SkywarsTypes.SOLO_NORMAL).visibleWhen(() -> rejoin.getValue() && gameTypeProperty.getValue() == GameType.SKYWARS);
+    private final Setting<BedwarsTypes> bedwarsTypes = new Setting<>("Bedwars", BedwarsTypes.FOURS).visibleWhen(() -> rejoin.getValue() && gameTypeProperty.getValue() == GameType.BEDWARS);
 
     @EventHandler
     private final Listener<PacketEvent> onPacketReceiveEvent = event -> {
@@ -31,7 +32,7 @@ public class AutoHypixel extends AbstractModule {
             if (s45.getMessage() == null) return;
 
             String title = StringUtils.stripControlCodes(s45.getMessage().getUnformattedText());
-            if (title.equals("VICTORY!") || title.equals("YOU LOST!") || title.equals("YOU DIED!")) {
+            if (title.equals("VICTORY!") || title.equals("YOU LOST!") || (title.equals("YOU DIED!")) && gameTypeProperty.getValue() == GameType.SKYWARS) {
                 if(autoGG.getValue()) {
                     mc.thePlayer.sendChatMessage("GG");
                 }
@@ -43,29 +44,58 @@ public class AutoHypixel extends AbstractModule {
 
     private void doRejoin() {
         if(rejoin.getValue()) {
-            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Auto Hypixel", "You are being sent to a new " + gameMode.getValue().name().toLowerCase().replace("_", " ") + " game.", 3000L);
+            Virago.getInstance().getServiceManager().getService(NotificationService.class).notify(NotificationType.INFO, "Auto Hypixel", "You are being sent to a new " + skywarsTypes.getValue().name().toLowerCase().replace("_", " ") + " game.", 3000L);
 
-            switch (gameMode.getValue()) {
-                case SW_SOLO_NORMAL:
-                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
-                    break;
-                case SW_SOLO_INSANE:
-                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_insane"));
-                    break;
-                case SW_TEAMS_NORMAL:
-                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play teams_normal"));
-                    break;
-                case SW_TEAMS_INSANE:
-                    mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play teams_insane"));
-                    break;
+            if (gameTypeProperty.getValue() == GameType.SKYWARS) {
+                switch (skywarsTypes.getValue()) {
+                    case SOLO_NORMAL:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_normal"));
+                        break;
+                    case SOLO_INSANE:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play solo_insane"));
+                        break;
+                    case TEAMS_NORMAL:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play teams_normal"));
+                        break;
+                    case TEAMS_INSANE:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play teams_insane"));
+                        break;
+                }
+            } else {
+                switch (bedwarsTypes.getValue()) {
+                    case SOLO:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play bedwars_eight_one"));
+                        break;
+                    case DOUBLES:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play bedwars_eight_two"));
+                        break;
+                    case FOURS_THREE:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play bedwars_four_three"));
+                        break;
+                    case FOURS:
+                        mc.getNetHandler().addToSendQueue(new C01PacketChatMessage("/play bedwars_four_four"));
+                        break;
+                }
             }
         }
     }
 
-    enum GameMode {
-        SW_SOLO_NORMAL,
-        SW_SOLO_INSANE,
-        SW_TEAMS_NORMAL,
-        SW_TEAMS_INSANE,
+    enum GameType {
+        SKYWARS,
+        BEDWARS
+    }
+
+    enum SkywarsTypes {
+        SOLO_NORMAL,
+        SOLO_INSANE,
+        TEAMS_NORMAL,
+        TEAMS_INSANE,
+    }
+
+    enum BedwarsTypes {
+        SOLO,
+        DOUBLES,
+        FOURS_THREE,
+        FOURS
     }
 }
