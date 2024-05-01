@@ -1,4 +1,4 @@
-package dev.revere.virago.client.checks.combat;
+package dev.revere.virago.client.checks.movement;
 
 import dev.revere.virago.api.anticheat.AbstractCheck;
 import dev.revere.virago.api.anticheat.CheckData;
