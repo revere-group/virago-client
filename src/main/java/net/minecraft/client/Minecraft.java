@@ -2206,6 +2206,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         networkmanager.sendPacket(new C00Handshake(47, socketaddress.toString(), 0, EnumConnectionState.LOGIN));
         networkmanager.sendPacket(new C00PacketLoginStart(this.getSession().getProfile()));
         this.myNetworkManager = networkmanager;
+        Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion(), "Playing in Singleplayer");
     }
 
     public void loadWorld(WorldClient worldClientIn)

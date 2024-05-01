@@ -17,11 +17,9 @@ import dev.revere.virago.client.events.player.StrafeEvent;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import dev.revere.virago.client.modules.misc.Teams;
 import dev.revere.virago.client.modules.player.Scaffold;
-import dev.revere.virago.client.modules.render.HUD;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.FriendService;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
@@ -74,6 +72,7 @@ public class KillAura extends AbstractModule {
     public final Setting<BlockMode> blockMode = new Setting<>("Block Mode", BlockMode.FAKE)
             .describedBy("The autoblock mode.");
 
+    private final Setting<SortMode> sortMode = new Setting<>("Sort Mode", SortMode.RANGE).describedBy("The sort mode.");
     private final Setting<RotationMode> rotationMode = new Setting<>("Rotation Mode", RotationMode.NORMAL).describedBy("The rotation mode.");
     private final Setting<RandomMode> randomMode = new Setting<>("Random Mode", RandomMode.NORMAL).describedBy("The random mode.");
 
@@ -472,11 +471,58 @@ public class KillAura extends AbstractModule {
     }
 
     public EntityLivingBase getSingleTarget() {
-        List<EntityLivingBase> targets = mc.theWorld.getLoadedEntityLivingBases().stream().filter(entity -> entity != mc.thePlayer).filter(entity -> entity.ticksExisted > 0).filter(entity -> (double) mc.thePlayer.getDistanceToEntity(entity) <= this.range.getValue()).filter(entity -> mc.theWorld.loadedEntityList.contains(entity)).filter(this::validTarget).sorted(Comparator.comparingDouble(entity -> mc.thePlayer.getDistanceSqToEntity(entity))).collect(Collectors.toList());
+        List<EntityLivingBase> targets = mc.theWorld.getLoadedEntityLivingBases().stream()
+                .filter(entity -> entity != mc.thePlayer)
+                .filter(entity -> entity.ticksExisted > 0)
+                .filter(entity -> (double) mc.thePlayer.getDistanceToEntity(entity) <= this.range.getValue())
+                .filter(entity -> mc.theWorld.loadedEntityList.contains(entity))
+                .filter(this::validTarget)
+                //.sorted(Comparator.comparingDouble(entity -> mc.thePlayer.getDistanceSqToEntity(entity)))
+                .collect(Collectors.toList());
+
         if (targets.isEmpty()) {
             return null;
         }
-        return targets.get(0);
+
+        switch (sortMode.getValue()) {
+            case RANGE:
+                return targets.stream()
+                        .min(Comparator.comparingDouble(entity -> mc.thePlayer.getDistanceSqToEntity(entity)))
+                        .orElse(null);
+            case HEALTH:
+                return targets.stream()
+                        .min(Comparator.comparingDouble(EntityLivingBase::getHealth))
+                        .orElse(null);
+            case ARMOR:
+                return targets.stream()
+                        .max(Comparator.comparingDouble(this::gearLevelCalculation))
+                        .orElse(null);
+            default:
+                return targets.get(0);
+        }
+    }
+
+    /**
+     * Calculates the gear level of the player
+     *
+     * @param entity the entity to calculate the gear level of
+     * @return the gear level of the player
+     */
+    private double gearLevelCalculation(EntityLivingBase entity) {
+        if (!(entity instanceof EntityPlayer)) {
+            return 0;
+        }
+
+        EntityPlayer player = (EntityPlayer) entity;
+        double totalArmorPoints = 0;
+
+        for (ItemStack itemStack : player.inventory.armorInventory) {
+            if (itemStack != null && itemStack.getItem() instanceof ItemArmor) {
+                totalArmorPoints += ((ItemArmor) itemStack.getItem()).damageReduceAmount;
+            }
+        }
+
+        return totalArmorPoints;
     }
 
     private boolean validTarget(EntityLivingBase entity) {
@@ -567,6 +613,10 @@ public class KillAura extends AbstractModule {
     public void onDisable() {
         super.onDisable();
         this.releaseBlock();
+    }
+
+    public enum SortMode {
+        RANGE, HEALTH, ARMOR
     }
 
     public enum BlockMode {

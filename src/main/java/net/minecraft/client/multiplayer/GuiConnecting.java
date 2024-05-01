@@ -70,6 +70,7 @@ public class GuiConnecting extends GuiScreen
                     GuiConnecting.this.networkManager.sendPacket(new C00Handshake(47, ip, port, EnumConnectionState.LOGIN));
                     GuiConnecting.this.networkManager.sendPacket(new C00PacketLoginStart(GuiConnecting.this.mc.getSession().getProfile()));
                     Virago.getInstance().getEventBus().call(new JoinEvent());
+                    Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion(), "Playing on " + ip + ":" + port);
                 }
                 catch (UnknownHostException unknownhostexception)
                 {

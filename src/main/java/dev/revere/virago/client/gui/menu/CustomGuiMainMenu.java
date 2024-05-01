@@ -26,6 +26,7 @@ public class CustomGuiMainMenu extends GuiScreen {
      */
     @Override
     public void initGui() {
+        Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion(), "discord.gg/virago");
         int centerX = width / 2;
         int centerY = height / 2;
 

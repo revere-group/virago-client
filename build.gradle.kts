@@ -53,14 +53,14 @@ dependencies {
     /**
      * Client Dependencies
      */
+    shadow("com.github.Vatuu:discord-rpc:1.6.2")
+    implementation("com.github.Vatuu:discord-rpc:1.6.2")
     implementation("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     shadow("org.reflections:reflections:0.10.2")
     implementation("org.reflections:reflections:0.10.2")
     shadow("org.json:json:20230227")
     implementation("org.json:json:20230227")
-    shadow("com.github.JnCrMx:discord-game-sdk4j:0.5.5")
-    implementation("com.github.JnCrMx:discord-game-sdk4j:0.5.5")
     shadow("org.java-websocket:Java-WebSocket:1.5.6")
     implementation("org.java-websocket:Java-WebSocket:1.5.6")
 }

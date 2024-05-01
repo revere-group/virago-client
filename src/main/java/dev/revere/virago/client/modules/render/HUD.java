@@ -183,6 +183,7 @@ public class HUD extends AbstractModule {
 
         List<AbstractModule> modules = getSortedEnabledModules();
         if (arraylist.getValue()) renderModules(sr, modules, true);
+
     };
 
     /**
