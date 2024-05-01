@@ -27,7 +27,6 @@ import java.util.ArrayList;
 @ModuleData(name = "BedwarsHUD", displayName = "Bedwars HUD", description = "Add a bedwars HUD", type = EnumModuleType.RENDER)
 public class BedwarsHUD extends AbstractModule {
 
-    public Setting<FontType> fontType = new Setting<>("Font", FontType.PRODUCT_SANS).describedBy("The font type to use.");
     private final Setting<Integer> opacity = new Setting<>("Opacity", 180)
             .minimum(0)
             .maximum(255)
@@ -46,7 +45,7 @@ public class BedwarsHUD extends AbstractModule {
     @EventHandler
     public Listener<Render2DEvent> onRender2D = event -> {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
-        getFont(font);
+        fontRenderer = font.getProductSans();
 
         RenderUtils.rect(draggable.getX(), draggable.getY() - 1, 115, 15, new Color(0,0,0, 120));
         RenderUtils.rect(draggable.getX(), draggable.getY() - 1, 115, 50, new Color(0,0,0, opacity.getValue()));
@@ -72,7 +71,6 @@ public class BedwarsHUD extends AbstractModule {
     @EventHandler
     private final Listener<ShaderEvent> shaderEventListener = event -> {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
-        getFont(font);
 
         fontRenderer.drawStringWithShadow("Bedwars", draggable.getX() + 37, draggable.getY() + 2, -1);
 
@@ -133,43 +131,12 @@ public class BedwarsHUD extends AbstractModule {
         this.traps.clear();
     };
 
-
-    /**
-     * Gets the font
-     *
-     * @param font The font service
-     */
-    private void getFont(FontService font) {
-        switch (fontType.getValue()) {
-            case PRODUCT_SANS:
-                fontRenderer = font.getProductSans();
-                break;
-            case POPPINS:
-                fontRenderer = font.getPoppinsMedium();
-                break;
-            case SF_PRO:
-                fontRenderer = font.getSfProTextRegular();
-                break;
-            case JETBRAINS:
-                fontRenderer = font.getJetbrainsMonoBold();
-                break;
-        }
-    }
-
     private String getTrap() {
         if(traps.isEmpty()) {
             return "None";
         }
 
         return traps.get(0);
-    }
-
-
-    public enum FontType {
-        PRODUCT_SANS,
-        JETBRAINS,
-        POPPINS,
-        SF_PRO
     }
 
     @Override

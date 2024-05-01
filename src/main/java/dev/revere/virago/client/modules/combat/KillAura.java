@@ -449,7 +449,7 @@ public class KillAura extends AbstractModule {
         GL11.glEnable(2832);
         GL11.glEnable(3553);
         GL11.glPopMatrix();
-        ColorUtil.glColor(Color.WHITE.getRGB());
+        GlStateManager.resetColor();
     }
 
     public float[] getRotations(EntityLivingBase target) {
@@ -596,24 +596,6 @@ public class KillAura extends AbstractModule {
             this.ent = player;
         }
 
-        private void getFont(FontService font) {
-            HUD hud = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class);
-            switch (hud.fontType.getValue()) {
-                case PRODUCT_SANS:
-                    fontRenderer = font.getProductSans();
-                    break;
-                case POPPINS:
-                    fontRenderer = font.getPoppinsMedium();
-                    break;
-                case SF_PRO:
-                    fontRenderer = font.getSfProTextRegular();
-                    break;
-                case JETBRAINS:
-                    fontRenderer = font.getJetbrainsMonoBold();
-                    break;
-            }
-        }
-
         private void renderArmor(EntityPlayer player) {
             ItemStack stack;
             int index;
@@ -658,7 +640,7 @@ public class KillAura extends AbstractModule {
         public void render(float x, float y) {
             GL11.glPushMatrix();
             FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
-            getFont(font);
+            fontRenderer = font.getProductSans();
 
             String playerName = this.ent.getName();
             String healthStr = (double) Math.round(this.ent.getHealth() * 10.0f) / 10.0 + " hp";
@@ -687,8 +669,6 @@ public class KillAura extends AbstractModule {
             float f3 = 37.0f + barWidth / 100.0f * (float) (this.ent.getTotalArmorValue() * 5);
             RenderUtils.drawRect(38.0f, 24.5f, 26.0f + width - 2.0f, 29.5f, ColorUtil.reAlpha(new Color(0).getRGB(), 0.35f));
             RenderUtils.drawRect(38.0f, 24.5f, f3, 29.5f, -12417291);
-
-            GlStateManager.resetColor();
             for (NetworkPlayerInfo info : GuiPlayerTabOverlay.field_175252_a.sortedCopy(mc.getNetHandler().getPlayerInfoMap())) {
                 if (mc.theWorld.getPlayerEntityByUUID(info.getGameProfile().getId()) != this.ent) continue;
                 mc.getTextureManager().bindTexture(info.getLocationSkin());

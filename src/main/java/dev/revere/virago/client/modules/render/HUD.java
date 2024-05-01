@@ -20,6 +20,7 @@ import dev.revere.virago.util.render.RoundedUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
@@ -109,7 +110,7 @@ public class HUD extends AbstractModule {
     public int y;
 
     public HUD() {
-        setEnabled(true);
+        //setEnabled(true);
     }
 
     /**
@@ -121,7 +122,33 @@ public class HUD extends AbstractModule {
     private final Listener<Render2DEvent> render2DEventListener = event -> {
         FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
         ScaledResolution sr = new ScaledResolution(mc);
-        getFont(font);
+
+        switch (fontType.getValue()) {
+            case PRODUCT_SANS:
+                fontRenderer = font.getProductSans();
+                break;
+            case ENCHANTMENT:
+                fontRenderer = font.getEnchantment();
+                break;
+            case GREYCLIFF:
+                fontRenderer = font.getGreyCliffCfMedium();
+                break;
+            case URBANIST:
+                fontRenderer = font.getUrbanistSemiBold();
+                break;
+            case MANROPE:
+                fontRenderer = font.getManropeSemiBold();
+                break;
+            case POPPINS:
+                fontRenderer = font.getPoppinsMedium();
+                break;
+            case SF_PRO:
+                fontRenderer = font.getSfProTextRegular();
+                break;
+            case JETBRAINS:
+                fontRenderer = font.getJetbrainsMonoBold();
+                break;
+        }
 
         if (watermark.getValue())
             renderWatermark(false);
@@ -143,9 +170,7 @@ public class HUD extends AbstractModule {
      */
     @EventHandler
     private final Listener<ShaderEvent> shaderEventListener = event -> {
-        FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
         ScaledResolution sr = new ScaledResolution(mc);
-        getFont(font);
 
         if (watermark.getValue())
             renderWatermark(true);
@@ -222,6 +247,7 @@ public class HUD extends AbstractModule {
         String serverText = mc.getCurrentServerData() != null ? mc.getCurrentServerData().serverIP : "singleplayer";
 
         String finalText = clientText + versionText + usernameText + serverText;
+        GlStateManager.pushMatrix();
         switch (watermarkMode.getValue()) {
             case TEXT:
                 FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
@@ -236,6 +262,7 @@ public class HUD extends AbstractModule {
                     RoundedUtils.shadowGradient(watermarkDraggable.getX(), watermarkDraggable.getY(), fontRenderer.getStringWidth(finalText) + 2, fontRenderer.getHeight() + 6, 1, 5, 5, new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), new Color(0, 0, 0, 150), false);
                     RenderUtils.renderGradientRect((int) watermarkDraggable.getX(), (int) watermarkDraggable.getY(), (int) (fontRenderer.getStringWidth(finalText) + 2 + watermarkDraggable.getX()), (int) (watermarkDraggable.getY() + 1), 5.0, 2000L, 2L, RenderUtils.Direction.RIGHT);
                 }
+
                 fontRenderer.drawStringWithShadow(finalText, watermarkDraggable.getX() + 1, watermarkDraggable.getY() + 4, ColorUtil.getColor(false));
                 watermarkDraggable.setWidth(fontRenderer.getStringWidth(finalText));
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 6);
@@ -247,58 +274,7 @@ public class HUD extends AbstractModule {
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 50);
                 break;
         }
-    }
-
-    /**
-     * Gets the font
-     *
-     * @param font The font service
-     */
-    private void getFont(FontService font) {
-        switch (fontType.getValue()) {
-            case PRODUCT_SANS:
-                fontRenderer = font.getProductSans();
-                break;
-            case ENCHANTMENT:
-                fontRenderer = font.getEnchantment();
-                break;
-            case GREYCLIFF:
-                fontRenderer = font.getGreyCliffCfMedium();
-                break;
-            case URBANIST:
-                fontRenderer = font.getUrbanistSemiBold();
-                break;
-            case MANROPE:
-                fontRenderer = font.getManropeSemiBold();
-                break;
-            case POPPINS:
-                fontRenderer = font.getPoppinsMedium();
-                break;
-            case SF_PRO:
-                fontRenderer = font.getSfProTextRegular();
-                break;
-            case JETBRAINS:
-                fontRenderer = font.getJetbrainsMonoBold();
-                break;
-        }
-    }
-
-    /**
-     * Gets the sorted modules
-     *
-     * @return The sorted modules
-     */
-    private List<AbstractModule> getSortedModules() {
-        List<AbstractModule> modules = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModuleList().stream().filter(mod -> !mod.isHidden()).collect(Collectors.toList());
-        modules.sort((module1, module2) -> {
-            String moduleData1 = generateModuleData(module1);
-            String moduleData2 = generateModuleData(module2);
-            int width1 = fontRenderer.getStringWidth(moduleData1);
-            int width2 = fontRenderer.getStringWidth(moduleData2);
-            return Float.compare(width1, width2);
-        });
-        Collections.reverse(modules);
-        return modules;
+        GlStateManager.popMatrix();
     }
 
     /**
@@ -373,6 +349,7 @@ public class HUD extends AbstractModule {
         int color = ColorUtil.generateColor(index);
         int nextColor = ColorUtil.generateColor(index + 1);
 
+        GlStateManager.pushMatrix();
         switch (arrayListOutline.getValue()) {
             case TOP: {
                 if (index == 0) {
@@ -409,6 +386,7 @@ public class HUD extends AbstractModule {
                 }
                 break;
         }
+        GlStateManager.popMatrix();
     }
 
     private int calculateModuleWidth(String text) {

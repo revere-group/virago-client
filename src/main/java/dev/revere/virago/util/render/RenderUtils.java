@@ -406,11 +406,20 @@ public class RenderUtils {
      */
     public static void drawVerticalGradient(float x, float y, float width, float height, Color top, Color bottom) {
         GL11.glPushMatrix();
+
+        boolean texture2DEnabled = GL11.glGetBoolean(GL11.GL_TEXTURE_2D);
+        boolean alphaTestEnabled = GL11.glGetBoolean(GL11.GL_ALPHA_TEST);
+        boolean blendingEnabled = GL11.glGetBoolean(GL11.GL_BLEND);
+        int blendSrcFactor = GL11.glGetInteger(GL11.GL_BLEND_SRC);
+        int blendDstFactor = GL11.glGetInteger(GL11.GL_BLEND_DST);
+        int shadeModel = GL11.glGetInteger(GL11.GL_SHADE_MODEL);
+
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glShadeModel(GL11.GL_SMOOTH);
+
         GL11.glBegin(GL11.GL_QUADS);
         ColorUtil.glColor(top.getRGB());
         GL11.glVertex2f(x, y);
@@ -420,14 +429,31 @@ public class RenderUtils {
         ColorUtil.glColor(top.getRGB());
         GL11.glVertex2f(x + width, y);
         GL11.glEnd();
-        GL11.glShadeModel(GL11.GL_FLAT);
-        GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+        if (texture2DEnabled) {
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+        } else {
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+        }
+
+        if (alphaTestEnabled) {
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+        } else {
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+        }
+
+        if (blendingEnabled) {
+            GL11.glEnable(GL11.GL_BLEND);
+        } else {
+            GL11.glDisable(GL11.GL_BLEND);
+        }
+
+        GL11.glBlendFunc(blendSrcFactor, blendDstFactor);
+        GL11.glShadeModel(shadeModel);
+
         GL11.glPopMatrix();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
     }
+
 
     /**
      * Converts a 3D vector to a 2D vector
