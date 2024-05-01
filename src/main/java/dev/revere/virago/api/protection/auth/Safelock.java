@@ -217,12 +217,7 @@ public class Safelock {
                 Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
                 SocketClient.init(productKey);
                 Virago.getInstance().getDiscordRPC().start();
-                Virago.getInstance().getDiscordRPC().getActivity()
-                        .setDetails(
-                                Virago.getInstance().getName()
-                                        + " v" +
-                                        Virago.getInstance().getVersion() + " | " + clientName);
-                Virago.getInstance().getDiscordRPC().getCore().activityManager().updateActivity(Virago.getInstance().getDiscordRPC().getActivity());
+                Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion() + " | " + clientName, "discord.gg/virago");
 
                 Minecraft.getMinecraft().displayGuiScreen(new CustomGuiMainMenu());
             }

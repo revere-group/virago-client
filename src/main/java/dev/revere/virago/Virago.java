@@ -53,6 +53,7 @@ public class Virago {
     public void startVirago() {
         Logger.info("Starting Virago...", getClass());
         this.discordRPC = new DiscordRPC();
+        this.discordRPC.start();
 
         if (!clientDir.exists() && clientDir.mkdir())
             Logger.info("Created client directory.", getClass());
@@ -78,6 +79,7 @@ public class Virago {
      */
     public void stopVirago() {
         Logger.info("Stopping Virago...", getClass());
+        this.discordRPC.shutdown();
         this.serviceManager.getServices().values().forEach(IService::stopService);
         this.serviceManager.getServices().values().forEach(IService::destroyService);
     }
@@ -95,6 +97,7 @@ public class Virago {
     private void handleEvents() {
         this.eventBus = new EventBus();
         this.eventBus.register(new KeybindManager());
+        this.eventBus.register(new DiscordRPC());
     }
 
     /**
