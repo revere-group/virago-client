@@ -224,6 +224,8 @@ public class Scaffold extends AbstractModule {
         if (sneaking)
             mc.getNetHandler().addToSendQueueNoEvent(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING));
 
+        stackToPlace = setStackToPlace();
+
         if (mc.thePlayer.onGround) {
             if (mode.getValue() != Mode.WATCHDOG_JUMP) {
                 yCoordinate = mc.thePlayer.posY;
@@ -238,8 +240,6 @@ public class Scaffold extends AbstractModule {
         } else if (mode.getValue() != Mode.WATCHDOG) {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
         }
-
-        stackToPlace = setStackToPlace();
 
         if (mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.ticksExisted % 2 == 0 && !mc.gameSettings.keyBindJump.isKeyDown()) {
             e.setY(mc.thePlayer.posY + 0.000001);
@@ -790,7 +790,27 @@ public class Scaffold extends AbstractModule {
             block = null;
         }
 
-        int mostBlocksSlot = findMostBlocksHotbarSlot();
+        int slot = lastSlot;
+        for (short g = 0; g < 9; g++) {
+            if (mc.thePlayer.inventoryContainer.getSlot(g + 36).getHasStack() &&
+                    isValidBlock(mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack())
+                    && (block == null)) {
+
+                if (mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack().stackSize <= 0) continue;
+                slot = g;
+                block = mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack();
+            }
+        }
+
+        if (lastSlot != slot) {
+            if (itemMode.getValue() == ItemMode.SWITCH) mc.thePlayer.inventory.currentItem = slot;
+            else mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(slot));
+
+            lastSlot = slot;
+        }
+        return block;
+
+        /*int mostBlocksSlot = findMostBlocksHotbarSlot();
         if (mostBlocksSlot != -1 && mostBlocksSlot != lastSlot) {
             if (itemMode.getValue() == ItemMode.SWITCH) {
                 mc.thePlayer.inventory.currentItem = mostBlocksSlot;
@@ -800,7 +820,7 @@ public class Scaffold extends AbstractModule {
             lastSlot = mostBlocksSlot;
         }
 
-        return block;
+        return block;*/
     }
 
     private int findMostBlocksHotbarSlot() {

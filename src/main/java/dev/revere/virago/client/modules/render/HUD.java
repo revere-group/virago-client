@@ -349,7 +349,6 @@ public class HUD extends AbstractModule {
         int color = ColorUtil.generateColor(index);
         int nextColor = ColorUtil.generateColor(index + 1);
 
-        GlStateManager.pushMatrix();
         switch (arrayListOutline.getValue()) {
             case TOP: {
                 if (index == 0) {
@@ -382,11 +381,10 @@ public class HUD extends AbstractModule {
                 if (index < getSortedEnabledModules().size() - 1f) {
                     String nextModule = generateModuleData(getSortedEnabledModules().get(index + 1));
                     int nextModuleWidth = calculateModuleWidth(nextModule);
-                    RenderUtils.verticalGradient(x - 1f, (float) (height + y), moduleWidth - nextModuleWidth + 1, 1f, new Color(color), new Color(nextColor));
+                    RenderUtils.drawVerticalGradient(x - 1f, (float) (height + y), moduleWidth - nextModuleWidth + 1, 1f, new Color(color), new Color(nextColor));
                 }
                 break;
         }
-        GlStateManager.popMatrix();
     }
 
     private int calculateModuleWidth(String text) {
