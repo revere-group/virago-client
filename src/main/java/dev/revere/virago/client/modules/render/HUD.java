@@ -43,7 +43,7 @@ public class HUD extends AbstractModule {
     private final Draggable bpsDraggable = Virago.getInstance().getServiceManager().getService(DraggableService.class).addDraggable(new Draggable(this, "BPS", 20, 40));
 
     public Setting<Boolean> arraylist = new Setting<>("ArrayList", true).describedBy("Should the arraylist be rendered?");
-    public Setting<Boolean> lowercase = new Setting<>("Lowercase", true)
+    public Setting<Boolean> lowercase = new Setting<>("Lowercase", false)
             .visibleWhen(arraylist::getValue)
             .describedBy("Make the text forced lowercase");
     public Setting<Boolean> watermark = new Setting<>("Watermark", true).describedBy("Should the watermark be rendered?");

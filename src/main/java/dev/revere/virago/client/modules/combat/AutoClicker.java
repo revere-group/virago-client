@@ -63,7 +63,7 @@ public class AutoClicker extends AbstractModule {
      * Updates the metadata
      */
     private void updateMetaData() {
-        setMetaData(String.format("C: %.1f J:%s", maxCPS.getValue(), jitter.getValue() ? "On" : "Off"));
+        setMetaData(String.format("C: %.1f J: %s", maxCPS.getValue(), jitter.getValue() ? "On" : "Off"));
     }
 
     /**
