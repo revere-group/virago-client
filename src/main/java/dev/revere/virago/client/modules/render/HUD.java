@@ -132,7 +132,7 @@ public class HUD extends AbstractModule {
         if (bps.getValue())
             renderBPS(false);
 
-        List<AbstractModule> modules = getSortedModules();
+        List<AbstractModule> modules = getSortedEnabledModules();
         if (arraylist.getValue()) renderModules(sr, modules, false);
     };
 
@@ -156,7 +156,7 @@ public class HUD extends AbstractModule {
         if (bps.getValue())
             renderBPS(true);
 
-        List<AbstractModule> modules = getSortedModules();
+        List<AbstractModule> modules = getSortedEnabledModules();
         if (arraylist.getValue()) renderModules(sr, modules, true);
     };
 
@@ -403,8 +403,9 @@ public class HUD extends AbstractModule {
                 }
 
                 if (index < getSortedEnabledModules().size() - 1f) {
-                    int nextModuleWidth = calculateModuleWidth(getSortedEnabledModules().get(index + 1).getDisplayName());
-                    RenderUtils.verticalGradient(x - 1f, (float) (height + y), moduleWidth - nextModuleWidth, 1f, new Color(color), new Color(nextColor));
+                    String nextModule = generateModuleData(getSortedEnabledModules().get(index + 1));
+                    int nextModuleWidth = calculateModuleWidth(nextModule);
+                    RenderUtils.verticalGradient(x - 1f, (float) (height + y), moduleWidth - nextModuleWidth + 1, 1f, new Color(color), new Color(nextColor));
                 }
                 break;
         }
