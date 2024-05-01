@@ -8,10 +8,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
-import dev.revere.virago.client.events.player.MoveEvent;
-import dev.revere.virago.client.events.player.PostMotionEvent;
-import dev.revere.virago.client.events.player.PreMotionEvent;
-import dev.revere.virago.client.events.player.UpdateEvent;
+import dev.revere.virago.client.events.player.*;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.util.Logger;
@@ -100,6 +97,8 @@ public class Scaffold extends AbstractModule {
 
     private final Setting<Boolean> gcdFix = new Setting<>("GCD Fix", false)
             .describedBy("Whether to enable a GCD fix.");
+
+    private final Setting<Boolean> safewalk = new Setting<>("Safewalk", true);
 
     private BlockInfo info;
     private int lastSlot, oldSlot, sprintTicks, towerTicks;
@@ -324,6 +323,11 @@ public class Scaffold extends AbstractModule {
         } else {
             if (info.pos != null) this.placeBlock();
         }
+    };
+
+    @EventHandler
+    private final Listener<SafeWalkEvent> safeWalkEventListener = e -> {
+        e.setCancelled(safewalk.getValue());
     };
 
     @EventHandler
@@ -787,7 +791,7 @@ public class Scaffold extends AbstractModule {
         }
 
         int mostBlocksSlot = findMostBlocksHotbarSlot();
-        if (mostBlocksSlot != lastSlot) {
+        if (mostBlocksSlot != -1 && mostBlocksSlot != lastSlot) {
             if (itemMode.getValue() == ItemMode.SWITCH) {
                 mc.thePlayer.inventory.currentItem = mostBlocksSlot;
             } else {

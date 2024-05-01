@@ -5,6 +5,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.events.player.SafeWalkEvent;
 import dev.revere.virago.util.rotation.vec.Vector3d;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
@@ -14,6 +16,7 @@ import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockPattern;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
@@ -456,6 +459,14 @@ public abstract class Entity implements ICommandSender
             double d4 = y;
             double d5 = z;
             boolean flag = this.onGround && this.isSneaking() && this instanceof EntityPlayer;
+
+            if(this instanceof EntityPlayerSP) {
+                SafeWalkEvent event = new SafeWalkEvent();
+                Virago.getInstance().getEventBus().call(event);
+                if(event.isCancelled() && this.onGround) {
+                    flag = true;
+                }
+            }
 
             if (flag)
             {
