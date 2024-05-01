@@ -110,7 +110,7 @@ public class HUD extends AbstractModule {
     public int y;
 
     public HUD() {
-        //setEnabled(true);
+        setEnabledSilent(true);
     }
 
     /**

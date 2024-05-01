@@ -181,6 +181,24 @@ public class InvManager extends AbstractModule {
         }
     };
 
+    private int findMostBlocksSlot() {
+        int mostBlocksSlot = -1;
+        int mostBlocksCount = 0;
+
+        for (int slot = InventoryUtil.INCLUDE_ARMOR_BEGIN; slot < InventoryUtil.END; slot++) {
+            final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot).getStack();
+            if (stack != null && stack.getItem() instanceof ItemBlock) {
+                int blockCount = stack.stackSize;
+                if (blockCount > mostBlocksCount) {
+                    mostBlocksCount = blockCount;
+                    mostBlocksSlot = slot;
+                }
+            }
+        }
+
+        return mostBlocksSlot;
+    }
+
     /**
      * Drops the items in the list of slots
      *
@@ -255,6 +273,17 @@ public class InvManager extends AbstractModule {
                             return true;
                         }
                     }
+                }
+            }
+
+            int mostBlocksSlot = findMostBlocksSlot();
+            if (mostBlocksSlot != -1) {
+                if (mostBlocksSlot < 36) {
+                    int lastHotbarSlot = 44;
+                    if (moveItems) {
+                        this.putItemInSlot(lastHotbarSlot, mostBlocksSlot);
+                    }
+                    return true;
                 }
             }
         }

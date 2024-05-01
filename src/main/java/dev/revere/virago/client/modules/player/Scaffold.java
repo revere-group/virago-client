@@ -786,25 +786,35 @@ public class Scaffold extends AbstractModule {
             block = null;
         }
 
-        int slot = lastSlot;
-        for (short g = 0; g < 9; g++) {
-            if (mc.thePlayer.inventoryContainer.getSlot(g + 36).getHasStack() &&
-                    isValidBlock(mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack())
-                    && (block == null)) {
+        int mostBlocksSlot = findMostBlocksHotbarSlot();
+        if (mostBlocksSlot != lastSlot) {
+            if (itemMode.getValue() == ItemMode.SWITCH) {
+                mc.thePlayer.inventory.currentItem = mostBlocksSlot;
+            } else {
+                mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mostBlocksSlot));
+            }
+            lastSlot = mostBlocksSlot;
+        }
 
-                if (mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack().stackSize <= 0) continue;
-                slot = g;
-                block = mc.thePlayer.inventoryContainer.getSlot(g + 36).getStack();
+        return block;
+    }
+
+    private int findMostBlocksHotbarSlot() {
+        int mostBlocksSlot = -1;
+        int mostBlocksCount = 0;
+
+        for (int hotbarSlot = 0; hotbarSlot < 9; hotbarSlot++) {
+            final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(hotbarSlot + 36).getStack();
+            if (stack != null && stack.getItem() instanceof ItemBlock) {
+                int blockCount = stack.stackSize;
+                if (blockCount > mostBlocksCount) {
+                    mostBlocksCount = blockCount;
+                    mostBlocksSlot = hotbarSlot;
+                }
             }
         }
 
-        if (lastSlot != slot) {
-            if (itemMode.getValue() == ItemMode.SWITCH) mc.thePlayer.inventory.currentItem = slot;
-            else mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(slot));
-
-            lastSlot = slot;
-        }
-        return block;
+        return mostBlocksSlot;
     }
 
     private boolean isValidBlock(ItemStack stack) {
