@@ -98,6 +98,7 @@ public class KillAura extends AbstractModule {
 
     private final Setting<Boolean> targetHud = new Setting<>("TargetHud", true).describedBy("Display a target hud.");
     private final Setting<Boolean> targetPlayers = new Setting<>("Players", true).describedBy("Target players.");
+    private final Setting<Boolean> targetVillager = new Setting<>("Villager", false).describedBy("Target villagers.");
     private final Setting<Boolean> targetAnimals = new Setting<>("Animals", false).describedBy("Target animals.");
     private final Setting<Boolean> targetMonsters = new Setting<>("Monsters", false).describedBy("Target monsters.");
     private final Setting<Boolean> targetInvisibles = new Setting<>("Invisibles", false).describedBy("Target invisibles.");
@@ -555,6 +556,10 @@ public class KillAura extends AbstractModule {
             return this.targetPlayers.getValue();
         }
 
+        if (entity instanceof EntityVillager) {
+            return this.targetVillager.getValue();
+        }
+
         if (entity instanceof EntityAnimal) {
             return this.targetAnimals.getValue();
         }
@@ -563,7 +568,7 @@ public class KillAura extends AbstractModule {
             return this.targetMonsters.getValue();
         }
 
-        if (entity instanceof EntityVillager || entity instanceof EntityArmorStand) {
+        if (entity instanceof EntityArmorStand) {
             return false;
         }
 
