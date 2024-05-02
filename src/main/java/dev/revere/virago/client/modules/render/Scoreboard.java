@@ -16,7 +16,12 @@ public class Scoreboard extends AbstractModule {
     public final Setting<Boolean> numbers = new Setting<>("Numbers", false)
             .describedBy("Whether to render numbers on the scoreboard");
 
-    public final Setting<Boolean> shadow = new Setting<>("Text Shadow", true).describedBy("Whether to render shadow on the scoreboard");
+    public final Setting<Integer> yOffset = new Setting<>("Y Offset", 0)
+            .minimum(0)
+            .maximum(250)
+            .incrementation(1)
+            .describedBy("The Y offset of the scoreboard");
+
 
     @Override
     public void onEnable() {

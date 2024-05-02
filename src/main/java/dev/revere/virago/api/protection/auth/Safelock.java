@@ -3,11 +3,12 @@ package dev.revere.virago.api.protection.auth;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dev.revere.virago.Virago;
+import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.api.protection.ViragoUser;
 import dev.revere.virago.api.protection.rank.Rank;
-import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
+import dev.revere.virago.util.Logger;
 import lombok.var;
 import net.minecraft.client.Minecraft;
 
@@ -214,9 +215,9 @@ public class Safelock {
             final boolean valid = status.contains("success") && response.contains("success") && String.valueOf(statusLength).equals("7");
             GuiLicenceKey.isAuthorized = valid;
             if (valid) {
+                Logger.info(Rank.getRank(rank) + " " + clientName, getClass());
                 Virago.getInstance().setViragoUser(new ViragoUser(clientName, "0001", Rank.getRank(rank)));
                 SocketClient.init(productKey);
-                Virago.getInstance().getDiscordRPC().start();
                 Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion() + " | " + clientName, "discord.gg/virago");
 
                 Minecraft.getMinecraft().displayGuiScreen(new CustomGuiMainMenu());

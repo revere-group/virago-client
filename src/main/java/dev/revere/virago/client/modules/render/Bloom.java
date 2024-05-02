@@ -8,8 +8,12 @@ import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.render.ShaderEvent;
 import dev.revere.virago.util.render.BloomUtil;
 import dev.revere.virago.util.render.RenderUtils;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.Framebuffer;
+
+import java.awt.*;
 
 /**
  * @author Remi
@@ -32,7 +36,8 @@ public class Bloom extends AbstractModule {
     private Framebuffer blurFramebuffer = new Framebuffer(1, 1, false);
 
     public void applyBlurEffect() {
-        if(mc.thePlayer == null)
+        ScaledResolution sr = new ScaledResolution(mc);
+        if (mc.thePlayer == null)
             return;
 
         blurFramebuffer = RenderUtils.createFrameBuffer(blurFramebuffer);
@@ -40,6 +45,10 @@ public class Bloom extends AbstractModule {
         blurFramebuffer.bindFramebuffer(false);
 
         Virago.getInstance().getEventBus().call(new ShaderEvent());
+
+        if (mc.currentScreen instanceof GuiChat) {
+            Gui.drawRect2(2, sr.getScaledHeight() - 14, sr.getScaledWidth() - 4, 12, Color.BLACK.getRGB());
+        }
 
         blurFramebuffer.unbindFramebuffer();
 

@@ -25,8 +25,10 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
-import java.util.*;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -252,7 +254,8 @@ public class HUD extends AbstractModule {
         switch (watermarkMode.getValue()) {
             case TEXT:
                 FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
-                if (!shader) RoundedUtils.round(watermarkDraggable.getX(), watermarkDraggable.getY(), font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()) + 5, watermarkDraggable.getHeight(), 4, new Color(10, 10, 10));
+                if (!shader)
+                    RoundedUtils.round(watermarkDraggable.getX(), watermarkDraggable.getY(), font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()) + 5, watermarkDraggable.getHeight(), 4, new Color(10, 10, 10));
                 font.getRalewayExtraBold().drawString(finalText.toUpperCase(), watermarkDraggable.getX() + 2, watermarkDraggable.getY() + 5, ColorUtil.getColor(false), false);
                 watermarkDraggable.setWidth(font.getRalewayExtraBold().getStringWidth(finalText.toUpperCase()));
                 watermarkDraggable.setHeight(font.getRalewayExtraBold().getHeight() + 7);
@@ -269,7 +272,8 @@ public class HUD extends AbstractModule {
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 6);
                 break;
             case LOGO:
-                if (!shader) RenderUtils.drawImage(new ResourceLocation("virago/textures/logo/logo.png"), watermarkDraggable.getX(), watermarkDraggable.getY(), 50, 50);
+                if (!shader)
+                    RenderUtils.drawImage(new ResourceLocation("virago/textures/logo/logo.png"), watermarkDraggable.getX(), watermarkDraggable.getY(), 50, 50);
                 fontRenderer.drawString(Virago.getInstance().getName().toLowerCase(), watermarkDraggable.getX() + 11, watermarkDraggable.getY() + 50, -1);
                 watermarkDraggable.setWidth(fontRenderer.getStringWidth(Virago.getInstance().getName().toLowerCase()));
                 watermarkDraggable.setHeight(fontRenderer.getHeight() + 50);
@@ -326,8 +330,9 @@ public class HUD extends AbstractModule {
         int moduleWidth = fontRenderer.getStringWidth(moduleData);
 
         if (!shader) {
-            if (background.getValue())
+            if (background.getValue()) {
                 Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
+            }
             renderBar(module, sr, y, index);
         }
         int padding = 3;
