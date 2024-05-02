@@ -233,6 +233,10 @@ public class ConfigService implements IService {
      */
     public void saveLicenseKey(String key) {
         File file = new File(clientDir, "license.txt");
+        if(file == null) {
+            System.out.println(file);
+        }
+
         try {
             if (!file.exists()) {
                 file.createNewFile();
