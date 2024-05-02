@@ -28,10 +28,6 @@ public class Fly extends AbstractModule {
     private final Setting<Boolean> noClip = new Setting<>("NoClip", false)
             .describedBy("Allows you to fly through blocks.");
 
-    public Fly() {
-        setKey(Keyboard.KEY_F);
-    }
-
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
         switch (mode.getValue()) {
