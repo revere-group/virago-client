@@ -11,20 +11,16 @@ import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.*;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.services.FontService;
-import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.rotation.RayCastUtil;
 import dev.revere.virago.util.rotation.vec.Vector2f;
 import lombok.Getter;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -97,8 +93,6 @@ public class Scaffold extends AbstractModule {
 
     private final Setting<Boolean> gcdFix = new Setting<>("GCD Fix", false)
             .describedBy("Whether to enable a GCD fix.");
-
-    private final Setting<Boolean> safewalk = new Setting<>("Safewalk", true);
 
     private BlockInfo info;
     private int lastSlot, oldSlot, sprintTicks, towerTicks;
@@ -323,11 +317,6 @@ public class Scaffold extends AbstractModule {
         } else {
             if (info.pos != null) this.placeBlock();
         }
-    };
-
-    @EventHandler
-    private final Listener<SafeWalkEvent> safeWalkEventListener = e -> {
-        e.setCancelled(safewalk.getValue());
     };
 
     @EventHandler
