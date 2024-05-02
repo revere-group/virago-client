@@ -80,33 +80,4 @@ public class Hotbar extends AbstractModule {
             GlStateManager.disableBlend();
         }
     };
-
-    @EventHandler
-    private final Listener<ShaderEvent> shaderEventListener = event -> {
-        ScaledResolution sr = new ScaledResolution(mc);
-
-        if (mc.getRenderViewEntity() instanceof EntityPlayer) {
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-
-            Gui.drawRect(
-                    sr.getScaledWidth() / 2.0F - 91,
-                    sr.getScaledHeight() - 22,
-                    sr.getScaledWidth() / 2.0F + 91,
-                    sr.getScaledHeight(),
-                    0x77000000
-            );
-
-            Gui.drawRect(
-                    sr.getScaledWidth() / 2.0F - 91 + mc.thePlayer.inventory.currentItem * 20,
-                    sr.getScaledHeight() - 22,
-                    sr.getScaledWidth() / 2.0F - 91 + mc.thePlayer.inventory.currentItem * 20 + 22,
-                    sr.getScaledHeight(),
-                    0x50FFFFFF
-            );
-
-            GlStateManager.disableRescaleNormal();
-            GlStateManager.disableBlend();
-        }
-    };
 }

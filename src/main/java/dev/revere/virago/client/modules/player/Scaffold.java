@@ -94,6 +94,8 @@ public class Scaffold extends AbstractModule {
     private final Setting<Boolean> gcdFix = new Setting<>("GCD Fix", false)
             .describedBy("Whether to enable a GCD fix.");
 
+    private final Setting<Boolean> safewalk = new Setting<>("Safewalk", true);
+
     private BlockInfo info;
     private int lastSlot, oldSlot, sprintTicks, towerTicks;
     private ItemStack stackToPlace;
@@ -355,6 +357,11 @@ public class Scaffold extends AbstractModule {
                 mc.thePlayer.setSpeed(e, 0.27);
             }
         }
+    };
+
+    @EventHandler
+    private final Listener<SafeWalkEvent> safeWalkEventListener = e -> {
+        e.setCancelled(safewalk.getValue());
     };
 
     @EventHandler
