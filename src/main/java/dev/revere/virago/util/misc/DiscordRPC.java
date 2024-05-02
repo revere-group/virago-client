@@ -1,16 +1,10 @@
 package dev.revere.virago.util.misc;
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.api.event.handler.EventHandler;
-import dev.revere.virago.api.event.handler.Listener;
-import dev.revere.virago.client.events.game.TickEvent;
-import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import lombok.Getter;
 import lombok.Setter;
 import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRichPresence;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ServerData;
 
 /**
  * @author Remi
