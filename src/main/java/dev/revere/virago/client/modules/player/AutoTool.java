@@ -21,7 +21,7 @@ public class AutoTool extends AbstractModule {
     @EventHandler
     private final Listener<PreMotionEvent> onPreMotion = event -> {
         KillAura aura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
-        if (mc.gameSettings.keyBindAttack.isKeyDown() && mc.objectMouseOver != null) {
+        if (mc.gameSettings.keyBindAttack.isKeyDown() && mc.objectMouseOver != null && aura.getSingleTarget() == null) {
             BlockPos pos = mc.objectMouseOver.getBlockPos();
             updateTool(pos);
         }
