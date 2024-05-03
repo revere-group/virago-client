@@ -571,6 +571,7 @@ public class GuiIngame extends Gui
             String s = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.getPlayerName()) + ": " + EnumChatFormatting.RED + score.getScorePoints();
             i = Math.max(i, this.getFontRenderer().getStringWidth(s));
         }
+        dev.revere.virago.client.modules.render.Scoreboard scoreboardModule = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(dev.revere.virago.client.modules.render.Scoreboard.class);
 
         int i1 = collection.size() * this.getFontRenderer().FONT_HEIGHT;
         int j1 = scaledRes.getScaledHeight() / 2 + i1 / 3;
@@ -581,11 +582,10 @@ public class GuiIngame extends Gui
         for (Score score1 : collection)
         {
             ++j;
-            dev.revere.virago.client.modules.render.Scoreboard scoreboardModule = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(dev.revere.virago.client.modules.render.Scoreboard.class);
             ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
             String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
             String s2 = EnumChatFormatting.RED + "" + score1.getScorePoints();
-            int k = j1 - j * this.getFontRenderer().FONT_HEIGHT;
+            int k = j1 - j * this.getFontRenderer().FONT_HEIGHT + scoreboardModule.yOffset.getValue();
             int l = scaledRes.getScaledWidth() - k1 + 2;
             drawRect(l1 - 2, k, l, k + this.getFontRenderer().FONT_HEIGHT, 1342177280);
             this.getFontRenderer().drawString(s1, l1, k, 553648127);
