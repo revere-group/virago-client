@@ -82,7 +82,7 @@ tasks.register<JavaExec>("run") {
 tasks.shadowJar {
     dependencies {
         include(dependency("com.github.Vatuu:discord-rpc:1.6.2"))
-        include(dependency("com.github.JnCrMx:discord-game-sdk4j:0.5.5"))
+        //include(dependency("com.github.JnCrMx:discord-game-sdk4j:0.5.5"))
         //include(dependency("org.projectlombok:lombok"))
         include(dependency("org.reflections:reflections:0.10.2"))
         include(dependency("org.json:json:20230227"))
