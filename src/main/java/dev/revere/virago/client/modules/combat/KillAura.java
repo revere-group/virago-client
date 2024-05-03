@@ -9,6 +9,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
@@ -44,9 +45,8 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.*;
 import net.minecraft.util.*;
 import net.optifine.util.MathUtils;
 import org.lwjgl.input.Keyboard;
@@ -114,6 +114,13 @@ public class KillAura extends AbstractModule {
 
     public boolean blocking = false;
     private int blockingTicks;
+
+    private boolean blinking;
+    private int stage;
+    private int delay;
+    private boolean unb2;
+
+    List<Packet> packets;
 
     public KillAura() {
         setKey(Keyboard.KEY_R);
@@ -318,6 +325,60 @@ public class KillAura extends AbstractModule {
         return this.attackTimer.hasTimeElapsed((long) (1000.0 / this.aps.getValue()), true);
     }
 
+    @EventHandler
+    private Listener<PreMotionEvent> onMotion = event -> {
+        if(target != null && blockMode.getValue() == BlockMode.WATCHDOG) {
+            boolean started = true;
+            unb2 = false;
+            delay = 0;
+            stage += 1;
+
+
+            if(stage == 1) {
+                blinking = true;
+                releaseBlock();
+            } else if(stage == 2) {
+                blinking = false;
+
+                for(Packet packet : packets) {
+                    mc.getNetHandler().getNetworkManager().sendPacket(packet);
+                }
+
+                preAutoblock();
+                stage = 0;
+            }
+
+            if(started && target != null) {
+                if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) || target == null) return;
+                else unb2 = true;
+                started = false;
+
+                delay = 0;
+                stage = 0;
+            }
+
+            if(unb2) {
+                delay += 1;
+                if(delay == 2) {
+                    mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C07PacketPlayerDigging());
+                    unb2 = false;
+                    delay = 0;
+                }
+            }
+        }
+    };
+
+    @EventHandler
+    private Listener<PacketEvent> packetEvent = event -> {
+        if (mc.thePlayer == null || !blinking)
+            return;
+
+        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement) {
+            event.setCancelled(true);
+            packets.add(event.getPacket());
+        }
+    };
+
     private void preAutoblock() {
         if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) || target == null) {
             return;
@@ -334,13 +395,8 @@ public class KillAura extends AbstractModule {
             case N_C_P:
                 break;
             case WATCHDOG:
-                /*if (this.blockingTicks == 0) {
-                    sendBlocking(false, true);
-                    this.blockingTicks = 6;
-                } else if (this.blockingTicks == 4) {
-                    releaseUseItem(false);
-                }
-                this.blockingTicks--;*/
+                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
+                blocking = true;
                 break;
             case VERUS:
                 mc.getNetHandler().addToSendQueueNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem(), new BlockPos(-1, -1, -1)));
@@ -370,6 +426,8 @@ public class KillAura extends AbstractModule {
                 break;
             case CONTROL:
                 break;
+            case WATCHDOG:
+                break;
         }
     }
 
@@ -386,6 +444,16 @@ public class KillAura extends AbstractModule {
                     mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
                     break;
                 case WATCHDOG:
+                    if (blocking) {
+                        mc.getNetHandler().addToSendQueueNoEvent(
+                                new C07PacketPlayerDigging(
+                                        C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                                        BlockPos.ORIGIN,
+                                        EnumFacing.DOWN
+                                )
+                        );
+                        blocking = false;
+                    }
                     break;
             }
         }
