@@ -12,14 +12,13 @@ import net.minecraft.util.EnumChatFormatting;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 import static dev.revere.virago.api.network.socket.SocketHelper.createSocketConnection;
 
 public class SocketClient {
     public static String jwt;
-    private static String URL = "ws://89.168.45.104:7376";
+    private static String URL = "wss://virago-websocket.revere.dev";
     private static String DEV = "ws://localhost:7376";
     public static String key = "";
 
