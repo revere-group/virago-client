@@ -59,6 +59,9 @@ public class HUD extends AbstractModule {
     public Setting<OutlineMode> arrayListOutline = new Setting<>("Outline", OutlineMode.TOP_RIGHT)
             .visibleWhen(arraylist::getValue)
             .describedBy("How to outline the arraylist");
+    public Setting<SortingSetting> sortingSetting = new Setting<>("Sorting", SortingSetting.ENABLED)
+            .visibleWhen(arraylist::getValue)
+            .describedBy("How to sort the arraylist");
 
     public static Setting<MetaData> arrayListMetaData = new Setting<>("Metadata", MetaData.SIMPLE)
             .describedBy("How to draw the module metadata");
@@ -288,14 +291,23 @@ public class HUD extends AbstractModule {
      * @return The sorted enabled modules
      */
     private List<AbstractModule> getSortedEnabledModules() {
-        List<AbstractModule> modules = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModuleList().stream().filter(mod -> !mod.isHidden() && mod.isEnabled()).collect(Collectors.toList());
-        modules.sort((module1, module2) -> {
-            String moduleData1 = generateModuleData(module1);
-            String moduleData2 = generateModuleData(module2);
-            int width1 = fontRenderer.getStringWidth(moduleData1);
-            int width2 = fontRenderer.getStringWidth(moduleData2);
-            return Float.compare(width1, width2);
-        });
+        List<AbstractModule> modules = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModuleList()
+                .stream()
+                .filter(mod -> {
+                    if (Objects.requireNonNull(sortingSetting.getValue()) == SortingSetting.BOUND) {
+                        return !mod.isHidden() && mod.isEnabled() && mod.getKey() != 0;
+                    }
+                    return !mod.isHidden() && mod.isEnabled();
+                })
+                .sorted((module1, module2) -> {
+                    String moduleData1 = generateModuleData(module1);
+                    String moduleData2 = generateModuleData(module2);
+                    if (fontType.getValue() == FontType.MINECRAFT)
+                        return Integer.compare(mc.fontRendererObj.getStringWidth(moduleData1), mc.fontRendererObj.getStringWidth(moduleData2));
+                    int width1 = fontRenderer.getStringWidth(moduleData1);
+                    int width2 = fontRenderer.getStringWidth(moduleData2);
+                    return Float.compare(width1, width2);
+                }).collect(Collectors.toList());
         Collections.reverse(modules);
         return modules;
     }
@@ -327,7 +339,12 @@ public class HUD extends AbstractModule {
      */
     private void renderModule(AbstractModule module, ScaledResolution sr, int y, int index, boolean shader) {
         String moduleData = generateModuleData(module);
-        int moduleWidth = fontRenderer.getStringWidth(moduleData);
+        int moduleWidth;
+        if (fontType.getValue() == FontType.MINECRAFT) {
+            moduleWidth = mc.fontRendererObj.getStringWidth(moduleData);
+        } else {
+            moduleWidth = fontRenderer.getStringWidth(moduleData);
+        }
 
         if (!shader) {
             if (background.getValue()) {
@@ -337,7 +354,11 @@ public class HUD extends AbstractModule {
         }
         int padding = 3;
         if (fontType.getValue() == FontType.POPPINS) padding -= 1;
-        fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6.5f) - moduleWidth, y + padding, ColorUtil.generateColor(index + 1));
+        if (fontType.getValue() == FontType.MINECRAFT) {
+            mc.fontRendererObj.drawString(moduleData, (int) ((sr.getScaledWidth() - 5.5f) - moduleWidth), y + padding, ColorUtil.generateColor(index + 1));
+        } else {
+            fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6.5f) - moduleWidth, y + padding, ColorUtil.generateColor(index + 1));
+        }
     }
 
     /**
@@ -349,7 +370,12 @@ public class HUD extends AbstractModule {
      */
     private void renderBar(AbstractModule module, ScaledResolution sr, int y, int index) {
         String moduleData = generateModuleData(module);
-        int moduleWidth = fontRenderer.getStringWidth(moduleData);
+        int moduleWidth;
+        if (fontType.getValue() == FontType.MINECRAFT) {
+            moduleWidth = mc.fontRendererObj.getStringWidth(moduleData);
+        } else {
+            moduleWidth = fontRenderer.getStringWidth(moduleData);
+        }
         int height = elementHeight.getValue().intValue();
         float x = sr.getScaledWidth() - moduleWidth - 8;
         int color = ColorUtil.generateColor(index);
@@ -394,7 +420,13 @@ public class HUD extends AbstractModule {
     }
 
     private int calculateModuleWidth(String text) {
-        return fontRenderer.getStringWidth(text);
+        int moduleWidth;
+        if (fontType.getValue() == FontType.MINECRAFT) {
+            moduleWidth = mc.fontRendererObj.getStringWidth(text);
+        } else {
+            moduleWidth = fontRenderer.getStringWidth(text);
+        }
+        return moduleWidth;
     }
 
     private String generateModuleData(AbstractModule module) {
@@ -501,6 +533,7 @@ public class HUD extends AbstractModule {
         PRODUCT_SANS,
         ENCHANTMENT,
         GREYCLIFF,
+        MINECRAFT,
         JETBRAINS,
         URBANIST,
         MANROPE,
@@ -516,6 +549,11 @@ public class HUD extends AbstractModule {
 
     public enum OutlineMode {
         TOP, RIGHT, TOP_RIGHT, LEFT, FULL, NONE
+    }
+
+    public enum SortingSetting {
+        ENABLED,
+        BOUND
     }
 
     public enum MetaData {

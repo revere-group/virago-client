@@ -23,10 +23,9 @@ import java.util.List;
 @ModuleData(name = "AntiBot", displayName = "Anti Bot", description = "Removes all bots", type = EnumModuleType.COMBAT)
 public class AntiBot extends AbstractModule {
 
-    public static ArrayList<EntityPlayer> bots = new ArrayList<>();
-
     @EventHandler
     private final Listener<UpdateEvent> playerUpdateEvent = event -> {
+        setMetaData("WATCHDOG");
         List<EntityPlayer> playerEntities = mc.theWorld.playerEntities;
 
         for (EntityPlayer player : playerEntities) {

@@ -22,7 +22,6 @@ public class Scoreboard extends AbstractModule {
             .incrementation(1)
             .describedBy("The Y offset of the scoreboard");
 
-
     @Override
     public void onEnable() {
         super.onEnable();

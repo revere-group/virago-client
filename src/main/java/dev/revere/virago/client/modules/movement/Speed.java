@@ -12,14 +12,11 @@ import dev.revere.virago.client.events.player.MoveEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.NotificationService;
-import dev.revere.virago.util.Logger;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.potion.Potion;
 import org.lwjgl.input.Keyboard;
-
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author Remi
@@ -30,15 +27,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 @ModuleData(name = "Speed", displayName = "Speed", description = "Increases your movement speed", type = EnumModuleType.MOVEMENT)
 public class Speed extends AbstractModule {
 
-    private final Setting<WatchdogMode> watchdogMode = new Setting<>("Watchdog Mode", WatchdogMode.NO_STRAFE)
+    private final Setting<SpeedMode> speedModeProperty = new Setting<>("Watchdog Mode", SpeedMode.WATCHDOG)
             .describedBy("How to control speed on Hypixel");
 
-    private final Setting<Double> speedNoStrafe = new Setting<>("Speed (nostrafe)", 2.1)
+    private final Setting<Double> speedNoStrafe = new Setting<>("Speed", 1.9)
             .minimum(1.5D)
             .maximum(2.25D)
             .incrementation(0.05D)
             .describedBy("The speed you will go.")
-            .visibleWhen(() -> watchdogMode.getValue() == WatchdogMode.NO_STRAFE);
+            .visibleWhen(() -> speedModeProperty.getValue() == SpeedMode.WATCHDOG);
 
     private double speed;
     private double lastDist;
@@ -52,7 +49,8 @@ public class Speed extends AbstractModule {
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
-        switch (watchdogMode.getValue()) {
+        setMetaData(speedModeProperty.getValue().name().replace("_", " "));
+        switch (speedModeProperty.getValue()) {
             case GROUND:
                 if(mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 4 == 0) &&  !(mc.theWorld.getBlockState(mc.thePlayer.getPosition().add(0, -1, 0)).getBlock() instanceof BlockSlab)) mc.timer.timerSpeed = 4.0f;
                 else mc.timer.timerSpeed = 1.0f;
@@ -62,8 +60,8 @@ public class Speed extends AbstractModule {
 
     @EventHandler
     private final Listener<MoveEvent> moveEventListener = event -> {
-        switch (watchdogMode.getValue()) {
-            case NO_STRAFE:
+        switch (speedModeProperty.getValue()) {
+            case WATCHDOG:
                 if (mc.thePlayer.isMoving()) {
                     if (mc.thePlayer.onGround && !prevOnGround) {
                         speed = mc.thePlayer.getBaseMoveSpeed();
@@ -157,7 +155,7 @@ public class Speed extends AbstractModule {
         super.onDisable();
     }
 
-    private enum WatchdogMode {
-        TEST, GROUND, NO_STRAFE
+    private enum SpeedMode {
+        TEST, GROUND, WATCHDOG
     }
 }

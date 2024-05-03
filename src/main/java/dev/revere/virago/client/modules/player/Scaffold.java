@@ -243,7 +243,7 @@ public class Scaffold extends AbstractModule {
             e.setY(mc.thePlayer.posY);
         }
 
-        if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump/*mc.thePlayer.isMoving()*/) {
+        if (towerMode.getValue() == TowerMode.WATCHDOG && mc.thePlayer.movementInput.jump && mc.thePlayer.isMoving() && getBlockCount() != 0) {
             airTicks++;
             int position = (int) mc.thePlayer.posY;
 
@@ -307,11 +307,11 @@ public class Scaffold extends AbstractModule {
                         info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                     } else {
                         info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                        if (towerMode.getValue() == TowerMode.WATCHDOG) {
+                        /*if (towerMode.getValue() == TowerMode.WATCHDOG) {
                             if (mc.thePlayer.ticksExisted % 6 == 0) {
                                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX - 1, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                             }
-                        }
+                        }*/
                     }
                 }
                 if (info.pos != null) this.placeBlock();
@@ -324,7 +324,7 @@ public class Scaffold extends AbstractModule {
     @EventHandler
     private final Listener<MoveEvent> moveEventListener = e -> {
         this.moveTowerMotion(e);
-        if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG) {
+        if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG && getBlockCount() != 0) {
             if (towerMode.getValue() == TowerMode.WATCHDOG) {
                 mc.thePlayer.setSpeed(e, mc.gameSettings.keyBindJump.isKeyDown() ? 0.2625 : 0.2085);
             } else {

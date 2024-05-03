@@ -26,6 +26,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +38,9 @@ import java.util.stream.Collectors;
 public class ESP extends AbstractModule {
 
     private final Setting<Boolean> nameTagsProperty = new Setting<>("NameTags", true);
+    private final Setting<TagColorMode> tagColorModeProperty = new Setting<>("Tag Color", TagColorMode.CUSTOM).visibleWhen(nameTagsProperty::getValue);
     private final Setting<Boolean> healthProperty = new Setting<>("Health", true);
+    private final Setting<HealthColorMode> healthColorModeProperty = new Setting<>("Health Color", HealthColorMode.CUSTOM).visibleWhen(healthProperty::getValue);
     private final Setting<Boolean> handProperty = new Setting<>("Hand", false);
     private final Setting<Boolean> glow = new Setting<>("Glow", true);
     private final Setting<Boolean> innerGlow = new Setting<>("Inner Glow", false).visibleWhen(glow::getValue);
@@ -64,7 +67,7 @@ public class ESP extends AbstractModule {
     private final Setting<PersonMode> personModeProperty = new Setting<>("Person Mode", PersonMode.ZIUE).visibleWhen(personProperty::getValue);
 
     public int getBoxColor() {
-        return ColorUtil.getColor(true);
+        return ColorUtil.getColor(false);
     }
 
     @EventHandler
@@ -352,8 +355,16 @@ public class ESP extends AbstractModule {
                 maxX *= leftoverScale;
                 maxY *= leftoverScale;
                 GL11.glScalef(scale, scale, 1);
+
+                Color tagColor;
+                if (Objects.requireNonNull(tagColorModeProperty.getValue()) == TagColorMode.ENTITY) {
+                    tagColor = new Color(255, 255, 255, 255);
+                } else {
+                    tagColor = new Color(ColorUtil.getColor(false));
+                }
+                ColorUtil.color(tagColor, MathHelper.floor_float(opacity));
                 if (entity != mc.thePlayer) {
-                    mc.fontRendererObj.drawStringWithShadow(entity.getDisplayName().getFormattedText(), minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(entity.getDisplayName().getFormattedText()) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? minY - mc.fontRendererObj.FONT_HEIGHT - 3 : minY - mc.fontRendererObj.FONT_HEIGHT / 2f, new Color(255, 255, 255, 255).getRGB());
+                    mc.fontRendererObj.drawStringWithShadow(entity.getDisplayName().getFormattedText(), minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(entity.getDisplayName().getFormattedText()) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? minY - mc.fontRendererObj.FONT_HEIGHT - 3 : minY - mc.fontRendererObj.FONT_HEIGHT / 2f, tagColor.getRGB());
                 }
                 GL11.glScalef(leftoverScale, leftoverScale, 1);
                 minX *= scale;
@@ -393,17 +404,22 @@ public class ESP extends AbstractModule {
                 GL11.glEnd();
                 GL11.glLineWidth(boxThicknessProperty.getValue().floatValue());
                 GL11.glBegin(GL11.GL_LINES);
-                Color healthColor = Color.GREEN;
-                if (entity.getHealth() < entity.getMaxHealth() / 2) healthColor = Color.YELLOW;
-                if (entity.getHealth() < entity.getMaxHealth() / 3) healthColor = Color.ORANGE;
-                if (entity.getHealth() < entity.getMaxHealth() / 4) healthColor = Color.RED;
+                Color healthColor;
+
+                if (Objects.requireNonNull(healthColorModeProperty.getValue()) == HealthColorMode.ENTITY) {
+                    healthColor = Color.GREEN;
+                    if (entity.getHealth() < entity.getMaxHealth() / 2) healthColor = Color.YELLOW;
+                    if (entity.getHealth() < entity.getMaxHealth() / 3) healthColor = Color.ORANGE;
+                    if (entity.getHealth() < entity.getMaxHealth() / 4) healthColor = Color.RED;
+                } else {
+                    healthColor = new Color(ColorUtil.getColor(false));
+                }
+
                 ColorUtil.color(healthColor, MathHelper.floor_float(opacity));
                 GL11.glVertex2f(minX, minY + (maxY - minY));
                 GL11.glVertex2f(minX, maxY - (maxY - minY) * (entity.getHealth() / entity.getMaxHealth()));
                 GL11.glEnd();
                 RenderUtils.post3D();
-                minX += 3;
-                maxX += 3;
             }
         }
     };
@@ -459,6 +475,32 @@ public class ESP extends AbstractModule {
         @Override
         public String toString() {
             return personName;
+        }
+    }
+
+    @AllArgsConstructor
+    public enum HealthColorMode {
+        CUSTOM("Custom"),
+        ENTITY("Entity");
+
+        private final String addonName;
+
+        @Override
+        public String toString() {
+            return addonName;
+        }
+    }
+
+    @AllArgsConstructor
+    public enum TagColorMode {
+        CUSTOM("Custom"),
+        ENTITY("Entity");
+
+        private final String addonName;
+
+        @Override
+        public String toString() {
+            return addonName;
         }
     }
 

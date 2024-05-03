@@ -57,6 +57,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -120,7 +121,7 @@ public class KillAura extends AbstractModule {
     private int delay;
     private boolean unb2;
 
-    List<Packet> packets;
+    private final List<Packet<?>> packets = new CopyOnWriteArrayList<>();
 
     public KillAura() {
         setKey(Keyboard.KEY_R);
@@ -144,7 +145,7 @@ public class KillAura extends AbstractModule {
             return;
         }
 
-        if (blockMode.getValue() == BlockMode.FAKE)
+        if (blockMode.getValue() == BlockMode.FAKE || blockMode.getValue() == BlockMode.WATCHDOG)
             blocking = true;
 
         if (!moveFix.getValue()) {
@@ -218,7 +219,7 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private final Listener<Render3DEvent> render3DEventListener = event -> {
-        this.preAutoblock();
+        //this.preAutoblock();
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
             return;
 
@@ -317,56 +318,50 @@ public class KillAura extends AbstractModule {
             return;
         }
 
-        mc.thePlayer.swingItem();
-        mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
-    }
-
-    private boolean hitTimerDone() {
-        return this.attackTimer.hasTimeElapsed((long) (1000.0 / this.aps.getValue()), true);
-    }
-
-    @EventHandler
-    private Listener<PreMotionEvent> onMotion = event -> {
-        if(target != null && blockMode.getValue() == BlockMode.WATCHDOG) {
-            boolean started = true;
+        if (blockMode.getValue() == BlockMode.WATCHDOG) {
             unb2 = false;
             delay = 0;
             stage += 1;
-
 
             if(stage == 1) {
                 blinking = true;
                 releaseBlock();
             } else if(stage == 2) {
+                mc.thePlayer.swingItem();
+                mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
+                mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.INTERACT));
                 blinking = false;
 
-                for(Packet packet : packets) {
-                    mc.getNetHandler().getNetworkManager().sendPacket(packet);
-                }
+                this.packets.forEach(packet -> {
+                    this.packets.remove(packet);
+                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
+                });
 
                 preAutoblock();
                 stage = 0;
             }
 
-            if(started && target != null) {
-                if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) || target == null) return;
-                else unb2 = true;
-                started = false;
+            if (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
+                unb2 = true;
+            } else {
+                return;
+            }
 
+            delay += 1;
+            if(delay == 2) {
+                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C07PacketPlayerDigging());
+                unb2 = false;
                 delay = 0;
-                stage = 0;
             }
-
-            if(unb2) {
-                delay += 1;
-                if(delay == 2) {
-                    mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C07PacketPlayerDigging());
-                    unb2 = false;
-                    delay = 0;
-                }
-            }
+        } else {
+            mc.thePlayer.swingItem();
+            mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
         }
-    };
+    }
+
+    private boolean hitTimerDone() {
+        return this.attackTimer.hasTimeElapsed((long) (1000.0 / this.aps.getValue()), true);
+    }
 
     @EventHandler
     private Listener<PacketEvent> packetEvent = event -> {
@@ -395,7 +390,7 @@ public class KillAura extends AbstractModule {
             case N_C_P:
                 break;
             case WATCHDOG:
-                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
+                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
                 blocking = true;
                 break;
             case VERUS:
@@ -426,8 +421,6 @@ public class KillAura extends AbstractModule {
                 break;
             case CONTROL:
                 break;
-            case WATCHDOG:
-                break;
         }
     }
 
@@ -438,22 +431,11 @@ public class KillAura extends AbstractModule {
                 case VANILLA:
                 case VERUS:
                 case H_V_H:
+                case WATCHDOG:
                     mc.getNetHandler().addToSendQueueNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     break;
                 case CONTROL:
                     mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
-                    break;
-                case WATCHDOG:
-                    if (blocking) {
-                        mc.getNetHandler().addToSendQueueNoEvent(
-                                new C07PacketPlayerDigging(
-                                        C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                                        BlockPos.ORIGIN,
-                                        EnumFacing.DOWN
-                                )
-                        );
-                        blocking = false;
-                    }
                     break;
             }
         }
