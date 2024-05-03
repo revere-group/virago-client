@@ -18,9 +18,6 @@ import net.minecraft.util.BlockPos;
 @ModuleData(name = "AutoTool", displayName = "Auto Tool", description = "Automatically switch to most useful tool", type = EnumModuleType.PLAYER)
 public class AutoTool extends AbstractModule {
 
-    private final Setting<Boolean> autoSword = new Setting<>("Auto Sword", true);
-    private final Setting<Boolean> auraOnly = new Setting<>("Aura Only", true).visibleWhen(autoSword::getValue);
-
     @EventHandler
     private final Listener<PreMotionEvent> onPreMotion = event -> {
         KillAura aura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
@@ -28,31 +25,7 @@ public class AutoTool extends AbstractModule {
             BlockPos pos = mc.objectMouseOver.getBlockPos();
             updateTool(pos);
         }
-
-        if (!autoSword.getValue()) return;
-        if (auraOnly.getValue()) {
-            if (aura == null || aura.getSingleTarget() == null || !aura.isEnabled()) return;
-            updateSword();
-            return;
-        }
-
-        if (mc.gameSettings.keyBindAttack.isKeyDown() || (aura != null && aura.isEnabled() && aura.getSingleTarget() != null)) {
-            updateSword();
-        }
     };
-
-    /**
-     * Updates the player's current item to the best sword in their inventory
-     */
-    private void updateSword() {
-        for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = mc.thePlayer.inventory.mainInventory[i];
-            if (itemStack != null && itemStack.getItem() instanceof ItemSword) {
-                mc.thePlayer.inventory.currentItem = i;
-                return;
-            }
-        }
-    }
 
     /**
      * Updates the player's current item to the best tool for the block at the given position
