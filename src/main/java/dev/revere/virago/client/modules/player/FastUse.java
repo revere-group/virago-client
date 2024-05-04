@@ -38,7 +38,7 @@ public class FastUse extends AbstractModule {
 
         Item heldItem = mc.thePlayer.inventory.getCurrentItem().getItem();
         if(heldItem instanceof ItemFood || heldItem instanceof ItemPotion) {
-            if(check != 16) {
+            if(check != 20) {
                 mc.timer.timerSpeed = 0.5f;
                 mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C03PacketPlayer(true));
                 check++;
