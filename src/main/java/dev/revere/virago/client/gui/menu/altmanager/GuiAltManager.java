@@ -146,6 +146,7 @@ public class GuiAltManager extends GuiScreen {
                         altService.getAlts().clear();
                         altService.save();
                         createAltPanel();
+                        break;
                     }
                     case 4: {
                         boolean fullscreen;
