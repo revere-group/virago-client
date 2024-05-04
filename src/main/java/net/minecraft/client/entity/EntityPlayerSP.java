@@ -5,7 +5,7 @@ import dev.revere.virago.api.network.packet.client.C2SChat;
 import dev.revere.virago.api.network.socket.SocketHelper;
 import dev.revere.virago.client.events.player.*;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
-import dev.revere.virago.client.modules.player.NoSlow;
+import dev.revere.virago.client.modules.movement.NoSlow;
 import dev.revere.virago.client.services.CommandService;
 import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.rotation.vec.Vector2f;

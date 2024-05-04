@@ -96,7 +96,7 @@ public class Fly extends AbstractModule {
 
     @Override
     public void onDisable() {
-        mc.thePlayer.capabilities.setFlySpeed(2.0F);
+        mc.thePlayer.capabilities.setFlySpeed(0.1F);
         mc.thePlayer.capabilities.isFlying = false;
         super.onDisable();
     }

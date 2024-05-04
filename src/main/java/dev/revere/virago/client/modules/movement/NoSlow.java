@@ -1,4 +1,4 @@
-package dev.revere.virago.client.modules.player;
+package dev.revere.virago.client.modules.movement;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
@@ -8,9 +8,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
-import dev.revere.virago.client.events.packet.TeleportEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
-import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.item.ItemSword;
@@ -21,7 +19,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange;
  * @project Virago-Client
  * @date 4/7/2024
  */
-@ModuleData(name = "NoSlow", displayName = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.PLAYER)
+@ModuleData(name = "NoSlow", displayName = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.MOVEMENT)
 public class NoSlow extends AbstractModule {
 
     public final Setting<Boolean> cancelBlocking = new Setting<>("Cancel Blocking", true);
