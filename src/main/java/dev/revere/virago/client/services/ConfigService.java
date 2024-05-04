@@ -103,6 +103,7 @@ public class ConfigService implements IService {
                         }
 
                         module.setEnabledSilent(moduleData.getBoolean("enabled"));
+                        module.setHidden(moduleData.getBoolean("hidden"));
                         module.setKey(moduleData.getInt("keybind"));
                     } catch (JSONException e) {
                         Logger.err("Failed to load module " + module.getName() + "!" + " | " + e.getMessage(), getClass());
@@ -140,6 +141,7 @@ public class ConfigService implements IService {
                 try {
                     object.put("enabled", module.isEnabled());
                     object.put("keybind", module.getKey());
+                    object.put("hidden", module.isHidden());
                 } catch (JSONException e) {
                     Logger.err("Failed to save module " + module.getName() + "!", getClass());
                 }

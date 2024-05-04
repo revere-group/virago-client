@@ -1,10 +1,13 @@
 package dev.revere.virago.api.network.socket;
 
+import dev.revere.virago.Virago;
 import dev.revere.virago.api.network.packet.client.C2SLogin;
 import dev.revere.virago.api.network.packet.client.C2SUpdate;
 import dev.revere.virago.api.network.packet.server.S2CChat;
 import dev.revere.virago.api.network.packet.server.S2CLogin;
 import dev.revere.virago.api.protection.rank.Rank;
+import dev.revere.virago.client.modules.misc.IRC;
+import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.Logger;
 import lombok.var;
 import net.minecraft.client.Minecraft;
@@ -57,21 +60,23 @@ public class SocketClient {
             @Override
             public void onMessage(String s) {
                 var packet = deserialize(s, S2CChat.class);
-                Logger.addChatMessageNoPrefix(
-                        String.format(
-                                "%s[%sIRC%s]%s %s[%s%s%s]%s %s%s: %s%s",
-                                EnumChatFormatting.DARK_GRAY, EnumChatFormatting.DARK_AQUA, EnumChatFormatting.DARK_GRAY, EnumChatFormatting.RESET,
-                                EnumChatFormatting.DARK_GRAY,
-                                Objects.requireNonNull(Rank.getRank(packet.rank())).getColor(),
-                                packet.rank(),
-                                EnumChatFormatting.DARK_GRAY,
-                                EnumChatFormatting.RESET,
-                                Objects.requireNonNull(Rank.getRank(packet.rank())).getColor(),
-                                packet.author(),
-                                EnumChatFormatting.RESET,
-                                packet.content()
-                        )
-                );
+                if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(IRC.class).isEnabled()) {
+                    Logger.addChatMessageNoPrefix(
+                            String.format(
+                                    "%s[%sIRC%s]%s %s[%s%s%s]%s %s%s: %s%s",
+                                    EnumChatFormatting.DARK_GRAY, EnumChatFormatting.DARK_AQUA, EnumChatFormatting.DARK_GRAY, EnumChatFormatting.RESET,
+                                    EnumChatFormatting.DARK_GRAY,
+                                    Objects.requireNonNull(Rank.getRank(packet.rank())).getColor(),
+                                    packet.rank(),
+                                    EnumChatFormatting.DARK_GRAY,
+                                    EnumChatFormatting.RESET,
+                                    Objects.requireNonNull(Rank.getRank(packet.rank())).getColor(),
+                                    packet.author(),
+                                    EnumChatFormatting.RESET,
+                                    packet.content()
+                            )
+                    );
+                }
             }
 
             @Override
