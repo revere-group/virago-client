@@ -315,18 +315,22 @@ public class KillAura extends AbstractModule {
 
     private void attack(EntityLivingBase e) {
         if (e == null) {
+            if (blockMode.getValue() == BlockMode.WATCHDOG) {
+                this.packets.forEach(packet -> {
+                    this.packets.remove(packet);
+                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
+                });
+            }
             return;
         }
 
         if (blockMode.getValue() == BlockMode.WATCHDOG) {
-            unb2 = false;
-            delay = 0;
             stage += 1;
 
             if(stage == 1) {
                 blinking = true;
                 releaseBlock();
-            } else if(stage == 2) {
+            } else if(stage >= 2) {
                 mc.thePlayer.swingItem();
                 mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
                 mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.INTERACT));
@@ -341,18 +345,12 @@ public class KillAura extends AbstractModule {
                 stage = 0;
             }
 
-            if (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
-                unb2 = true;
-            } else {
-                return;
-            }
-
-            delay += 1;
+            /*delay += 1;
             if(delay == 2) {
                 mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C07PacketPlayerDigging());
                 unb2 = false;
                 delay = 0;
-            }
+            }*/
         } else {
             mc.thePlayer.swingItem();
             mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
@@ -365,7 +363,7 @@ public class KillAura extends AbstractModule {
 
     @EventHandler
     private Listener<PacketEvent> packetEvent = event -> {
-        if (mc.thePlayer == null || !blinking)
+        if (mc.thePlayer == null || !blinking || target == null)
             return;
 
         if (event.getPacket() instanceof C08PacketPlayerBlockPlacement) {

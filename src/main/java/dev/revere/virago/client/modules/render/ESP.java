@@ -357,14 +357,17 @@ public class ESP extends AbstractModule {
                 GL11.glScalef(scale, scale, 1);
 
                 Color tagColor;
+                String text;
                 if (Objects.requireNonNull(tagColorModeProperty.getValue()) == TagColorMode.ENTITY) {
                     tagColor = new Color(255, 255, 255, 255);
+                    text = entity.getDisplayName().getFormattedText();
                 } else {
                     tagColor = new Color(ColorUtil.getColor(false));
+                    text = entity.getDisplayName().getFormattedText().replaceAll("§[0-9a-f]", "");
                 }
                 ColorUtil.color(tagColor, MathHelper.floor_float(opacity));
                 if (entity != mc.thePlayer) {
-                    mc.fontRendererObj.drawStringWithShadow(entity.getDisplayName().getFormattedText(), minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(entity.getDisplayName().getFormattedText()) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? minY - mc.fontRendererObj.FONT_HEIGHT - 3 : minY - mc.fontRendererObj.FONT_HEIGHT / 2f, tagColor.getRGB());
+                    mc.fontRendererObj.drawStringWithShadow(text, minX + (maxX - minX) / 2 - mc.fontRendererObj.getStringWidth(entity.getDisplayName().getFormattedText()) / 2f, boxModeProperty.getValue() == BoxMode.BOX || boxModeProperty.getValue() == BoxMode.FILL ? minY - mc.fontRendererObj.FONT_HEIGHT - 3 : minY - mc.fontRendererObj.FONT_HEIGHT / 2f, tagColor.getRGB());
                 }
                 GL11.glScalef(leftoverScale, leftoverScale, 1);
                 minX *= scale;

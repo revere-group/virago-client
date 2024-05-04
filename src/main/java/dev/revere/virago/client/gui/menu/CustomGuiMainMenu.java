@@ -2,7 +2,7 @@ package dev.revere.virago.client.gui.menu;
 
 
 import dev.revere.virago.Virago;
-import dev.revere.virago.client.gui.menu.alt.GuiAltManager;
+import dev.revere.virago.client.gui.menu.altmanager.GuiAltManager;
 import dev.revere.virago.client.gui.menu.components.GuiImageButton;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.util.render.RenderUtils;
@@ -33,7 +33,6 @@ public class CustomGuiMainMenu extends GuiScreen {
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(1, centerX - 85, centerY + 37, 170, 18, "S I N G L E P L A Y E R"));
         this.buttonList.add(new GuiButton(2, centerX - 85, centerY + 60, 170, 18, "M U L T I P L A Y E R"));
-        this.buttonList.add(new GuiButton(3, 15, 15, 60, 18, "Compose Testing"));
 
         int BUTTON_WIDTH = 20;
         int BUTTON_HEIGHT = 20;

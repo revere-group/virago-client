@@ -236,6 +236,16 @@ public class Scaffold extends AbstractModule {
         } else if (mode.getValue() != Mode.WATCHDOG) {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
         }
+        if (placeMode.getValue() == PlaceMode.PRE && mode.getValue().equals(Mode.WATCHDOG_JUMP)) {
+            if (!firstJump) {
+                if (mc.thePlayer.movementInput.jump) {
+                    yCoordinate = mc.thePlayer.posY;
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                    yCoordinateUpdated = false;
+                    if (info.pos != null) this.placeBlock();
+                }
+            }
+        }
 
         if (mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.ticksExisted % 2 == 0 && !mc.gameSettings.keyBindJump.isKeyDown()) {
             e.setY(mc.thePlayer.posY + 0.000001);
@@ -289,15 +299,6 @@ public class Scaffold extends AbstractModule {
             else
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
             if (info.pos != null) this.placeBlock();
-        } else if (placeMode.getValue() == PlaceMode.PRE && mode.getValue().equals(Mode.WATCHDOG_JUMP)) {
-            if (!firstJump) {
-                if (mc.thePlayer.movementInput.jump) {
-                    yCoordinate = mc.thePlayer.posY;
-                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                    yCoordinateUpdated = false;
-                    if (info.pos != null) this.placeBlock();
-                }
-            }
         } else if (mode.getValue().equals(Mode.WATCHDOG)) {
             if (mc.gameSettings.keyBindJump.isKeyDown()) {
                 if (keepY.getValue() && !mc.thePlayer.movementInput.jump) {
@@ -316,7 +317,7 @@ public class Scaffold extends AbstractModule {
                 }
                 if (info.pos != null) this.placeBlock();
             }
-        } else {
+        } else if (mode.getValue() != Mode.WATCHDOG_JUMP) {
             if (info.pos != null) this.placeBlock();
         }
     };

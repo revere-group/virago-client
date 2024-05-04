@@ -1,4 +1,4 @@
-package dev.revere.virago.client.gui.menu.alt;
+package dev.revere.virago.client.gui.menu.altmanager;
 
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.exceptions.AuthenticationException;
@@ -6,6 +6,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.services.AltService;
+import dev.revere.virago.util.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Session;
@@ -40,31 +41,30 @@ public final class AltLoginThread extends Thread {
             auth.logIn();
             return new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), "mojang");
         } catch (AuthenticationException exception) {
-            exception.printStackTrace();
+            Logger.err("Failed to login: " + exception.getMessage(), getClass());
             return null;
         }
     }
 
     @Override
     public void run() {
-        if (password.equals("")) {
+        if (password.isEmpty()) {
             if (altmgr.isValidCrackedAlt(username)) {
                 mc.session = new Session(username, "", "", "mojang");
-                altmgr.setStatus(EnumChatFormatting.GREEN + "Logged in as " + username + ".");
+                altmgr.setStatus("");
             } else {
                 altmgr.setStatus(EnumChatFormatting.RED + "Invalid Username!");
             }
             return;
         }
 
-        altmgr.setStatus(EnumChatFormatting.YELLOW + "Logging in...");
         Session auth = createSession(username, password);
-
-        if (auth == null)
-            altmgr.setStatus(EnumChatFormatting.RED + "Login failed!");
-        else {
-            altmgr.setStatus(EnumChatFormatting.GREEN + "Logged in as " + auth.getUsername() + ".");
-            mc.session = auth;
+        if (auth == null) {
+            altmgr.setStatus(EnumChatFormatting.RED + "Failed to login.");
+            return;
         }
+
+        mc.session = auth;
+        altmgr.setStatus("");
     }
 }

@@ -113,6 +113,24 @@ public class RenderUtils {
     }
 
     /**
+     * Draws a bordered rectangle
+     *
+     * @param x     x position
+     * @param y     y position
+     * @param w     width
+     * @param h     height
+     * @param borderC border color
+     * @param insideC inside color
+     */
+    public static void drawBorderedRect(double x, double y, double w, double h, int borderC, int insideC) {
+        Gui.drawRect(x + (double) 1, y + (double) 1, (x + w) - (double) 1, (y + h) - (double) 1, insideC);
+        Gui.drawRect(x + (double) 1, y + (double) 1, (x + w), y, borderC);
+        Gui.drawRect(x, y, x + (double) 1, (y + h), borderC);
+        Gui.drawRect((x + w), (y + h), (x + w) - (double) 1, y + (double) 1, borderC);
+        Gui.drawRect(x, (y + h) - (double) 1, (x + w), (y + h), borderC);
+    }
+
+    /**
      * Scales the screen
      *
      * @param x     x position
