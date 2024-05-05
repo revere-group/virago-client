@@ -106,7 +106,7 @@ public class ChestStealer extends AbstractModule {
                 executor.shutdown();
 
                 ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-                scheduler.schedule(() -> { mc.thePlayer.closeScreen(); }, 200, TimeUnit.MILLISECONDS);
+                scheduler.schedule(() -> { mc.thePlayer.closeScreen(); }, 100, TimeUnit.MILLISECONDS);
 
                 scheduler.shutdown();
             }
