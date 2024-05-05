@@ -315,13 +315,8 @@ public abstract class GuiContainer extends GuiScreen
         return null;
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        if(Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(InventoryMove.class).isEnabled()) {
-            if (mc.thePlayer.motionX != 0 || mc.thePlayer.motionZ != 0) {
-                return;
-            }
-        }
-
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         boolean flag = mouseButton == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100;
         Slot slot = this.getSlotAtPosition(mouseX, mouseY);
