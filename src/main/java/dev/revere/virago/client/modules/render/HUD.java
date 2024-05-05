@@ -54,6 +54,7 @@ public class HUD extends AbstractModule {
     public Setting<Boolean> fps = new Setting<>("FPS", false).describedBy("Should the fps be rendered?");
     public Setting<Boolean> bps = new Setting<>("BPS", false).describedBy("Should the bps be rendered?");
 
+    public Setting<BackgroundMode> backgroundMode = new Setting<>("Background Mode", BackgroundMode.CUSTOM).describedBy("The background mode to use for the Array List");
     public Setting<WatermarkMode> watermarkMode = new Setting<>("Watermark Type", WatermarkMode.CSGO).describedBy("The watermark mode to use for the HUD");
     public Setting<ColorMode> colorMode = new Setting<>("Color", ColorMode.CLIENT).describedBy("The color mode to use for the HUD");
     public Setting<FontType> fontType = new Setting<>("Font", FontType.SF_PRO).describedBy("The font type to use for the HUD");
@@ -351,14 +352,20 @@ public class HUD extends AbstractModule {
 
         if (!shader && !shaderBg.getValue()) {
             if (background.getValue()) {
-                RenderUtils.drawVerticalGradient(sr.getScaledWidth() - moduleWidth - 8, y, moduleWidth + 4, elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()), new Color(color2.getRed(), color2.getGreen(), color2.getBlue(), opacity.getValue()));
-                //Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()).getRGB());
+                if (backgroundMode.getValue() == BackgroundMode.OPACITY) {
+                    Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
+                } else {
+                    RenderUtils.drawVerticalGradient(sr.getScaledWidth() - moduleWidth - 8, y, moduleWidth + 4, elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()), new Color(color2.getRed(), color2.getGreen(), color2.getBlue(), opacity.getValue()));
+                }
             }
             renderBar(module, sr, y, index);
         } else if (shaderBg.getValue()) {
             if (background.getValue()) {
-                RenderUtils.drawVerticalGradient(sr.getScaledWidth() - moduleWidth - 8, y, moduleWidth + 4, elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()), new Color(color2.getRed(), color2.getGreen(), color2.getBlue(), opacity.getValue()));
-                //Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()).getRGB());
+                if (backgroundMode.getValue() == BackgroundMode.OPACITY) {
+                    Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
+                } else {
+                    RenderUtils.drawVerticalGradient(sr.getScaledWidth() - moduleWidth - 8, y, moduleWidth + 4, elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()), new Color(color2.getRed(), color2.getGreen(), color2.getBlue(), opacity.getValue()));
+                }
             }
             renderBar(module, sr, y, index);
         }
@@ -550,6 +557,11 @@ public class HUD extends AbstractModule {
         MANROPE,
         POPPINS,
         SF_PRO
+    }
+
+    public enum BackgroundMode {
+        CUSTOM,
+        OPACITY,
     }
 
     public enum WatermarkMode {
