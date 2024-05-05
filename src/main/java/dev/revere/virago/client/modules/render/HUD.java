@@ -50,6 +50,7 @@ public class HUD extends AbstractModule {
             .describedBy("Make the text forced lowercase");
     public Setting<Boolean> watermark = new Setting<>("Watermark", true).describedBy("Should the watermark be rendered?");
     public Setting<Boolean> background = new Setting<>("Background", true).describedBy("Should the background be rendered?");
+    public Setting<Boolean> shaderBg = new Setting<>("Shader Background", false).describedBy("Should the bps be rendered?").visibleWhen(background::getValue);
     public Setting<Boolean> fps = new Setting<>("FPS", false).describedBy("Should the fps be rendered?");
     public Setting<Boolean> bps = new Setting<>("BPS", false).describedBy("Should the bps be rendered?");
 
@@ -345,13 +346,23 @@ public class HUD extends AbstractModule {
         } else {
             moduleWidth = fontRenderer.getStringWidth(moduleData);
         }
+        Color color = new Color(ColorUtil.generateColor(index));
+        Color color2 = new Color(ColorUtil.generateColor(index + 1));
 
-        if (!shader) {
+        if (!shader && !shaderBg.getValue()) {
             if (background.getValue()) {
-                Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(0, 0, 0, opacity.getValue()).getRGB());
+                RenderUtils.drawVerticalGradient(sr.getScaledWidth() - moduleWidth - 8, y, moduleWidth + 4, elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()), new Color(color2.getRed(), color2.getGreen(), color2.getBlue(), opacity.getValue()));
+                //Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()).getRGB());
+            }
+            renderBar(module, sr, y, index);
+        } else if (shaderBg.getValue()) {
+            if (background.getValue()) {
+                RenderUtils.drawVerticalGradient(sr.getScaledWidth() - moduleWidth - 8, y, moduleWidth + 4, elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()), new Color(color2.getRed(), color2.getGreen(), color2.getBlue(), opacity.getValue()));
+                //Gui.drawRect(sr.getScaledWidth() - moduleWidth - 8, y, sr.getScaledWidth() - 4, y + elementHeight.getValue().intValue(), new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity.getValue()).getRGB());
             }
             renderBar(module, sr, y, index);
         }
+
         int padding = 3;
         if (fontType.getValue() == FontType.POPPINS) padding -= 1;
         if (fontType.getValue() == FontType.MINECRAFT) {
