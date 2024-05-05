@@ -12,6 +12,7 @@ import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
@@ -24,21 +25,31 @@ import org.lwjgl.input.Keyboard;
 @ModuleData(name = "InventoryMove", displayName = "Inventory Move", description = "N/A", type = EnumModuleType.MOVEMENT)
 public class InventoryMove extends AbstractModule {
 
+    private final KeyBinding[] bindings = new KeyBinding[]{
+            mc.gameSettings.keyBindForward,
+            mc.gameSettings.keyBindBack,
+            mc.gameSettings.keyBindRight,
+            mc.gameSettings.keyBindLeft,
+            mc.gameSettings.keyBindJump
+    };
+
     @EventHandler
     private final Listener<UpdateEvent> onUpdate = event -> {
         if (mc.currentScreen != null) {
             ModuleService moduleService = Virago.getInstance().getServiceManager().getService(ModuleService.class);
 
-            if (mc.currentScreen instanceof GuiChat || moduleService.getModule(Scaffold.class).isEnabled() || moduleService.getModule(KillAura.class).getSingleTarget() != null) {
-                return;
-            }
+            if (mc.currentScreen instanceof GuiChat
+                    || moduleService.getModule(Scaffold.class).isEnabled()
+                    || moduleService.getModule(KillAura.class).getSingleTarget() != null
+                    || moduleService.getModule(Speed.class).isEnabled())
 
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode()));
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode()));
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode()));
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode()));
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode()));
+                return;
+
             EntityPlayerSP player = mc.thePlayer;
+
+            for (final KeyBinding bind : bindings) {
+                bind.setPressed(GameSettings.isKeyDown(bind));
+            }
 
             if (Keyboard.isKeyDown(208) && mc.thePlayer.rotationPitch < 90.0F) {
                 player.rotationPitch += 6.0F;
@@ -54,6 +65,16 @@ public class InventoryMove extends AbstractModule {
 
             if (Keyboard.isKeyDown(203)) {
                 player.rotationYaw -= 6.0F;
+            }
+
+            if(player.getSpeed() >= 0.12) {
+                player.motionX = player.motionX * 0.6;
+                player.motionZ = player.motionZ * 0.6;
+            }
+
+            if(player.onGround) {
+                player.motionX = player.motionX * 0.76;
+                player.motionZ = player.motionZ * 0.76;
             }
         }
     };
