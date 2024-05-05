@@ -36,10 +36,8 @@ public class NoSlow extends AbstractModule {
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
-        if (mc.thePlayer.isUsingItem()) {
-            if (mc.thePlayer.isMoving()) {
-                mc.getNetHandler().addToSendQueueNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, null, 0, 0, 0));
-            }
+        if (mc.thePlayer.isUsingItem() && mc.thePlayer.isMoving() && !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) {
+            mc.getNetHandler().addToSendQueueNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, null, 0, 0, 0));
         }
     };
 
