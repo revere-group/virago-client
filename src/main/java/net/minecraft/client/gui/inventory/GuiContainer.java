@@ -3,6 +3,11 @@ package net.minecraft.client.gui.inventory;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Set;
+
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.modules.movement.InventoryMove;
+import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -310,8 +315,13 @@ public abstract class GuiContainer extends GuiScreen
         return null;
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        if(Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(InventoryMove.class).isEnabled()) {
+            if (mc.thePlayer.motionX != 0 || mc.thePlayer.motionZ != 0) {
+                return;
+            }
+        }
+
         super.mouseClicked(mouseX, mouseY, mouseButton);
         boolean flag = mouseButton == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100;
         Slot slot = this.getSlotAtPosition(mouseX, mouseY);
