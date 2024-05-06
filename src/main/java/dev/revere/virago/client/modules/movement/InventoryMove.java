@@ -31,8 +31,7 @@ public class InventoryMove extends AbstractModule {
             mc.gameSettings.keyBindForward,
             mc.gameSettings.keyBindBack,
             mc.gameSettings.keyBindRight,
-            mc.gameSettings.keyBindLeft,
-            mc.gameSettings.keyBindJump
+            mc.gameSettings.keyBindLeft
     };
 
     @EventHandler

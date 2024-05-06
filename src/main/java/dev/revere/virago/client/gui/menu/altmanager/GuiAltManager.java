@@ -11,6 +11,7 @@ import dev.revere.virago.util.alt.CookieLogin;
 import dev.revere.virago.util.misc.ScrollUtil;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
+import dev.revere.virago.util.shader.GLSLSandboxShader;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
@@ -19,10 +20,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -39,12 +42,14 @@ import java.util.Random;
  * @date 5/4/2024
  */
 public class GuiAltManager extends GuiScreen {
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("virago/textures/bg.png");
+    private final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("virago/textures/bg.png");
 
     private final List<GuiAltButton> altAccountButtons = new ArrayList<>();
     private final List<GuiMainButton> altButtons = new ArrayList<>();
     private final ScrollUtil scrollUtils = new ScrollUtil();
     private final GuiScreen prevScreen;
+
+    private GLSLSandboxShader backgroundShader;
 
     private Alt selectedAlt;
     private int pressedTime;
@@ -59,6 +64,11 @@ public class GuiAltManager extends GuiScreen {
         this.altButtons.add(new GuiMainButton("Edit", 5, 100, 20));
         this.altButtons.add(new GuiMainButton("Use", 6, 100, 20));
         this.altButtons.add(new GuiMainButton("Microsoft", 7, 100, 20));
+        try {
+            this.backgroundShader = new GLSLSandboxShader("/assets/minecraft/virago/shader/noise.fsh");
+        } catch (Exception e) {
+            Logger.err("Failed to load background shader. " + e.getMessage(), getClass());
+        }
         Virago.getInstance().getServiceManager().getService(AltService.class).setStatus(" ");
     }
 
@@ -66,14 +76,20 @@ public class GuiAltManager extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         AltService altService = Virago.getInstance().getServiceManager().getService(AltService.class);
         FontService fontService = Virago.getInstance().getServiceManager().getService(FontService.class);
-
-        RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
+        GlStateManager.disableCull();
+        this.backgroundShader.useShader(this.width, this.height + 600, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2f(-1f, -1f);
+        GL11.glVertex2f(-1f, 1f);
+        GL11.glVertex2f(1f, 1f);
+        GL11.glVertex2f(1f, -1f);
+        GL11.glEnd();
+        GL20.glUseProgram(0);
+        //RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
 
         GL11.glPushMatrix();
         GL11.glEnable(3089);
         prepareScissorBox(0.0F, 50, this.width, (this.height - 50));
-
-
 
         for (GuiAltButton button : this.altAccountButtons) {
             button.x = (isHovered(mouseY, 50, this.height - 50) && button.isHovered(mouseX, mouseY)) ? (float) this.width / 2 - 103 : (float) this.width / 2 - 100;

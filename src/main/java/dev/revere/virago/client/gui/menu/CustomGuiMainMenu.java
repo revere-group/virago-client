@@ -5,21 +5,27 @@ import dev.revere.virago.Virago;
 import dev.revere.virago.client.gui.menu.altmanager.GuiAltManager;
 import dev.revere.virago.client.gui.menu.components.GuiImageButton;
 import dev.revere.virago.client.services.FontService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
+import dev.revere.virago.util.shader.GLSLSandboxShader;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
 
 public class CustomGuiMainMenu extends GuiScreen {
 
-    private static final ResourceLocation LOGO_TEXTURE = new ResourceLocation("virago/textures/logo/logo.png");
-    private static final ResourceLocation COSMETICS_TEXTURE = new ResourceLocation("virago/textures/icons/cosmetics.png");
-    private static final ResourceLocation CLOSE_TEXTURE = new ResourceLocation("virago/textures/icons/close.png");
-    private static final ResourceLocation ALTS_TEXTURE = new ResourceLocation("virago/textures/icons/alts.png");
-    private static final ResourceLocation OPTIONS_TEXTURE = new ResourceLocation("virago/textures/icons/options.png");
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("virago/textures/bg.png");
+    private final ResourceLocation LOGO_TEXTURE = new ResourceLocation("virago/textures/logo/logo.png");
+    private final ResourceLocation COSMETICS_TEXTURE = new ResourceLocation("virago/textures/icons/cosmetics.png");
+    private final ResourceLocation CLOSE_TEXTURE = new ResourceLocation("virago/textures/icons/close.png");
+    private final ResourceLocation ALTS_TEXTURE = new ResourceLocation("virago/textures/icons/alts.png");
+    private final ResourceLocation OPTIONS_TEXTURE = new ResourceLocation("virago/textures/icons/options.png");
+    private final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("virago/textures/bg.png");
+    private GLSLSandboxShader backgroundShader;
 
     /**
      * Initializes the screen and all the components in it.
@@ -46,6 +52,12 @@ public class CustomGuiMainMenu extends GuiScreen {
         this.buttonList.add(new GuiImageButton(4, startX + BUTTON_WIDTH + buttonSpacing, startY, BUTTON_WIDTH, BUTTON_HEIGHT, OPTIONS_TEXTURE));
         this.buttonList.add(new GuiImageButton(5, startX + 2 * (BUTTON_WIDTH + buttonSpacing), startY, BUTTON_WIDTH, BUTTON_HEIGHT, ALTS_TEXTURE));
         this.buttonList.add(new GuiImageButton(8, width - BUTTON_WIDTH - 10, 10, BUTTON_WIDTH, BUTTON_HEIGHT, CLOSE_TEXTURE));
+
+        try {
+            backgroundShader = new GLSLSandboxShader("/assets/minecraft/virago/shader/noise.fsh");
+        } catch (Exception e) {
+            Logger.err("Failed to load background shader. " + e.getMessage(), getClass());
+        }
     }
 
     /**
@@ -56,7 +68,17 @@ public class CustomGuiMainMenu extends GuiScreen {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
+        //RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
+        GlStateManager.disableCull();
+        this.backgroundShader.useShader(this.width, this.height + 600, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2f(-1f, -1f);
+        GL11.glVertex2f(-1f, 1f);
+        GL11.glVertex2f(1f, 1f);
+        GL11.glVertex2f(1f, -1f);
+        GL11.glEnd();
+        GL20.glUseProgram(0);
+
         FontService fonts = Virago.getInstance().getServiceManager().getService(FontService.class);
 
         int boxWidth = 240;
