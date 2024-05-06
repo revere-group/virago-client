@@ -93,7 +93,9 @@ public class GuiMainButton extends Gui {
     public void drawButtonCenteredString(Minecraft mc, int mouseX, int mouseY) {
         FontService fontService = Virago.getInstance().getServiceManager().getService(FontService.class);
         setHovered(mouseX >= getX() && mouseY >= getY() && mouseX < getWidth() && mouseY < getHeight());
-        RenderUtils.drawBorderedRect(getX(), getY(), getPanelWidth(), getPanelHeight(), 0xff303030, isHovered() ? 0xff404040 : 0);
+        RoundedUtils.glRound(getX(), getY(), getPanelWidth(), getPanelHeight(), 5, isHovered() ? new Color(50, 50, 50, 200).getRGB() : new Color(20, 20, 20, 200).getRGB());
+        RoundedUtils.outline(getX(), getY(), getPanelWidth(), getPanelHeight(), 5, 1, new Color(50, 50, 50, 200));
+        //RenderUtils.drawBorderedRect(getX(), getY(), getPanelWidth(), getPanelHeight(), 0xff303030, isHovered() ? new Color(50, 50, 50, 100).getRGB() : 0);
 
         fontService.getProductSans().drawCenteredString(getName(), getWidth() - 50, getHeight() - 14, -1);
         //this.drawCenteredString(mc.fontRendererObj, getName(), (int) getWidth() - 50, (int) getHeight() - 14, -1);
