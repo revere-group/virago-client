@@ -10,10 +10,12 @@ import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.potion.Potion;
 import org.lwjgl.input.Keyboard;
 
 /**
@@ -51,30 +53,28 @@ public class InventoryMove extends AbstractModule {
                 bind.setPressed(GameSettings.isKeyDown(bind));
             }
 
-            if (Keyboard.isKeyDown(208) && mc.thePlayer.rotationPitch < 90.0F) {
-                player.rotationPitch += 6.0F;
-            }
-
-            if (Keyboard.isKeyDown(200) && mc.thePlayer.rotationPitch > -90.0F) {
-                player.rotationPitch -= 6.0F;
-            }
-
-            if (Keyboard.isKeyDown(205)) {
-                player.rotationYaw += 6.0F;
-            }
-
-            if (Keyboard.isKeyDown(203)) {
-                player.rotationYaw -= 6.0F;
-            }
-
             if(player.getSpeed() >= 0.12) {
                 player.motionX = player.motionX * 0.6;
                 player.motionZ = player.motionZ * 0.6;
             }
 
-            if(player.onGround) {
-                player.motionX = player.motionX * 0.76;
-                player.motionZ = player.motionZ * 0.76;
+            if(player.getActivePotionEffect(Potion.moveSpeed) == null) {
+                player.motionX = player.motionX * 0.74;
+                player.motionZ = player.motionZ * 0.74;
+                return;
+            }
+
+            int amplifier = player.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1;
+
+            switch(amplifier) {
+                case 1:
+                    player.motionX = player.motionX * 0.52;
+                    player.motionZ = player.motionZ * 0.52;
+                    break;
+                case 2:
+                    player.motionX = player.motionX * 0.31;
+                    player.motionZ = player.motionZ * 0.31;
+                    break;
             }
         }
     };
