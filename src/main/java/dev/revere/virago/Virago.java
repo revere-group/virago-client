@@ -8,6 +8,9 @@ import dev.revere.virago.api.service.ServiceManager;
 import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.api.network.socket.SocketHelper;
 import dev.revere.virago.client.gui.panel.PanelGUI;
+import dev.revere.virago.client.modules.render.ClickGUI;
+import dev.revere.virago.client.newgui.IngameMenu;
+import dev.revere.virago.client.newgui.framework.Menu;
 import dev.revere.virago.client.services.*;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.DiscordRPC;
@@ -44,6 +47,8 @@ public class Virago {
     private ServiceManager serviceManager;
     private ViragoUser viragoUser;
     private DiscordRPC discordRPC;
+    private Menu menu;
+    private IngameMenu menuImpl;
     private PanelGUI panelGUI;
     private EventBus eventBus;
 
@@ -89,6 +94,8 @@ public class Virago {
      */
     private void handleManagers() {
         this.panelGUI = new PanelGUI();
+        this.menu = new Menu("", 1035, 525);
+        menuImpl = new IngameMenu(serviceManager.getService(ModuleService.class).getModule(ClickGUI.class), menu);
     }
 
     /**
