@@ -111,6 +111,11 @@ public class HUD extends AbstractModule {
             .visibleWhen(arraylist::getValue)
             .describedBy("The height of each element");
 
+    public Setting<Integer> menuFps = new Setting<>("Menu FPS", 60)
+            .minimum(1)
+            .maximum(240)
+            .incrementation(1)
+            .describedBy("The FPS for the menu");
 
     public FontRenderer fontRenderer;
 
