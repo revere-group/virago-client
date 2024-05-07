@@ -260,11 +260,11 @@ vec3 addSign(vec3 color, vec3 pos, float side, vec2 id) {
     flicker = step(0.93, flicker);
     flicker = 1.0 - flicker * step(0.96, hash1(charId, time));
 
-    float char = -3.5 + 8.0 * noise(id + 6.0 * charPos);
+    float character = -3.5 + 8.0 * noise(id + 6.0 * charPos);
     charPos = fract(charPos);
-    char *= smoothstep(0.0, 0.4, charPos.x) * smoothstep(1.0, 0.6, charPos.x);
-    char *= smoothstep(0.0, 0.4, charPos.y) * smoothstep(1.0, 0.6, charPos.y);
-    color = mix(color, signColor, flash * flicker * step(outline, 0.01) * clamp(char, 0.0, 1.0));
+    character *= smoothstep(0.0, 0.4, charPos.x) * smoothstep(1.0, 0.6, charPos.x);
+    character *= smoothstep(0.0, 0.4, charPos.y) * smoothstep(1.0, 0.6, charPos.y);
+    color = mix(color, signColor, flash * flicker * step(outline, 0.01) * clamp(character, 0.0, 1.0));
 
     outline = smoothstep(0.0, 0.2, outline) * smoothstep(0.5, 0.3, outline);
     return mix(color, outlineColor, flash * outline);
