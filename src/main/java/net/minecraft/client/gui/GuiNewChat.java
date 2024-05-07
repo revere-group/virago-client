@@ -3,6 +3,8 @@ package net.minecraft.client.gui;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -128,7 +130,11 @@ public class GuiNewChat extends Gui
     public void printChatMessageWithOptionalDeletion(IChatComponent chatComponent, int chatLineId)
     {
         this.setChatLine(chatComponent, chatLineId, this.mc.ingameGUI.getUpdateCounter(), false);
-        logger.info("[CHAT] " + chatComponent.getUnformattedText());
+        // LOG4J RCE FIX
+        if (!Pattern.compile(".*\\$\\{[^}]*}.*").matcher(chatComponent.getUnformattedText()).matches()) {
+            logger.info("[CHAT] " + chatComponent.getUnformattedText());
+        }
+        // END
     }
 
     private void setChatLine(IChatComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly)

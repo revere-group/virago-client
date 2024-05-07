@@ -11,7 +11,6 @@ import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.NotificationService;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import org.lwjgl.input.Keyboard;
 
 @ModuleData(name = "Fly", displayName = "Fly", description = "Allows you to fly", type = EnumModuleType.MOVEMENT)
 public class Fly extends AbstractModule {
