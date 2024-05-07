@@ -248,7 +248,7 @@ public class Scaffold extends AbstractModule {
         }
 
         if (mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.ticksExisted % 2 == 0 && !mc.gameSettings.keyBindJump.isKeyDown()) {
-            e.setY(mc.thePlayer.posY + 0.000001);
+            e.setY(mc.thePlayer.posY + .00001 + Math.random() / 100000);
         } else if (mc.gameSettings.keyBindJump.isKeyDown()) {
             e.setY(mc.thePlayer.posY);
         }
@@ -906,7 +906,7 @@ public class Scaffold extends AbstractModule {
         placeTimer.reset();
         blockCount = getBlockCount();
 
-        if (mode.getValue() == Mode.WATCHDOG_SPRINT) {
+        if (mode.getValue() == Mode.WATCHDOG_JUMP) {
             mc.thePlayer.motionX = 0.0f;
             mc.thePlayer.motionY = 0.42f;
             mc.thePlayer.motionZ = 0.0f;

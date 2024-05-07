@@ -57,6 +57,10 @@ public class NoFall extends AbstractModule {
         lastDistance = fallDistance;
 
         switch (mode.getValue()) {
+            case Watchdog: {
+                event.setGround(false);
+                event.setY(event.getY() + Math.random() / 100000000000000000000f);
+            }
             case BLINK: {
                 if ((!canFall() && mc.isIntegratedServerRunning()) || mc.thePlayer.capabilities.isFlying) return;
                 if (distance > 2.5) {
@@ -198,6 +202,7 @@ public class NoFall extends AbstractModule {
 
     enum Mode {
         BLINK,
-        POSITION
+        POSITION,
+        Watchdog
     }
 }

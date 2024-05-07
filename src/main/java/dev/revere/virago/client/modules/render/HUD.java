@@ -373,7 +373,7 @@ public class HUD extends AbstractModule {
         int padding = 3;
         if (fontType.getValue() == FontType.POPPINS) padding -= 1;
         if (fontType.getValue() == FontType.MINECRAFT) {
-            mc.fontRendererObj.drawString(moduleData, (int) ((sr.getScaledWidth() - 5.5f) - moduleWidth), y + padding, ColorUtil.generateColor(index + 1));
+            mc.fontRendererObj.drawStringWithShadow(moduleData, (int) ((sr.getScaledWidth() - 5.5f) - moduleWidth), y + padding, ColorUtil.generateColor(index + 1));
         } else {
             fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6.5f) - moduleWidth, y + padding, ColorUtil.generateColor(index + 1));
         }
