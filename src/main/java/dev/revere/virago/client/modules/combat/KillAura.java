@@ -21,7 +21,6 @@ import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.FriendService;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
@@ -58,7 +57,8 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -120,7 +120,6 @@ public class KillAura extends AbstractModule {
     private int stage;
     private int delay;
     private boolean unb2;
-    private boolean isSlotSpoofed = false;
 
     private final List<Packet<?>> packets = new CopyOnWriteArrayList<>();
 
@@ -140,10 +139,14 @@ public class KillAura extends AbstractModule {
 
         this.target = this.getSingleTarget();
 
-        /*
+        if (target == null) {
+            this.releaseBlock();
+            this.blockingTicks = 0;
+            return;
+        }
+
         if (blockMode.getValue() == BlockMode.FAKE || blockMode.getValue() == BlockMode.WATCHDOG)
             blocking = true;
-         */
 
         if (!moveFix.getValue()) {
             float[] rots = this.getRotations(target);
@@ -165,37 +168,8 @@ public class KillAura extends AbstractModule {
         event.setYaw(mc.thePlayer.renderYawOffset);
         event.setPitch(mc.thePlayer.rotationPitchHead);
 
-        if(target == null)
-            return;
-
         if (this.attackStage.getValue().equals(AttackStage.PRE) && this.hitTimerDone()) {
             this.attack(this.target);
-        }
-
-        if (target == null || mc.thePlayer.getDistanceToEntity(target) > range.getValue()) {
-            if(isSlotSpoofed) {
-                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-                isSlotSpoofed = false;
-            }
-
-            this.packets.forEach(packet -> {
-                this.packets.remove(packet);
-                System.out.println("Sent packet: " + packet.getClass().getName());
-                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(packet);
-            });
-
-            blinking = false;
-            stage = 0;
-
-            if(blocking && blockMode.getValue() == BlockMode.WATCHDOG) {
-                this.releaseBlock();
-                blocking = false;
-            } else {
-                this.releaseBlock();
-            }
-
-            this.blockingTicks = 0;
-            return;
         }
     };
 
@@ -340,43 +314,34 @@ public class KillAura extends AbstractModule {
     }
 
     private void attack(EntityLivingBase e) {
-        if (blockMode.getValue() == BlockMode.WATCHDOG) {
-            stage++;
+        if (e == null) {
+            if (blockMode.getValue() == BlockMode.WATCHDOG) {
+                this.packets.forEach(packet -> {
+                    this.packets.remove(packet);
+                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
+                });
+            }
+            return;
+        }
 
-            Logger.addChatMessage("Stage: " + stage);
+        if (blockMode.getValue() == BlockMode.WATCHDOG) {
+            stage += 1;
 
             if(stage == 1) {
                 blinking = true;
-                if(!isSlotSpoofed) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-                }
-
-                Logger.addChatMessage(String.valueOf(mc.thePlayer.inventory.currentItem % 8 + 1));
-
-                blocking = false;
-                isSlotSpoofed = true;
+                releaseBlock();
             } else if(stage >= 2) {
-                if(isSlotSpoofed) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-                }
-
-                isSlotSpoofed = false;
                 mc.thePlayer.swingItem();
-
                 mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
                 mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.INTERACT));
-
-                preAutoblock();
+                blinking = false;
 
                 this.packets.forEach(packet -> {
                     this.packets.remove(packet);
-                    System.out.println("Sent packet: " + packet.getClass().getName());
-                    mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(packet);
+                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
                 });
 
-                blinking = false;
-                blocking = true;
-
+                preAutoblock();
                 stage = 0;
             }
 
@@ -393,21 +358,15 @@ public class KillAura extends AbstractModule {
     }
 
     private boolean hitTimerDone() {
-        if(blockMode.getValue() == BlockMode.WATCHDOG)
-            return true;
-
         return this.attackTimer.hasTimeElapsed((long) (1000.0 / this.aps.getValue()), true);
     }
 
     @EventHandler
     private Listener<PacketEvent> packetEvent = event -> {
-        if(event.getEventState() == PacketEvent.EventState.RECEIVING)
-            return;
-
         if (mc.thePlayer == null || !blinking || target == null)
             return;
 
-        if (!(event.getPacket() instanceof C00PacketKeepAlive)) {
+        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement) {
             event.setCancelled(true);
             packets.add(event.getPacket());
         }
@@ -429,7 +388,7 @@ public class KillAura extends AbstractModule {
             case N_C_P:
                 break;
             case WATCHDOG:
-                mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
+                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
                 blocking = true;
                 break;
             case VERUS:
