@@ -21,6 +21,7 @@ import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.FriendService;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.render.ColorUtil;
 import dev.revere.virago.util.render.RenderUtils;
@@ -119,6 +120,7 @@ public class KillAura extends AbstractModule {
     private int stage;
     private int delay;
     private boolean unb2;
+    private boolean isSlotSpoofed = false;
 
     private final List<Packet<?>> packets = new CopyOnWriteArrayList<>();
 
@@ -138,14 +140,10 @@ public class KillAura extends AbstractModule {
 
         this.target = this.getSingleTarget();
 
-        if (target == null) {
-            this.releaseBlock();
-            this.blockingTicks = 0;
-            return;
-        }
-
+        /*
         if (blockMode.getValue() == BlockMode.FAKE || blockMode.getValue() == BlockMode.WATCHDOG)
             blocking = true;
+         */
 
         if (!moveFix.getValue()) {
             float[] rots = this.getRotations(target);
@@ -167,8 +165,37 @@ public class KillAura extends AbstractModule {
         event.setYaw(mc.thePlayer.renderYawOffset);
         event.setPitch(mc.thePlayer.rotationPitchHead);
 
+        if(target == null)
+            return;
+
         if (this.attackStage.getValue().equals(AttackStage.PRE) && this.hitTimerDone()) {
             this.attack(this.target);
+        }
+
+        if (target == null || mc.thePlayer.getDistanceToEntity(target) > range.getValue()) {
+            if(isSlotSpoofed) {
+                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                isSlotSpoofed = false;
+            }
+
+            this.packets.forEach(packet -> {
+                this.packets.remove(packet);
+                System.out.println("Sent packet: " + packet.getClass().getName());
+                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(packet);
+            });
+
+            blinking = false;
+            stage = 0;
+
+            if(blocking && blockMode.getValue() == BlockMode.WATCHDOG) {
+                this.releaseBlock();
+                blocking = false;
+            } else {
+                this.releaseBlock();
+            }
+
+            this.blockingTicks = 0;
+            return;
         }
     };
 
@@ -313,24 +340,27 @@ public class KillAura extends AbstractModule {
     }
 
     private void attack(EntityLivingBase e) {
-        if (e == null) {
-            if (blockMode.getValue() == BlockMode.WATCHDOG) {
-                this.packets.forEach(packet -> {
-                    this.packets.remove(packet);
-                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
-                });
-            }
-            return;
-        }
-
         if (blockMode.getValue() == BlockMode.WATCHDOG) {
-            stage += 1;
+            stage++;
+
+            Logger.addChatMessage("Stage: " + stage);
 
             if(stage == 1) {
                 blinking = true;
-                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+                if(!isSlotSpoofed) {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+                }
+
+                Logger.addChatMessage(String.valueOf(mc.thePlayer.inventory.currentItem % 8 + 1));
+
+                blocking = false;
+                isSlotSpoofed = true;
             } else if(stage >= 2) {
-                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                if(isSlotSpoofed) {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                }
+
+                isSlotSpoofed = false;
                 mc.thePlayer.swingItem();
 
                 mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
@@ -340,10 +370,12 @@ public class KillAura extends AbstractModule {
 
                 this.packets.forEach(packet -> {
                     this.packets.remove(packet);
-                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
+                    System.out.println("Sent packet: " + packet.getClass().getName());
+                    mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(packet);
                 });
 
                 blinking = false;
+                blocking = true;
 
                 stage = 0;
             }
@@ -361,15 +393,21 @@ public class KillAura extends AbstractModule {
     }
 
     private boolean hitTimerDone() {
+        if(blockMode.getValue() == BlockMode.WATCHDOG)
+            return true;
+
         return this.attackTimer.hasTimeElapsed((long) (1000.0 / this.aps.getValue()), true);
     }
 
     @EventHandler
     private Listener<PacketEvent> packetEvent = event -> {
+        if(event.getEventState() == PacketEvent.EventState.RECEIVING)
+            return;
+
         if (mc.thePlayer == null || !blinking || target == null)
             return;
 
-        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement || event.getPacket() instanceof C09PacketHeldItemChange || event.getPacket() instanceof C03PacketPlayer || event.getPacket() instanceof C0FPacketConfirmTransaction || event.getPacket() instanceof C02PacketUseEntity || event.getPacket() instanceof C0APacketAnimation) {
+        if (!(event.getPacket() instanceof C00PacketKeepAlive)) {
             event.setCancelled(true);
             packets.add(event.getPacket());
         }
@@ -433,15 +471,7 @@ public class KillAura extends AbstractModule {
                 case VERUS:
                 case H_V_H:
                 case WATCHDOG:
-                    //mc.getNetHandler().addToSendQueueNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-                    mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-
-                    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-                    executorService.schedule(() -> {
-                        mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-                    }, 50, TimeUnit.MILLISECONDS); // 50 milliseconds is roughly equivalent to 1 tick
-
-                    executorService.shutdown();
+                    mc.getNetHandler().addToSendQueueNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     break;
                 case CONTROL:
                     mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
