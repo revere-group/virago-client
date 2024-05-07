@@ -10,9 +10,15 @@ import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.util.player.ItemUtil;
 import dev.revere.virago.util.misc.TimerUtil;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.*;
 import net.optifine.util.MathUtils;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Remi
@@ -22,16 +28,19 @@ import net.optifine.util.MathUtils;
 @ModuleData(name = "ChestStealer", displayName = "Chest Stealer", description = "Steals items from players", type = EnumModuleType.PLAYER)
 public class ChestStealer extends AbstractModule {
 
+    private final Setting<Boolean> instant = new Setting<>("Instant", true).describedBy("Whether it should be instant or not.");
     private final Setting<Long> maxDelay = new Setting<>("Max Delay", 50L)
             .minimum(0L)
             .maximum(500L)
             .incrementation(1L)
-            .describedBy("The amount of times to loot per second");
+            .describedBy("The amount of times to loot per second")
+            .visibleWhen(() -> !instant.getValue());
     private final Setting<Long> minDelay = new Setting<>("Min Delay", 30L)
             .minimum(0L)
             .maximum(500L)
             .incrementation(1L)
-            .describedBy("The amount of times to loot per second");
+            .describedBy("The amount of times to loot per second")
+            .visibleWhen(() -> !instant.getValue());
 
     private final Setting<Boolean> ignoreTrash = new Setting<>("Ignore Trash", true).describedBy("Ignore trash items in containers");
 
@@ -49,35 +58,57 @@ public class ChestStealer extends AbstractModule {
                 return;
             }
 
-            if (!this.timer.hasTimeElapsed(this.nextClick)) {
-                return;
-            }
-
-            this.lastSteal++;
-
-            for (int i = 0; i < container.inventorySlots.size(); i++) {
-                final ItemStack stack = container.getLowerChestInventory().getStackInSlot(i);
-
-                if (stack == null || this.lastSteal <= 1) {
-                    continue;
+            if(!instant.getValue()) {
+                if (!this.timer.hasTimeElapsed(this.nextClick)) {
+                    return;
                 }
 
-                if (this.ignoreTrash.getValue() && !ItemUtil.isValidItem(stack)) {
-                    continue;
+                this.lastSteal++;
+
+                for (int i = 0; i < container.inventorySlots.size(); i++) {
+                    final ItemStack stack = container.getLowerChestInventory().getStackInSlot(i);
+
+                    if (stack == null || this.lastSteal <= 1) {
+                        continue;
+                    }
+
+                    if (this.ignoreTrash.getValue() && !ItemUtil.isValidItem(stack)) {
+                        continue;
+                    }
+
+                    this.nextClick = Math.round(MathUtils.randomNumber(this.maxDelay.getValue().intValue(), this.minDelay.getValue().intValue()));
+                    mc.playerController.windowClick(container.windowId, i, 0, 1, mc.thePlayer);
+
+                    this.timer.reset();
+                    this.lastClick = 0;
+                    return;
                 }
 
-                this.nextClick = Math.round(MathUtils.randomNumber(this.maxDelay.getValue().intValue(), this.minDelay.getValue().intValue()));
-                mc.playerController.windowClick(container.windowId, i, 0, 1, mc.thePlayer);
+                this.lastClick++;
 
-                this.timer.reset();
-                this.lastClick = 0;
-                return;
-            }
+                if (this.lastClick > 1) {
+                    mc.thePlayer.closeScreen();
+                }
+            } else {
+                ExecutorService executor = Executors.newCachedThreadPool();
 
-            this.lastClick++;
+                for (int i = 0; i < container.inventorySlots.size(); i++) {
+                    final int slotIndex = i;
+                    executor.execute(() -> {
+                        ItemStack stack = container.getLowerChestInventory().getStackInSlot(slotIndex);
 
-            if (this.lastClick > 1) {
-                mc.thePlayer.closeScreen();
+                        if (stack != null && (!ignoreTrash.getValue() || ItemUtil.isValidItem(stack))) {
+                            mc.playerController.windowClick(container.windowId, slotIndex, 0, 1, mc.thePlayer);
+                        }
+                    });
+                }
+
+                executor.shutdown();
+
+                ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+                scheduler.schedule(() -> { mc.thePlayer.closeScreen(); }, 100, TimeUnit.MILLISECONDS);
+
+                scheduler.shutdown();
             }
         } else {
             this.lastClick = 0;

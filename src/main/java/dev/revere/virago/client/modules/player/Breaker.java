@@ -13,6 +13,7 @@ import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.player.PlayerUtil;
 import dev.revere.virago.util.rotation.RayCastUtil;
 import dev.revere.virago.util.rotation.RotationUtil;
@@ -21,12 +22,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
+import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -43,8 +48,16 @@ public class Breaker extends AbstractModule {
     private final Setting<Boolean> instantBreak = new Setting<>("Instant Break", false);
     private final Setting<Boolean> throughWalls = new Setting<>("Through Walls", true);
     private final Setting<Boolean> emptySurroundings = new Setting<>("Empty Surroundings", true).visibleWhen(throughWalls::getValue);
-    private final Setting<Boolean> rotations = new Setting<>("Rotations", true);
     private final Setting<Boolean> preventOwnBed = new Setting<>("Prevent own bed", true);
+    private final Setting<Boolean> groundSpoof = new Setting<>("Ground spoof", false);
+    private final Setting<Boolean> silentSwing = new Setting<>("Silent swing", false);
+    private final Setting<Boolean> rotations = new Setting<>("Rotations", true);
+
+    private final Setting<Integer> range = new Setting<>("Range", 4)
+            .minimum(1)
+            .maximum(8)
+            .incrementation(1)
+            .describedBy("The range in which the module will look for blocks to break.");
 
     private Vector3d block;
     private Vector3d lastBlock;
@@ -70,12 +83,30 @@ public class Breaker extends AbstractModule {
             mc.thePlayer.rotationPitchHead = rotations[1];
         }
 
+        if (this.groundSpoof.getValue() && !mc.thePlayer.isInWater()) {
+            event.setGround(true);
+        }
+
         if (lastBlock == null || !lastBlock.equals(block)) {
             damage = 0;
         }
 
         this.destroy();
     };
+
+    private boolean isCovered(BlockPos blockPos) {
+        for (EnumFacing enumFacing : EnumFacing.values()) {
+            BlockPos offset = blockPos.offset(enumFacing);
+            if (replaceable(offset)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean replaceable(BlockPos blockPos) {
+        return getBlock(blockPos).isReplaceable(mc.theWorld, blockPos);
+    }
 
     @EventHandler
     private final Listener<Render2DEvent> render2DEventListener = event -> {
@@ -108,14 +139,22 @@ public class Breaker extends AbstractModule {
         }
     };
 
+    private Block getBlock(BlockPos blockPos) {
+        return getBlockState(blockPos).getBlock();
+    }
+
+    private IBlockState getBlockState(BlockPos blockPos) {
+        return mc.theWorld.getBlockState(blockPos);
+    }
+
     public Vector3d getBlock() {
         if (ownLocation != null && mc.thePlayer.getDistanceSq(ownLocation.getX(), ownLocation.getY(), ownLocation.getZ()) < 35 * 35 && preventOwnBed.getValue()) {
             return null;
         }
 
-        for (int x = -5; x <= 5; x++) {
-            for (int y = -5; y <= 5; y++) {
-                for (int z = -5; z <= 5; z++) {
+        for (int x = -(int) range.getValue(); x <= range.getValue(); x++) {
+            for (int y = -(int) range.getValue(); y <= range.getValue(); y++) {
+                for (int z = -(int) range.getValue(); z <= range.getValue(); z++) {
 
                     final Block block = PlayerUtil.blockRelativeToPlayer(x, y, z);
                     final Vector3d position = new Vector3d(mc.thePlayer.posX + x, mc.thePlayer.posY + y, mc.thePlayer.posZ + z);
@@ -124,8 +163,8 @@ public class Breaker extends AbstractModule {
                         continue;
                     }
 
-                    final MovingObjectPosition movingObjectPosition = RayCastUtil.rayCast(RotationUtil.calculate(position), 4f);
-                    if (movingObjectPosition == null || movingObjectPosition.hitVec.distanceTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)) > 4.5) {
+                    final MovingObjectPosition movingObjectPosition = RayCastUtil.rayCast(RotationUtil.calculate(position), range.getValue());
+                    if (movingObjectPosition == null || movingObjectPosition.hitVec.distanceTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)) > range.getValue()) {
                         continue;
                     }
 
@@ -144,7 +183,7 @@ public class Breaker extends AbstractModule {
                         for (int addX = -1; addX <= 1; addX++) {
                             for (int addY = 0; addY <= 1; addY++) {
                                 for (int addZ = -1; addZ <= 1; addZ++) {
-                                    if (empty || (mc.thePlayer.getDistanceSq(position.getX() + addX, position.getY() + addY, position.getZ() + addZ) + 4 > 4 * 4))
+                                    if (empty || (mc.thePlayer.getDistanceSq(position.getX() + addX, position.getY() + addY, position.getZ() + addZ) + range.getValue() > range.getValue() * range.getValue()))
                                         continue;
 
                                     if (Math.abs(addX) + Math.abs(addY) + Math.abs(addZ) != 1) {
@@ -233,7 +272,11 @@ public class Breaker extends AbstractModule {
                 this.updateDamage(blockPos, hardness);
             }
 
-            mc.thePlayer.swingItem();
+            if (!silentSwing.getValue()) {
+                mc.thePlayer.swingItem();
+            } else {
+                mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+            }
         }
         if (bestSlot != originalSlot) {
             mc.thePlayer.inventory.currentItem = originalSlot;

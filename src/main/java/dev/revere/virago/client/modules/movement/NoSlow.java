@@ -9,10 +9,13 @@ import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
+import net.minecraft.util.BlockPos;
 
 /**
  * @author Remi
@@ -22,15 +25,19 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange;
 @ModuleData(name = "NoSlow", displayName = "No Slow", description = "Prevents the player from slowing down when using items", type = EnumModuleType.MOVEMENT)
 public class NoSlow extends AbstractModule {
 
-    public final Setting<Boolean> cancelBlocking = new Setting<>("Cancel Blocking", true);
-
     @EventHandler
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
         KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
-        if (!cancelBlocking.getValue()) return;
         if (mc.thePlayer.isUsingItem() && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword && killAura.getSingleTarget() == null) {
             mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
             mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+        }
+    };
+
+    @EventHandler
+    private final Listener<PreMotionEvent> preMotionEventListener = event -> {
+        if (mc.thePlayer.isUsingItem() && mc.thePlayer.isMoving() && !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) {
+            mc.getNetHandler().addToSendQueueNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, null, 0, 0, 0));
         }
     };
 

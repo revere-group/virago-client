@@ -15,7 +15,7 @@ import net.arikia.dev.drpc.DiscordRichPresence;
 @Getter
 public class DiscordRPC {
     private boolean running = true;
-    private long created = 0L;
+    public long created = 0L;
 
     public void start() {
         this.created = System.currentTimeMillis();

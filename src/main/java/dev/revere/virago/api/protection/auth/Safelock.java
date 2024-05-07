@@ -8,6 +8,7 @@ import dev.revere.virago.api.protection.ViragoUser;
 import dev.revere.virago.api.protection.rank.Rank;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
+import dev.revere.virago.client.gui.menu.GuiSelectDesign;
 import dev.revere.virago.util.Logger;
 import lombok.var;
 import net.minecraft.client.Minecraft;
@@ -220,7 +221,7 @@ public class Safelock {
                 SocketClient.init(productKey);
                 Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion() + " | " + clientName, "discord.gg/virago");
 
-                Minecraft.getMinecraft().displayGuiScreen(new CustomGuiMainMenu());
+                Minecraft.getMinecraft().displayGuiScreen(new GuiSelectDesign());
             }
             return new String[]{valid ? "2" : "1", neekeri, statusCode, String.valueOf(valid)};
         } catch (IOException ex) {

@@ -5,13 +5,18 @@ import dev.revere.virago.Virago;
 import dev.revere.virago.api.protection.auth.Safelock;
 import dev.revere.virago.client.services.ConfigService;
 import dev.revere.virago.client.services.FontService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.render.RenderUtils;
 import dev.revere.virago.util.render.RoundedUtils;
 import dev.revere.virago.client.gui.menu.components.CustomGuiTextField;
+import dev.revere.virago.util.shader.GLSLSandboxShader;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
 import java.io.IOException;
@@ -25,6 +30,8 @@ public class GuiLicenceKey extends GuiScreen {
 
     public static boolean isAuthorized = false;
     public static String status = "";
+
+    private GLSLSandboxShader backgroundShader;
 
     /**
      * Initializes the screen and all the components in it.
@@ -47,6 +54,11 @@ public class GuiLicenceKey extends GuiScreen {
 
         // Add components to the screen
         this.buttonList.add(this.button);
+        try {
+            this.backgroundShader = new GLSLSandboxShader("/assets/minecraft/virago/shader/noise.fsh");
+        } catch (Exception e) {
+            Logger.err("Failed to load background shader. " + e.getMessage(), getClass());
+        }
     }
 
     /**
@@ -57,7 +69,16 @@ public class GuiLicenceKey extends GuiScreen {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
+        //RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
+        GlStateManager.disableCull();
+        this.backgroundShader.useShader(this.width, this.height + 600, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2f(-1f, -1f);
+        GL11.glVertex2f(-1f, 1f);
+        GL11.glVertex2f(1f, 1f);
+        GL11.glVertex2f(1f, -1f);
+        GL11.glEnd();
+        GL20.glUseProgram(0);
         FontService fonts = Virago.getInstance().getServiceManager().getService(FontService.class);
 
         int boxWidth = 240;

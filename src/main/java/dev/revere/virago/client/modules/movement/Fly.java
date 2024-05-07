@@ -11,7 +11,6 @@ import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.NotificationService;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import org.lwjgl.input.Keyboard;
 
 @ModuleData(name = "Fly", displayName = "Fly", description = "Allows you to fly", type = EnumModuleType.MOVEMENT)
 public class Fly extends AbstractModule {
@@ -25,12 +24,26 @@ public class Fly extends AbstractModule {
             .incrementation(0.1D)
             .describedBy("The speed you will fly at.");
 
+    private final Setting<Integer> verticalHeight = new Setting<>("Vertical Height", 5)
+            .minimum(1)
+            .maximum(20)
+            .incrementation(1)
+            .describedBy("The speed you will fly at.");
+
     private final Setting<Boolean> noClip = new Setting<>("NoClip", false)
             .describedBy("Allows you to fly through blocks.");
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
         switch (mode.getValue()) {
+            case VERTICAL:
+                if (noClip.getValue()) {
+                    mc.thePlayer.noClip = true;
+                }
+
+                mc.thePlayer.capabilities.isFlying = true;
+                mc.thePlayer.capabilities.setFlySpeed(speed.getValue().floatValue());
+                break;
             case VANILLA:
                 if (noClip.getValue()) {
                     mc.thePlayer.noClip = true;
@@ -84,6 +97,9 @@ public class Fly extends AbstractModule {
     @Override
     public void onEnable() {
         NotificationService notificationService = Virago.getInstance().getServiceManager().getService(NotificationService.class);
+        if (mode.getValue() == FlyMode.VERTICAL) {
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + verticalHeight.getValue(), mc.thePlayer.posZ);
+        }
 
         if (noClip.getValue() && mode.getValue() != FlyMode.VANILLA) {
             notificationService.notify(NotificationType.NO, "Fly", "NoClip is not supported in packet mode.");
@@ -102,6 +118,7 @@ public class Fly extends AbstractModule {
     }
 
     private enum FlyMode {
+        VERTICAL,
         VANILLA,
         PACKET,
     }

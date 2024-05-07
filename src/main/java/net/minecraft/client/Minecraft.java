@@ -42,6 +42,7 @@ import dev.revere.virago.client.events.input.KeyDownEvent;
 import dev.revere.virago.client.events.input.KeyUpEvent;
 import dev.revere.virago.client.gui.menu.CustomGuiMainMenu;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
+import dev.revere.virago.client.modules.render.HUD;
 import dev.revere.virago.client.modules.render.MotionBlur;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.block.Block;
@@ -1156,7 +1157,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public int getLimitFramerate()
     {
-        return this.theWorld == null && this.currentScreen != null ? 30 : this.gameSettings.limitFramerate;
+        return this.theWorld == null && this.currentScreen != null ? Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(HUD.class).menuFps.getValue() : this.gameSettings.limitFramerate;
     }
 
     public boolean isFramerateLimitBelowMax()

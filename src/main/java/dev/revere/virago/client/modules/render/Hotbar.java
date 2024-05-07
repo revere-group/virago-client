@@ -45,7 +45,7 @@ public class Hotbar extends AbstractModule {
                     sr.getScaledHeight() - 21,
                     sr.getScaledWidth() / 2.0F - 91 + mc.thePlayer.inventory.currentItem * 20 + 22,
                     sr.getScaledHeight(),
-                    0x88000000
+                    0x99000000
             );
 
             RoundedUtils.shadowGradient(

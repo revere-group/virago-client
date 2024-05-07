@@ -63,7 +63,7 @@ public class NoFall extends AbstractModule {
             }
             case BLINK: {
                 if ((!canFall() && mc.isIntegratedServerRunning()) || mc.thePlayer.capabilities.isFlying) return;
-                if (distance > 2.5) {
+                if (distance > 2.5 && distance < 30) {
                     this.isBlinking = true;
 
                     if (!this.packets.isEmpty()) {
@@ -109,10 +109,23 @@ public class NoFall extends AbstractModule {
             case BLINK: {
                 if (mc.thePlayer == null) return;
                 if (!this.isBlinking) return;
-
                 if (event.getEventState() == PacketEvent.EventState.SENDING && event.getPacket() instanceof C03PacketPlayer) {
+                    C03PacketPlayer packet = event.getPacket();
+                    switch (event.getPacket().getClass().getSimpleName().substring(0, 3)) {
+                        case "C03":
+                            packets.add(new C03PacketPlayer(true));
+                            break;
+                        case "C04":
+                            packets.add(new C03PacketPlayer.C04PacketPlayerPosition(packet.getPositionX(), packet.getPositionY(), packet.getPositionZ(), true));
+                            break;
+                        case "C05":
+                            packets.add(new C03PacketPlayer.C05PacketPlayerLook(packet.getYaw(), packet.getPitch(), true));
+                            break;
+                        case "C06":
+                            packets.add(new C03PacketPlayer.C06PacketPlayerPosLook(packet.getPositionX(), packet.getPositionY(), packet.getPositionZ(), packet.getYaw(), packet.getPitch(), true));
+                            break;
+                    }
                     event.setCancelled(true);
-                    this.packets.add(event.getPacket());
                 }
                 break;
             }

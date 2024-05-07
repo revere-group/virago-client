@@ -140,17 +140,58 @@ public class Scaffold extends AbstractModule {
     private final Listener<UpdateEvent> updateEventListener = e -> {
         if (mc.thePlayer == null || mc.theWorld == null) this.toggle();
 
-        if (!firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
-            if (!mc.thePlayer.movementInput.jump) {
-                if (!yCoordinateUpdated)
-                    yCoordinate = mc.thePlayer.posY - 1;
-
-                if (mc.thePlayer.fallDistance > 0.8 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
-                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ));
-                    if (info.pos != null) this.placeBlock();
-                    placeTimer.reset();
+        if (mode.getValue().equals(Mode.WATCHDOG_JUMP)) {
+            if (firstJump) {
+                if (!yCoordinateUpdated) {
+                    mc.thePlayer.jump();
+                    yCoordinate = mc.thePlayer.posY;
+                    yCoordinateUpdated = true;
                 }
-                yCoordinateUpdated = true;
+                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                    if (info.pos != null) this.placeBlock();
+                    firstJump = false;
+                    yCoordinateUpdated = false;
+                }
+            } else {
+                if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                    yCoordinate = mc.thePlayer.posY;
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                    yCoordinateUpdated = false;
+                    if (info.pos != null) this.placeBlock();
+                } else {
+                    if (!yCoordinateUpdated)
+                        yCoordinate = mc.thePlayer.posY - 1;
+
+                    if (mc.thePlayer.fallDistance > 0.8 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+                        info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ));
+                        if (info.pos != null) this.placeBlock();
+                        placeTimer.reset();
+                    }
+                    yCoordinateUpdated = true;
+                }
+
+                if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+                    if (info.pos != null) this.placeBlock();
+                }
+            }
+
+            if (mc.thePlayer.posY <= yCoordinate && !mc.gameSettings.keyBindJump.isKeyDown()) {
+                fuckedUp = true;
+            }
+
+            if (fuckedUp) {
+                if (!fuckedUpAndJumped && !mc.gameSettings.keyBindJump.isKeyDown()) {
+                    mc.thePlayer.jump();
+                    fuckedUpAndJumped = true;
+                }
+                if (mc.thePlayer.fallDistance > 0.1) {
+                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
+                    if (info.pos != null) this.placeBlock();
+                    fuckedUp = false;
+                    fuckedUpAndJumped = false;
+                }
             }
         }
 
@@ -158,44 +199,6 @@ public class Scaffold extends AbstractModule {
             info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
         } else {
             info = getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-        }
-
-        if (mc.thePlayer.posY <= yCoordinate && !mc.gameSettings.keyBindJump.isKeyDown() && mode.getValue() == Mode.WATCHDOG_JUMP) {
-            fuckedUp = true;
-        }
-
-        if (!firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
-            if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
-                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-                if (info.pos != null) this.placeBlock();
-            }
-        }
-
-        if (firstJump && mode.getValue() == Mode.WATCHDOG_JUMP) {
-            if (!yCoordinateUpdated) {
-                mc.thePlayer.jump();
-                yCoordinate = mc.thePlayer.posY;
-                yCoordinateUpdated = true;
-            }
-            if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
-                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                if (info.pos != null) this.placeBlock();
-                firstJump = false;
-                yCoordinateUpdated = false;
-            }
-        }
-
-        if (fuckedUp && mode.getValue() == Mode.WATCHDOG_JUMP) {
-            if (!fuckedUpAndJumped && !mc.gameSettings.keyBindJump.isKeyDown()) {
-                mc.thePlayer.jump();
-                fuckedUpAndJumped = true;
-            }
-            if (mc.thePlayer.fallDistance > 0.1) {
-                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                if (info.pos != null) this.placeBlock();
-                fuckedUp = false;
-                fuckedUpAndJumped = false;
-            }
         }
 
         if (mode.getValue() == Mode.WATCHDOG) {
@@ -235,16 +238,6 @@ public class Scaffold extends AbstractModule {
             mc.thePlayer.setSprinting(true);
         } else if (mode.getValue() != Mode.WATCHDOG) {
             mc.thePlayer.setSprinting(sprint.getValue() && mc.thePlayer.isMoving());
-        }
-        if (placeMode.getValue() == PlaceMode.PRE && mode.getValue().equals(Mode.WATCHDOG_JUMP)) {
-            if (!firstJump) {
-                if (mc.thePlayer.movementInput.jump) {
-                    yCoordinate = mc.thePlayer.posY;
-                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
-                    yCoordinateUpdated = false;
-                    if (info.pos != null) this.placeBlock();
-                }
-            }
         }
 
         if (mode.getValue() == Mode.WATCHDOG_SPRINT && mc.thePlayer.ticksExisted % 2 == 0 && !mc.gameSettings.keyBindJump.isKeyDown()) {
@@ -318,7 +311,7 @@ public class Scaffold extends AbstractModule {
                 if (info.pos != null) this.placeBlock();
             }
         } else if (mode.getValue() != Mode.WATCHDOG_JUMP) {
-            if (info.pos != null) this.placeBlock();
+            //if (info.pos != null) this.placeBlock();
         }
     };
 
