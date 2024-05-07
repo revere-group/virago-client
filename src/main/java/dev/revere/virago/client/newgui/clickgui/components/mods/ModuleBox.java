@@ -206,8 +206,6 @@ public class ModuleBox extends MenuComponent {
 
 		RoundedUtils.round(x + 10, y + height - 10 - 20, width - 20, 25, 4, module.isEnabled() ? new Color(0, 200, 0, 255) : new Color(200, 0, 0, 225));
 		String text = module.isEnabled() ? "ENABLED" : "DISABLED";
-
-		fontService.getProductSans().drawString(text, x + (float) width / 2 - (double) fontService.getProductSans().getStringWidth(text) / 2, y + height - 10 - 14.5f, -1);
 		fontService.getProductSans28().drawString(text, x + (float) width / 2 - fontService.getProductSans28().getStringWidth(text) / 2, y + height - 10 - 15, -1);
 
 		if (!module.getSettings().isEmpty()) {
