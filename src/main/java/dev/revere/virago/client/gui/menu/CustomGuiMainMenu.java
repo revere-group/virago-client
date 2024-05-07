@@ -4,6 +4,7 @@ package dev.revere.virago.client.gui.menu;
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.gui.menu.altmanager.GuiAltManager;
 import dev.revere.virago.client.gui.menu.components.GuiImageButton;
+import dev.revere.virago.client.services.DesignService;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.render.RenderUtils;
@@ -54,7 +55,7 @@ public class CustomGuiMainMenu extends GuiScreen {
         this.buttonList.add(new GuiImageButton(8, width - BUTTON_WIDTH - 10, 10, BUTTON_WIDTH, BUTTON_HEIGHT, CLOSE_TEXTURE));
 
         try {
-            backgroundShader = new GLSLSandboxShader("/assets/minecraft/virago/shader/noise.fsh");
+            backgroundShader = new GLSLSandboxShader(Virago.getInstance().getServiceManager().getService(DesignService.class).getSelectedDesign().getShaderPath());
         } catch (Exception e) {
             Logger.err("Failed to load background shader. " + e.getMessage(), getClass());
         }
@@ -70,7 +71,7 @@ public class CustomGuiMainMenu extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         //RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
         GlStateManager.disableCull();
-        this.backgroundShader.useShader(this.width, this.height + 600, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
+        this.backgroundShader.useShader(this.width * 2, this.height * 2, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(-1f, -1f);
         GL11.glVertex2f(-1f, 1f);
@@ -112,6 +113,9 @@ public class CustomGuiMainMenu extends GuiScreen {
                     break;
                 case 2:
                     this.mc.displayGuiScreen(new GuiMultiplayer(this));
+                    break;
+                case 3:
+                    this.mc.displayGuiScreen(new GuiSelectDesign());
                     break;
                 case 4:
                     this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));

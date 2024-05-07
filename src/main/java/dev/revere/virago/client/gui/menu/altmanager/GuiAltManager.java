@@ -5,6 +5,7 @@ import dev.revere.virago.api.alt.Alt;
 import dev.revere.virago.client.gui.menu.altmanager.components.GuiAltButton;
 import dev.revere.virago.client.gui.menu.altmanager.components.GuiMainButton;
 import dev.revere.virago.client.services.AltService;
+import dev.revere.virago.client.services.DesignService;
 import dev.revere.virago.client.services.FontService;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.alt.CookieLogin;
@@ -65,7 +66,7 @@ public class GuiAltManager extends GuiScreen {
         this.altButtons.add(new GuiMainButton("Use", 6, 100, 20));
         this.altButtons.add(new GuiMainButton("Microsoft", 7, 100, 20));
         try {
-            this.backgroundShader = new GLSLSandboxShader("/assets/minecraft/virago/shader/noise.fsh");
+            this.backgroundShader = new GLSLSandboxShader(Virago.getInstance().getServiceManager().getService(DesignService.class).getSelectedDesign().getShaderPath());
         } catch (Exception e) {
             Logger.err("Failed to load background shader. " + e.getMessage(), getClass());
         }
@@ -77,7 +78,7 @@ public class GuiAltManager extends GuiScreen {
         AltService altService = Virago.getInstance().getServiceManager().getService(AltService.class);
         FontService fontService = Virago.getInstance().getServiceManager().getService(FontService.class);
         GlStateManager.disableCull();
-        this.backgroundShader.useShader(this.width, this.height + 600, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
+        this.backgroundShader.useShader(this.width * 2, this.height * 2, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(-1f, -1f);
         GL11.glVertex2f(-1f, 1f);

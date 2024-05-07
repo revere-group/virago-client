@@ -9,8 +9,8 @@ import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.api.network.socket.SocketHelper;
 import dev.revere.virago.client.gui.panel.PanelGUI;
 import dev.revere.virago.client.modules.render.ClickGUI;
-import dev.revere.virago.client.newgui.IngameMenu;
-import dev.revere.virago.client.newgui.framework.Menu;
+import dev.revere.virago.client.gui.newgui.IngameMenu;
+import dev.revere.virago.client.gui.newgui.framework.Menu;
 import dev.revere.virago.client.services.*;
 import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.DiscordRPC;
@@ -121,6 +121,7 @@ public class Virago {
         this.serviceManager.addService(new AltService());
         this.serviceManager.addService(new FriendService());
         this.serviceManager.addService(new CheckService());
+        this.serviceManager.addService(new DesignService());
         this.serviceManager.getServices().values().forEach(IService::initService);
         this.serviceManager.getServices().values().forEach(IService::startService);
     }
