@@ -7,7 +7,7 @@ package dev.revere.virago.client.newgui;
  */
 
 public enum Category {
-	MODS("MODS", "Athena/gui/menu/mods.png");
+	MODS("MODS", "virago/textures/clickgui/mods.png");
 
 	private String name;
 	private String icon;

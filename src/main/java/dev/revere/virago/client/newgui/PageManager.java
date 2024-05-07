@@ -2,6 +2,7 @@ package dev.revere.virago.client.newgui;
 
 import dev.revere.virago.client.newgui.clickgui.pages.ModsPage;
 import dev.revere.virago.client.newgui.framework.Menu;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 
 import java.util.HashMap;
@@ -13,10 +14,11 @@ import java.util.Map;
  * @date 6/2/2023
  */
 
+@Getter
 public class PageManager {
-	private IngameMenu parent;
-	private Menu menu;
-	private Map<Category, Page> pages;
+	private final IngameMenu parent;
+	private final Menu menu;
+	private final Map<Category, Page> pages;
 
 	public PageManager(IngameMenu parent, Menu menu) {
 		this.parent = parent;
@@ -29,10 +31,6 @@ public class PageManager {
 		Minecraft mc = Minecraft.getMinecraft();
 
 		pages.put(Category.MODS, new ModsPage(mc, menu, parent));
-	}
-
-	public Map<Category, Page> getPages() {
-		return pages;
 	}
 
 	public <T extends Page> T getPage(Category category) {

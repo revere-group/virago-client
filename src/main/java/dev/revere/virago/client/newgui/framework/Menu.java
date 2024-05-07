@@ -98,7 +98,7 @@ public class Menu {
 	 * @param button The button that was clicked.
 	 */
 	public void onMouseClick(int button) {
-		Collections.sort(components, (a, b) -> Integer.compare(a.getPriority().getPriority(), b.getPriority().getPriority()));
+		components.sort(Comparator.comparingInt(a -> a.getPriority().getPriority()));
 		Collections.reverse(components);
 		boolean returnMode = false;
 		for(MenuComponent component : components) {
@@ -118,7 +118,7 @@ public class Menu {
 	 * @param button The button that was clicked.
 	 */
 	public void onMouseClickMove(int button) {
-		Collections.sort(components, (a, b) -> Integer.compare(a.getPriority().getPriority(), b.getPriority().getPriority()));
+		components.sort(Comparator.comparingInt(a -> a.getPriority().getPriority()));
 		Collections.reverse(components);
 		
 		boolean returnMode = false;

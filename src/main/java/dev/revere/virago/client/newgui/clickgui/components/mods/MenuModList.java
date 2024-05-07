@@ -117,7 +117,7 @@ public class MenuModList extends MenuDropdown {
 
 		GlStateManager.color(1,1,1);
 
-		RenderUtils.drawRoundedRect(x, y, x + width, y + height, 12.0f, new Color(43, 44, 48, 255).getRGB());
+		RoundedUtils.round(x, y, width, height, 12.0f, new Color(43, 44, 48, 255));
 
 		int mouseX = parent.getMouseX();
 		int mouseY = parent.getMouseY();

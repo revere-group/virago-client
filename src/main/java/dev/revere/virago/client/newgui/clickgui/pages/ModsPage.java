@@ -142,7 +142,7 @@ public class ModsPage extends Page {
 
 			menu.addComponent(enable);
 
-			MenuModList list = new MenuModList(BindType.class, menu.getWidth() - 182 - 160, menu.getHeight() - h - 6, 20) {
+			/*MenuModList list = new MenuModList(BindType.class, menu.getWidth() - 182 - 160, menu.getHeight() - h - 6, 20) {
 				@Override
 				public void onAction() {
 					activeModule.setBindType(BindType.valueOf(getValue().toUpperCase()));
@@ -151,7 +151,7 @@ public class ModsPage extends Page {
 
 			list.setValue(activeModule.getBindType().toString());
 
-			menu.addComponent(list);
+			menu.addComponent(list);*/
 
 			MenuModKeybind btn = new MenuModKeybind(menu.getWidth() - 182, menu.getHeight() - h - 6, w, h) {
 				@Override
