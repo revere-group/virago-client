@@ -57,8 +57,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -329,19 +328,23 @@ public class KillAura extends AbstractModule {
 
             if(stage == 1) {
                 blinking = true;
-                releaseBlock();
+                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
             } else if(stage >= 2) {
+                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
                 mc.thePlayer.swingItem();
+
                 mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
                 mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.INTERACT));
-                blinking = false;
+
+                preAutoblock();
 
                 this.packets.forEach(packet -> {
                     this.packets.remove(packet);
                     mc.thePlayer.sendQueue.getNetworkManager().sendPacketWithoutEvent(packet);
                 });
 
-                preAutoblock();
+                blinking = false;
+
                 stage = 0;
             }
 
@@ -366,7 +369,7 @@ public class KillAura extends AbstractModule {
         if (mc.thePlayer == null || !blinking || target == null)
             return;
 
-        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement) {
+        if (event.getPacket() instanceof C08PacketPlayerBlockPlacement || event.getPacket() instanceof C09PacketHeldItemChange || event.getPacket() instanceof C03PacketPlayer || event.getPacket() instanceof C0FPacketConfirmTransaction || event.getPacket() instanceof C02PacketUseEntity || event.getPacket() instanceof C0APacketAnimation) {
             event.setCancelled(true);
             packets.add(event.getPacket());
         }
@@ -388,7 +391,7 @@ public class KillAura extends AbstractModule {
             case N_C_P:
                 break;
             case WATCHDOG:
-                mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
+                mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
                 blocking = true;
                 break;
             case VERUS:
@@ -430,7 +433,15 @@ public class KillAura extends AbstractModule {
                 case VERUS:
                 case H_V_H:
                 case WATCHDOG:
-                    mc.getNetHandler().addToSendQueueNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+                    //mc.getNetHandler().addToSendQueueNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+                    mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+
+                    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+                    executorService.schedule(() -> {
+                        mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                    }, 50, TimeUnit.MILLISECONDS); // 50 milliseconds is roughly equivalent to 1 tick
+
+                    executorService.shutdown();
                     break;
                 case CONTROL:
                     mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
