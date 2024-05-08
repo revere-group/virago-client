@@ -117,6 +117,8 @@ public class HUD extends AbstractModule {
             .incrementation(1)
             .describedBy("The FPS for the menu");
 
+    private final Setting<Boolean> textShadow = new Setting<>("Text Shadow", false);
+
     public FontRenderer fontRenderer;
 
     public int y;
@@ -378,9 +380,17 @@ public class HUD extends AbstractModule {
         int padding = 3;
         if (fontType.getValue() == FontType.POPPINS) padding -= 1;
         if (fontType.getValue() == FontType.MINECRAFT) {
-            mc.fontRendererObj.drawStringWithShadow(moduleData, (int) ((sr.getScaledWidth() - 5.5f) - moduleWidth), y + padding, ColorUtil.generateColor(index + 1));
+            if(textShadow.getValue()) {
+                mc.fontRendererObj.drawStringWithShadow(moduleData, (int) ((sr.getScaledWidth() - 5.5f) - moduleWidth), y + padding, ColorUtil.generateColor(index + 1));
+            } else {
+                mc.fontRendererObj.drawString(moduleData, (int) ((sr.getScaledWidth() - 5.5f) - moduleWidth), y + padding, ColorUtil.generateColor(index + 1));
+            }
         } else {
-            fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6.5f) - moduleWidth, y + padding, ColorUtil.generateColor(index + 1));
+            if(textShadow.getValue()) {
+                fontRenderer.drawStringWithShadow(moduleData, (sr.getScaledWidth() - 6.5f) - moduleWidth, y + padding, ColorUtil.generateColor(index + 1));
+            } else {
+                fontRenderer.drawString(moduleData, (sr.getScaledWidth() - 6.5f) - moduleWidth, y + padding, ColorUtil.generateColor(index + 1));
+            }
         }
     }
 
