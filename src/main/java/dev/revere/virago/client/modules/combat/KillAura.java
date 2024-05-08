@@ -9,6 +9,7 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.client.events.attack.AttackEvent;
 import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
@@ -170,6 +171,7 @@ public class KillAura extends AbstractModule {
 
         if (this.attackStage.getValue().equals(AttackStage.PRE) && this.hitTimerDone()) {
             this.attack(this.target);
+            Virago.getInstance().getEventBus().call(new AttackEvent(target));
         }
     };
 
@@ -214,6 +216,7 @@ public class KillAura extends AbstractModule {
         this.postAutoblock();
         if (this.attackStage.getValue().equals(AttackStage.POST) && this.hitTimerDone()) {
             this.attack(this.target);
+            Virago.getInstance().getEventBus().call(new AttackEvent(target));
         }
     };
 

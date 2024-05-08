@@ -8,26 +8,9 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.attack.AttackEvent;
-import dev.revere.virago.client.events.packet.PacketEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
-import dev.revere.virago.client.events.render.Render2DEvent;
-import dev.revere.virago.client.notification.NotificationType;
-import dev.revere.virago.client.services.FontService;
-import dev.revere.virago.client.services.NotificationService;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.init.Blocks;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.server.S08PacketPlayerPosLook;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
-import org.apache.commons.lang3.time.StopWatch;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import dev.revere.virago.util.Logger;
+import dev.revere.virago.util.misc.TimerUtil;
 
 /**
  * @author Remi
@@ -40,14 +23,14 @@ public class Criticals extends AbstractModule {
     private final Setting<Mode> mode = new Setting<>("Mode", Mode.WATCHDOG);
 
 
-    private final Setting<Float> delay = new Setting<>("Range", 3.0F)
+    private final Setting<Float> delay = new Setting<>("Delay", 3.0F)
             .minimum(0F)
             .maximum(1000F)
             .incrementation(50F)
             .describedBy("Delay");
 
 
-    private final StopWatch stopwatch = new StopWatch();
+    private final TimerUtil timer = new TimerUtil();
 
     private boolean attacked;
     private int ticks;
@@ -58,14 +41,16 @@ public class Criticals extends AbstractModule {
 
         if(!mc.thePlayer.onGround) {
             offGroundTicks++;
-        }else{
+        } else {
             offGroundTicks = 0;
         }
+
         switch (mode.getValue()) {
             case WATCHDOG2: {
                 event.setGround(false);
                 break;
             }
+
             case WATCHDOG: {
                 if (attacked) {
                     ticks++;
@@ -96,18 +81,14 @@ public class Criticals extends AbstractModule {
 
     @EventHandler
     public final Listener<AttackEvent> onAttackEvent = event -> {
-        if (mc.thePlayer.onGround && !mc.thePlayer.isOnLadder() && stopwatch.equals(delay.getValue().longValue())) {
+        Logger.addChatMessage("testing 1: " + timer.getTime());
+        if (mc.thePlayer.onGround && !mc.thePlayer.isOnLadder() && timer.getTime() >= delay.getValue()) {
             mc.thePlayer.onCriticalHit(event.getTarget());
+            Logger.addChatMessage("testing1 2");
 
-            stopwatch.reset();
+            timer.reset();
             attacked = true;
         }
-    };
-
-    @EventHandler
-    private final Listener<Render2DEvent> render2DEventListener = event -> {
-        FontService font = Virago.getInstance().getServiceManager().getService(FontService.class);
-        ScaledResolution sr = new ScaledResolution(mc);
     };
 
     @Override

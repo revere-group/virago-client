@@ -10,13 +10,11 @@ import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.modules.combat.KillAura;
 import dev.revere.virago.client.modules.player.Scaffold;
 import dev.revere.virago.client.services.ModuleService;
-import dev.revere.virago.util.Logger;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.potion.Potion;
-import org.lwjgl.input.Keyboard;
 
 /**
  * @author Zion
