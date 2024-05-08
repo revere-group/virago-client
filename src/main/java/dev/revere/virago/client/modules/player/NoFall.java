@@ -60,6 +60,7 @@ public class NoFall extends AbstractModule {
             case WATCHDOG: {
                 event.setGround(false);
                 event.setY(event.getY() + Math.random() / 100000000000000000000f);
+                break;
             }
             case BLINK: {
                 if ((!canFall() && mc.isIntegratedServerRunning()) || mc.thePlayer.capabilities.isFlying) return;
