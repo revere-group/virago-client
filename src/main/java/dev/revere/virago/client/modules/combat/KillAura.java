@@ -361,6 +361,8 @@ public class KillAura extends AbstractModule {
     }
 
     private boolean hitTimerDone() {
+        if (blockMode.getValue() == BlockMode.WATCHDOG)
+            return true;
         return this.attackTimer.hasTimeElapsed((long) (1000.0 / this.aps.getValue()), true);
     }
 

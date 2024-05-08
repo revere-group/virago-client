@@ -1,6 +1,5 @@
 package dev.revere.virago.client.modules.combat;
 
-import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
@@ -39,7 +38,7 @@ public class Criticals extends AbstractModule {
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
 
-        if(!mc.thePlayer.onGround) {
+        if (!mc.thePlayer.onGround) {
             offGroundTicks++;
         } else {
             offGroundTicks = 0;
@@ -57,18 +56,21 @@ public class Criticals extends AbstractModule {
 
                     switch (ticks) {
                         case 1: {
-                            if(mc.thePlayer.onGround)
+                            if (mc.thePlayer.onGround) {
                                 mc.thePlayer.motionY = .2f - Math.random() / 1000f;
+                                Logger.addChatMessage("move up " + ticks);
+                            }
                             break;
                         }
 
                         case 2: {
-                            if(offGroundTicks == 1)
-                                mc.thePlayer.motionY -= 0.1f - Math.random() / 1000f;;
+                            if (offGroundTicks == 1) {
+                                mc.thePlayer.motionY -= 0.1f - Math.random() / 1000f;
+                                Logger.addChatMessage("move down " + ticks);
+                            }
                             break;
                         }
                     }
-
                     event.setGround(false);
                 } else {
                     attacked = false;
@@ -81,10 +83,9 @@ public class Criticals extends AbstractModule {
 
     @EventHandler
     public final Listener<AttackEvent> onAttackEvent = event -> {
-        Logger.addChatMessage("testing 1: " + timer.getTime());
         if (mc.thePlayer.onGround && !mc.thePlayer.isOnLadder() && timer.getTime() >= delay.getValue()) {
             mc.thePlayer.onCriticalHit(event.getTarget());
-            Logger.addChatMessage("testing1 2");
+            Logger.addChatMessage("Critical Hit! " + ticks);
 
             timer.reset();
             attacked = true;

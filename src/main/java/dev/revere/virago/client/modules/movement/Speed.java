@@ -39,6 +39,7 @@ public class Speed extends AbstractModule {
 
     private double speed;
     private double lastDist;
+    private int offGroundTicks;
 
     private boolean prevOnGround;
     private double lastMotionX, lastMotionZ;
@@ -52,7 +53,8 @@ public class Speed extends AbstractModule {
         setMetaData(speedModeProperty.getValue().name().replace("_", " "));
         switch (speedModeProperty.getValue()) {
             case GROUND:
-                if(mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 4 == 0) &&  !(mc.theWorld.getBlockState(mc.thePlayer.getPosition().add(0, -1, 0)).getBlock() instanceof BlockSlab)) mc.timer.timerSpeed = 4.0f;
+                if (mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 4 == 0) && !(mc.theWorld.getBlockState(mc.thePlayer.getPosition().add(0, -1, 0)).getBlock() instanceof BlockSlab))
+                    mc.timer.timerSpeed = 4.0f;
                 else mc.timer.timerSpeed = 1.0f;
                 break;
         }
@@ -68,7 +70,7 @@ public class Speed extends AbstractModule {
                         prevOnGround = true;
                         event.setY(0.41999998688698);
                         mc.thePlayer.motionY = 0.42;
-                        if(mc.thePlayer.isPotionActive(Potion.moveSpeed)) speed *= (speedNoStrafe.getValue() * 0.85);
+                        if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) speed *= (speedNoStrafe.getValue() * 0.85);
                         else speed *= speedNoStrafe.getValue();
                     } else if (prevOnGround) {
                         double difference = (0.76D * (lastDist - mc.thePlayer.getBaseMoveSpeed()));
@@ -77,7 +79,7 @@ public class Speed extends AbstractModule {
                         speed = lastDist - lastDist / 159D;
                     }
 
-                    if(mc.thePlayer.onGround || prevOnGround) {
+                    if (mc.thePlayer.onGround || prevOnGround) {
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
                     } else if (mc.thePlayer.hurtTime == 9) {
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
@@ -87,7 +89,7 @@ public class Speed extends AbstractModule {
 
                     lastMotionX = event.getX();
                     lastMotionZ = event.getZ();
-                    if(this.prevOnGround && !mc.thePlayer.onGround)
+                    if (this.prevOnGround && !mc.thePlayer.onGround)
                         prevOnGround = false;
                 } else {
                     mc.thePlayer.setSpeed(event, 0);
@@ -100,7 +102,7 @@ public class Speed extends AbstractModule {
                         prevOnGround = true;
                         event.setY(0.41999998688698);
                         mc.thePlayer.motionY = 0.42;
-                        if(mc.thePlayer.isPotionActive(Potion.moveSpeed)) speed *= (speedNoStrafe.getValue() * 0.85);
+                        if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) speed *= (speedNoStrafe.getValue() * 0.85);
                         else speed *= speedNoStrafe.getValue();
                     } else if (prevOnGround) {
                         double lowerBound = 1.22;
@@ -113,14 +115,14 @@ public class Speed extends AbstractModule {
                         speed = lastDist - lastDist / 159D;
                     }
 
-                    if(mc.thePlayer.onGround || prevOnGround)
+                    if (mc.thePlayer.onGround || prevOnGround)
                         mc.thePlayer.setSpeed(event, Math.max(mc.thePlayer.getSpeed(), speed));
                     else
                         mc.thePlayer.setSpeedWithCorrection(event, Math.max(mc.thePlayer.getSpeed(), speed), lastMotionX, lastMotionZ, 0.1);
 
                     lastMotionX = event.getX();
                     lastMotionZ = event.getZ();
-                    if(this.prevOnGround && !mc.thePlayer.onGround)
+                    if (this.prevOnGround && !mc.thePlayer.onGround)
                         prevOnGround = false;
                 } else {
                     mc.thePlayer.setSpeed(event, 0);
@@ -156,6 +158,6 @@ public class Speed extends AbstractModule {
     }
 
     private enum SpeedMode {
-        TEST, GROUND, WATCHDOG
+        TEST, GROUND, WATCHDOG, WATCHDOG2
     }
 }
