@@ -57,7 +57,7 @@ public class NoFall extends AbstractModule {
         lastDistance = fallDistance;
 
         switch (mode.getValue()) {
-            case Watchdog: {
+            case WATCHDOG: {
                 event.setGround(false);
                 event.setY(event.getY() + Math.random() / 100000000000000000000f);
             }
@@ -216,6 +216,6 @@ public class NoFall extends AbstractModule {
     enum Mode {
         BLINK,
         POSITION,
-        Watchdog
+        WATCHDOG
     }
 }

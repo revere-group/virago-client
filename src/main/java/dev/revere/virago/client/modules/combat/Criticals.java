@@ -37,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleData(name = "Criticals", displayName = "Criticals", description = "Always Criticals", type = EnumModuleType.COMBAT)
 public class Criticals extends AbstractModule {
 
-    private final Setting<Mode> mode = new Setting<>("Mode", Mode.Watchdog);
+    private final Setting<Mode> mode = new Setting<>("Mode", Mode.WATCHDOG);
 
 
     private final Setting<Float> delay = new Setting<>("Range", 3.0F)
@@ -62,11 +62,11 @@ public class Criticals extends AbstractModule {
             offGroundTicks = 0;
         }
         switch (mode.getValue()) {
-            case Watchdog2: {
+            case WATCHDOG2: {
                 event.setGround(false);
                 break;
             }
-            case Watchdog: {
+            case WATCHDOG: {
                 if (attacked) {
                     ticks++;
 
@@ -121,8 +121,8 @@ public class Criticals extends AbstractModule {
     }
 
     enum Mode {
-        Edit,
-        Watchdog,
-        Watchdog2
+        EDIT,
+        WATCHDOG,
+        WATCHDOG2
     }
 }
