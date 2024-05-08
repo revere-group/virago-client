@@ -2,6 +2,9 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.events.game.CollideEvent;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -392,6 +395,15 @@ public class Block
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
     {
         AxisAlignedBB axisalignedbb = this.getCollisionBoundingBox(worldIn, pos, state);
+
+        CollideEvent eventCollide = new CollideEvent(collidingEntity, pos.getX(), pos.getY(), pos.getZ(), axisalignedbb, this);
+        Virago.getInstance().getEventBus().call(eventCollide);
+
+        axisalignedbb = eventCollide.getBoundingBox();
+
+        if(eventCollide.isCancelled()) {
+            return;
+        }
 
         if (axisalignedbb != null && mask.intersectsWith(axisalignedbb))
         {
