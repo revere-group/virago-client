@@ -55,7 +55,7 @@ public class GuiLicenceKey extends GuiScreen {
         // Add components to the screen
         this.buttonList.add(this.button);
         try {
-            this.backgroundShader = new GLSLSandboxShader("/assets/minecraft/virago/shader/noise.fsh");
+            this.backgroundShader = new GLSLSandboxShader("/assets/minecraft/virago/shader/background/noise.fsh");
         } catch (Exception e) {
             Logger.err("Failed to load background shader. " + e.getMessage(), getClass());
         }

@@ -107,7 +107,7 @@ public class GuiSelectDesign extends GuiScreen {
         RoundedUtils.round(centerX - (float) boxWidth / 2, centerY - (float) boxHeight / 2 + 90, boxWidth, 3, 2, new Color(ColorUtil.getColor(false)).darker());
         RoundedUtils.outline(centerX - (float) boxWidth / 2, centerY - (float) boxHeight / 2 + 5, boxWidth, boxHeight, 10, 1, new Color(ColorUtil.getColor(false)));
 
-        fonts.getRalewayExtraBold().drawCenteredStringWithShadow("Chose your design", centerX, centerY - 60, 0xFFFFFF);
+        fonts.getRalewayExtraBold().drawCenteredStringWithShadow("Choose your design", centerX, centerY - 60, 0xFFFFFF);
 
         RenderUtils.drawImage(LOGO_TEXTURE, centerX - 33, centerY - 125, 64, 64);
 
