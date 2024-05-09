@@ -285,10 +285,9 @@ public class HUD extends AbstractModule {
                 break;
             case LOGO:
                 if (!shader)
-                    RenderUtils.drawImage(new ResourceLocation("virago/textures/logo/logo.png"), watermarkDraggable.getX(), watermarkDraggable.getY(), 50, 50);
-                fontRenderer.drawString(Virago.getInstance().getName().toLowerCase(), watermarkDraggable.getX() + 11, watermarkDraggable.getY() + 50, -1);
-                watermarkDraggable.setWidth(fontRenderer.getStringWidth(Virago.getInstance().getName().toLowerCase()));
-                watermarkDraggable.setHeight(fontRenderer.getHeight() + 50);
+                    RenderUtils.drawImage(new ResourceLocation("virago/textures/logo/banner.png"), watermarkDraggable.getX(), watermarkDraggable.getY(), 132, 60);
+                watermarkDraggable.setWidth(132);
+                watermarkDraggable.setHeight(60);
                 break;
         }
         GlStateManager.popMatrix();
