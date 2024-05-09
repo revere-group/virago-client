@@ -1,8 +1,10 @@
 package net.minecraft.client.multiplayer;
 
 import dev.revere.virago.Virago;
+import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.client.events.attack.AttackEvent;
 import dev.revere.virago.client.events.player.window.WindowClickEvent;
+import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -443,7 +445,9 @@ public class PlayerControllerMP
     {
         this.syncCurrentPlayItem();
         this.netClientHandler.addToSendQueue(new C02PacketUseEntity(targetEntity, C02PacketUseEntity.Action.ATTACK));
-
+        if (SocketClient.jwt == null && (!(mc.currentScreen instanceof GuiLicenceKey))) {
+            System.exit(0);
+        }
         Virago.getInstance().getEventBus().call(new AttackEvent(targetEntity));
 
         if (this.currentGameType != WorldSettings.GameType.SPECTATOR)

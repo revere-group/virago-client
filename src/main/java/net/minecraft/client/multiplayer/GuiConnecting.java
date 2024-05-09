@@ -6,7 +6,9 @@ import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import dev.revere.virago.Virago;
+import dev.revere.virago.api.network.socket.SocketClient;
 import dev.revere.virago.client.events.player.JoinEvent;
+import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
@@ -70,6 +72,9 @@ public class GuiConnecting extends GuiScreen
                     GuiConnecting.this.networkManager.sendPacket(new C00Handshake(47, ip, port, EnumConnectionState.LOGIN));
                     GuiConnecting.this.networkManager.sendPacket(new C00PacketLoginStart(GuiConnecting.this.mc.getSession().getProfile()));
                     Virago.getInstance().getEventBus().call(new JoinEvent());
+                    if (SocketClient.jwt == null && (!(mc.currentScreen instanceof GuiLicenceKey))) {
+                        System.exit(0);
+                    }
                     Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion(), "Playing on " + ip + ":" + port);
                 }
                 catch (UnknownHostException unknownhostexception)
