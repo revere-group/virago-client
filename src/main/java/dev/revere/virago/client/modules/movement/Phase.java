@@ -27,17 +27,19 @@ public class Phase extends AbstractModule {
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
         reset -= 1;
+
         double xOff = 0;
         double zOff = 0;
         double multi = 2.6D;
+
         double mx = Math.cos(Math.toRadians(mc.thePlayer.rotationYaw + 90F));
         double mz = Math.sin(Math.toRadians(mc.thePlayer.rotationYaw + 90F));
-        xOff = mc.thePlayer.moveForward * 2.6D * mx + mc.thePlayer.moveStrafing * 2.6D * mz;
-        zOff = mc.thePlayer.moveForward * 2.6D * mz + mc.thePlayer.moveStrafing * 2.6D * mx;
-        if(isInsideBlock() && mc.thePlayer.isSneaking())
-            reset = 1;
-        if(reset > 0)
-            mc.thePlayer.boundingBox.offsetAndUpdate(xOff, 0, zOff);
+
+        xOff = mc.thePlayer.moveForward * multi * mx + mc.thePlayer.moveStrafing * multi * mz;
+        zOff = mc.thePlayer.moveForward * multi * mz + mc.thePlayer.moveStrafing * multi * mx;
+
+        if(isInsideBlock() && mc.thePlayer.isSneaking()) reset = 1;
+        if(reset > 0) mc.thePlayer.boundingBox.offsetAndUpdate(xOff, 0, zOff);
     };
 
     @EventHandler
@@ -53,8 +55,10 @@ public class Phase extends AbstractModule {
                     Block block = mc.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock();
                     if(block != null && !(block instanceof BlockAir)) {
                         AxisAlignedBB boundingBox = block.getCollisionBoundingBox(mc.theWorld, new BlockPos(x, y, z), mc.theWorld.getBlockState(new BlockPos(x, y, z)));
+
                         if(block instanceof BlockHopper)
                             boundingBox = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+
                         if(boundingBox != null && mc.thePlayer.boundingBox.intersectsWith(boundingBox))
                             return true;
                     }
