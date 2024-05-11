@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Scanner;
@@ -229,7 +230,7 @@ public class Safelock {
                 GuiLicenceKey.status = "RATE_LIMITED";
                 return new String[]{"1", "ERROR", "You are being rate limited because of sending too many requests", String.valueOf(false)};
             }
-            ex.printStackTrace();
+            Logger.err("Error: " + ex.getMessage() + " " + Arrays.toString(ex.getStackTrace()), getClass());
             GuiLicenceKey.status = "ERROR";
             return new String[]{"1", "ERROR", ex.getMessage(), String.valueOf(false)};
         }
