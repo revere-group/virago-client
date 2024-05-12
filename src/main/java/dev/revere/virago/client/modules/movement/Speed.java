@@ -8,14 +8,16 @@ import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.packet.PacketEvent;
-import dev.revere.virago.client.events.player.MoveEvent;
-import dev.revere.virago.client.events.player.PreMotionEvent;
+import dev.revere.virago.client.events.player.*;
 import dev.revere.virago.client.notification.NotificationType;
 import dev.revere.virago.client.services.NotificationService;
+import dev.revere.virago.util.Logger;
 import net.minecraft.block.BlockSlab;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Keyboard;
 
 /**
@@ -43,6 +45,9 @@ public class Speed extends AbstractModule {
 
     private boolean prevOnGround;
     private double lastMotionX, lastMotionZ;
+    private Double offGround;
+    private boolean niggerjump = false;
+    private boolean nigger = false;
 
     public Speed() {
         setKey(Keyboard.KEY_V);
@@ -52,6 +57,32 @@ public class Speed extends AbstractModule {
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
         setMetaData(speedModeProperty.getValue().name().replace("_", " "));
         switch (speedModeProperty.getValue()) {
+            case LOW_HOP:
+                if (!mc.thePlayer.isMoving()) break;
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.motionY = 0.42;
+                }
+                if (mc.thePlayer.hurtTime < 9) {
+                    if (mc.thePlayer.onGround) {
+                        if (!niggerjump) {
+                            offGroundTicks = 0;
+                            niggerjump = true;
+                            return;
+                        }
+                        nigger = true;
+                        mc.thePlayer.setSpeed(0.45f);
+                    } else {
+                        if (nigger) {
+                            offGroundTicks++;
+                            if (offGroundTicks == 4) {
+                                mc.thePlayer.motionY = 0.05;
+                            } else if (offGroundTicks == 6) {
+                                mc.thePlayer.motionY -= 0.1;
+                            }
+                        }
+                    }
+                }
+                break;
             case GROUND:
                 if (mc.thePlayer.onGround && !(mc.thePlayer.ticksExisted % 4 == 0) && !(mc.theWorld.getBlockState(mc.thePlayer.getPosition().add(0, -1, 0)).getBlock() instanceof BlockSlab))
                     mc.timer.timerSpeed = 4.0f;
@@ -148,6 +179,9 @@ public class Speed extends AbstractModule {
 
     @Override
     public void onEnable() {
+        offGround = null;
+        nigger = false;
+        niggerjump = false;
         super.onEnable();
     }
 
@@ -158,6 +192,6 @@ public class Speed extends AbstractModule {
     }
 
     private enum SpeedMode {
-        TEST, GROUND, WATCHDOG, WATCHDOG2
+        TEST, GROUND, WATCHDOG, LOW_HOP
     }
 }

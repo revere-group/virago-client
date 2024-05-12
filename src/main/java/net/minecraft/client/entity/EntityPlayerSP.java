@@ -120,10 +120,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void onUpdate()
     {
-        UpdateEvent event = new UpdateEvent(this.rotationYaw, this.rotationPitch, this.posY, this.onGround, true);
-        Virago.getInstance().getEventBus().call(event);
         if (this.worldObj.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ)))
         {
+            UpdateEvent event = new UpdateEvent(this.rotationYaw, this.rotationPitch, this.posY, this.onGround, true);
+            Virago.getInstance().getEventBus().call(event);
+
             super.onUpdate();
 
             if (this.isRiding())
@@ -921,7 +922,62 @@ public class EntityPlayerSP extends AbstractClientPlayer
         return yaw;
     }
 
+    public double direction() {
+        float rotationYaw = MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw);
+
+        if (mc.thePlayer.moveForward < 0) {
+            rotationYaw += 180;
+        }
+
+        float forward = 1;
+
+        if (mc.thePlayer.moveForward < 0) {
+            forward = -0.5F;
+        } else if (mc.thePlayer.moveForward > 0) {
+            forward = 0.5F;
+        }
+
+        if (mc.thePlayer.moveStrafing > 0) {
+            rotationYaw -= 70 * forward;
+        }
+
+        if (mc.thePlayer.moveStrafing < 0) {
+            rotationYaw += 70 * forward;
+        }
+
+        return Math.toRadians(rotationYaw);
+    }
+
     public float getSpeed() { return (float) Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ); }
+
+    public void setSpeed(double speed) {
+        setSpeed(speed, mc.thePlayer.rotationYaw, mc.thePlayer.movementInput.moveStrafe, mc.thePlayer.movementInput.moveForward);
+    }
+
+    public void setSpeed(double moveSpeed, float yaw, double strafe, double forward) {
+        if (forward != 0.0D) {
+            if (strafe > 0.0D) {
+                yaw += ((forward > 0.0D) ? -45 : 45);
+            } else if (strafe < 0.0D) {
+                yaw += ((forward > 0.0D) ? 45 : -45);
+            }
+            strafe = 0.0D;
+            if (forward > 0.0D) {
+                forward = 1.0D;
+            } else if (forward < 0.0D) {
+                forward = -1.0D;
+            }
+        }
+        if (strafe > 0.0D) {
+            strafe = 1.0D;
+        } else if (strafe < 0.0D) {
+            strafe = -1.0D;
+        }
+        double mx = Math.cos(Math.toRadians((yaw + 90.0F)));
+        double mz = Math.sin(Math.toRadians((yaw + 90.0F)));
+        mc.thePlayer.motionX = forward * moveSpeed * mx + strafe * moveSpeed * mz;
+        mc.thePlayer.motionZ = forward * moveSpeed * mz - strafe * moveSpeed * mx;
+    }
 
     public void setSpeed(MoveEvent event, double speed) {
         float direction = (float) Math.toRadians(getDirection());

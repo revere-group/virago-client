@@ -1392,11 +1392,6 @@ public abstract class EntityLivingBase extends Entity
                         f5 = this.jumpMovementFactor;
                     }
 
-                    StrafeEvent event = new StrafeEvent(forward, strafe, f4, f5, this.rotationYaw, this.rotationPitch);
-                    if(this.equals(Minecraft.getMinecraft().thePlayer)) {
-                        Virago.getInstance().getEventBus().call(event);
-                    }
-
                     this.moveFlying(strafe, forward, f5);
                     f4 = 0.91F;
 
