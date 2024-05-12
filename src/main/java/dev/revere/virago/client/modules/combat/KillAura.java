@@ -15,7 +15,6 @@ import dev.revere.virago.client.events.render.Render2DEvent;
 import dev.revere.virago.client.events.render.Render3DEvent;
 import dev.revere.virago.client.events.player.PostMotionEvent;
 import dev.revere.virago.client.events.player.PreMotionEvent;
-import dev.revere.virago.client.events.player.StrafeEvent;
 import dev.revere.virago.client.gui.menu.GuiLicenceKey;
 import dev.revere.virago.client.modules.misc.Teams;
 import dev.revere.virago.client.modules.player.Scaffold;
@@ -172,18 +171,6 @@ public class KillAura extends AbstractModule {
         if (this.attackStage.getValue().equals(AttackStage.PRE) && this.hitTimerDone()) {
             this.attack(this.target);
             Virago.getInstance().getEventBus().call(new AttackEvent(target));
-        }
-    };
-
-    @EventHandler
-    private final Listener<StrafeEvent> strafeEventListener = event -> {
-        if (moveFix.getValue()) {
-            float[] rots = this.getRotations(target);
-            finalYaw = processRotation(rots[0]);
-            finalPitch = processRotation(rots[1]);
-
-            event.setYaw(finalYaw);
-            event.setPitch(finalPitch);
         }
     };
 

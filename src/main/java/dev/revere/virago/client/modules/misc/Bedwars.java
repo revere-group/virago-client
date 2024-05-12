@@ -41,35 +41,35 @@ public class Bedwars extends AbstractModule {
 
     @EventHandler
     private final Listener<WorldChangeEvent> onWorldChange = event -> {
-      armoredPlayers.clear();
-      heldItemMap.clear();
+        armoredPlayers.clear();
+        heldItemMap.clear();
     };
 
     @EventHandler
     private final Listener<UpdateEvent> onUpdate = event -> {
         Logger.addChatMessage("hello 1");
-        if(!armor.getValue() || !heldItems.getValue())
+        if (!armor.getValue() || !heldItems.getValue())
             return;
 
         System.out.println("check 1");
 
-        for(EntityPlayer player : mc.theWorld.playerEntities) {
-            if(player == null) continue;
+        for (EntityPlayer player : mc.theWorld.playerEntities) {
+            if (player == null) continue;
             //if(player == mc.thePlayer) continue;
 
             String name = player.getName();
             ItemStack item = player.getHeldItem();
 
-            if(armor.getValue()) {
+            if (armor.getValue()) {
                 ItemStack leggings = player.inventory.armorInventory[1];
                 String armorType = null;
 
-                if(leggings.getItem() == null || leggings.getDisplayName().contains("LEATHER"))
+                if (leggings.getItem() == null || leggings.getDisplayName().contains("LEATHER"))
                     continue;
 
                 Logger.addChatMessage(leggings.getUnlocalizedName());
 
-                switch(leggings.getUnlocalizedName()) {
+                switch (leggings.getUnlocalizedName()) {
                     case "item.minecraft.diamond_leggings":
                         armorType = "Diamond";
                         break;
@@ -81,20 +81,20 @@ public class Bedwars extends AbstractModule {
                         break;
                 }
 
-                if(armorType == null) continue;
-                if(armoredPlayers.contains(name)) continue;
+                if (armorType == null) continue;
+                if (armoredPlayers.contains(name)) continue;
 
                 armoredPlayers.add(name);
                 Logger.addChatMessage("Armor: " + player.getDisplayName().getFormattedText() + " has purchased " + armorType + " Armor");
                 ping();
             }
 
-            if(heldItems.getValue()) {
+            if (heldItems.getValue()) {
                 Logger.addChatMessage(item.getUnlocalizedName());
-                if(item != null && !heldItemMap.containsKey(name)) {
+                if (item != null && !heldItemMap.containsKey(name)) {
                     String itemType = null;
 
-                    switch(item.getUnlocalizedName()) {
+                    switch (item.getUnlocalizedName()) {
                         case "OBSIDIAN":
                             itemType = "Obsidian";
                             break;
@@ -115,7 +115,7 @@ public class Bedwars extends AbstractModule {
                             break;
                     }
 
-                    if(itemType == null) continue;
+                    if (itemType == null) continue;
                     heldItemMap.put(name, itemType);
 
                     double distance = Math.round(mc.thePlayer.getDistanceToEntity(player));
