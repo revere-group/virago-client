@@ -1,23 +1,34 @@
 package dev.revere.virago.client.events.player;
 
 import dev.revere.virago.api.event.Event;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import net.minecraft.client.Minecraft;
 
 /**
  * @author Remi
  * @project Virago
  * @date 3/26/2024
  */
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 public class StrafeEvent extends Event {
-    private float forward, strafe, friction, attributeSpeed, yaw, pitch;
+    private float forward;
+    private float strafe;
+    private float friction;
+    private float yaw;
 
-    public StrafeEvent(float forward, float strafe, float friction, float attributeSpeed, float yaw, float pitch) {
-        this.forward = forward;
-        this.strafe = strafe;
-        this.friction = friction;
-        this.attributeSpeed = attributeSpeed;
-        this.yaw = yaw;
-        this.pitch = pitch;
+    public void setSpeed(final double speed, final double motionMultiplier) {
+        setFriction((float) (getForward() != 0 && getStrafe() != 0 ? speed * 0.98F : speed));
+        Minecraft.getMinecraft().thePlayer.motionX *= motionMultiplier;
+        Minecraft.getMinecraft().thePlayer.motionZ *= motionMultiplier;
+    }
+
+    public void setSpeed(final double speed) {
+        setFriction((float) (getForward() != 0 && getStrafe() != 0 ? speed * 0.98F : speed));
+        Minecraft.getMinecraft().thePlayer.motionX = 0;
+        Minecraft.getMinecraft().thePlayer.motionZ = 0;
     }
 }
