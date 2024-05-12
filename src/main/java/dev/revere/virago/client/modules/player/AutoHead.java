@@ -1,13 +1,18 @@
 package dev.revere.virago.client.modules.player;
 
+import dev.revere.virago.Virago;
 import dev.revere.virago.api.event.handler.EventHandler;
 import dev.revere.virago.api.event.handler.Listener;
 import dev.revere.virago.api.module.AbstractModule;
 import dev.revere.virago.api.module.EnumModuleType;
 import dev.revere.virago.api.module.ModuleData;
 import dev.revere.virago.api.setting.Setting;
+import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.player.UpdateEvent;
+import dev.revere.virago.client.services.ModuleService;
 import dev.revere.virago.util.misc.TimerUtil;
+import dev.revere.virago.util.rotation.MathUtil;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemAppleGold;
 import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
@@ -21,54 +26,57 @@ import net.minecraft.util.EnumFacing;
 public class AutoHead extends AbstractModule {
 
     private final TimerUtil timer = new TimerUtil();
+    private long nextUse;
+    private final ModuleService moduleService = Virago.getInstance().getServiceManager().getService(ModuleService.class);
 
     private final Setting<Integer> minHealth = new Setting<>("Minimum Health", 12)
             .maximum(20)
             .minimum(2)
             .incrementation(1);
 
-    private final Setting<Integer> delay = new Setting<>("Delay", 50)
+    private final Setting<Integer> maximumDelay = new Setting<>("Maximum Delay", 30)
+            .maximum(500)
+            .minimum(0)
+            .incrementation(5);
+
+    private final Setting<Integer> minimumDelay = new Setting<>("Minimum Delay", 50)
             .maximum(500)
             .minimum(0)
             .incrementation(5);
 
     @EventHandler
-    private final Listener<UpdateEvent> onUpdate = event -> {
-      if(mc.thePlayer.getHealth() < minHealth.getValue() && timer.hasTimeElapsed(delay.getValue())) {
-          useHead();
-      }
+    private final Listener<PreMotionEvent> preMotionEventListener = event -> {
+        if(moduleService.getModule(Scaffold.class).isEnabled())
+            return;
 
-      timer.reset();
-    };
+        for(int i = 0; i < 9; i++) {
+            final ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
 
-    private void useHead() {
-        int index;
-        int item = -1;
-        boolean found = false;
-
-        ItemStack stack;
-
-        for(index = 36; index < 45; index++) {
-            stack = mc.thePlayer.inventoryContainer.getSlot(index).getStack();
-            if(stack == null || !(stack.getItem() instanceof ItemSkull) && !(stack.getItem() instanceof ItemAppleGold))
+            if(stack == null)
                 continue;
 
-            item = index;
-            found = true;
-            break;
+            final Item item = stack.getItem();
+            if(!(item instanceof ItemSkull)) continue;
+            if(mc.thePlayer.getHealth() > minHealth.getValue()) continue;
+
+            setSlot(i);
+        }
+    };
+
+
+    private void setSlot(int slot) {
+        if(slot < 0 || slot > 8)
+            return;
+
+        final int oldSlot = mc.thePlayer.inventory.currentItem;
+        mc.thePlayer.inventory.currentItem = slot;
+
+        if(timer.hasTimeElapsed(nextUse)) {
+            mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
+            nextUse = Math.round(MathUtil.getRandom(minimumDelay.getValue(), maximumDelay.getValue()));
+            timer.reset();
         }
 
-        if(!found) return;
-
-        final int slot = mc.thePlayer.inventory.currentItem;
-        mc.thePlayer.inventory.currentItem = item - 36;
-        mc.playerController.updateController();
-
-        mc.getNetHandler().getNetworkManager().sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-        mc.getNetHandler().getNetworkManager().sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-        mc.getNetHandler().getNetworkManager().sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-
-        mc.thePlayer.stopUsingItem();
-        mc.thePlayer.inventory.currentItem = slot;
+        mc.thePlayer.inventory.currentItem = oldSlot;
     }
 }
