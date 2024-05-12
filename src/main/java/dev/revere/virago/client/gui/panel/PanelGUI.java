@@ -32,8 +32,8 @@ public class PanelGUI extends ResponsiveViewport {
     public PanelGUI() {
         int x = 0;
         for (EnumModuleType type : EnumModuleType.values()) {
-            components.add(new Panel(type, 20 + x, 10, 90, 20));
-            x += 100;
+            components.add(new Panel(type, 20 + x, 10, 105, 20));
+            x += 110;
         }
     }
 

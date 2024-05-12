@@ -6,6 +6,7 @@ import java.util.List;
 
 import dev.revere.virago.Virago;
 import dev.revere.virago.client.events.render.RenderNametagEvent;
+import dev.revere.virago.client.modules.render.CustomHitColor;
 import dev.revere.virago.client.modules.render.ESP;
 import dev.revere.virago.client.services.ModuleService;
 import net.minecraft.client.Minecraft;
@@ -421,10 +422,19 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
 
             if (flag1)
             {
-                this.brightnessBuffer.put(1.0F);
-                this.brightnessBuffer.put(0.0F);
-                this.brightnessBuffer.put(0.0F);
-                this.brightnessBuffer.put(0.3F);
+
+                CustomHitColor customHitColor = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(CustomHitColor.class);
+                if (customHitColor.isEnabled()) {
+                    this.brightnessBuffer.put(customHitColor.colorSetting.getValue().getRed() / 255F);
+                    this.brightnessBuffer.put(customHitColor.colorSetting.getValue().getGreen() / 255F);
+                    this.brightnessBuffer.put(customHitColor.colorSetting.getValue().getBlue() / 255F);
+                    this.brightnessBuffer.put(customHitColor.colorSetting.getValue().getAlpha() / 255F);
+                } else {
+                    this.brightnessBuffer.put(1.0F);
+                    this.brightnessBuffer.put(0.0F);
+                    this.brightnessBuffer.put(0.0F);
+                    this.brightnessBuffer.put(0.3F);
+                }
 
                 if (Config.isShaders())
                 {

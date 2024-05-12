@@ -1,7 +1,10 @@
 package net.minecraft.client.model;
 
+import dev.revere.virago.Virago;
+import dev.revere.virago.client.events.player.ModalUpdateEvent;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class ModelPlayer extends ModelBiped
 {
@@ -120,6 +123,8 @@ public class ModelPlayer extends ModelBiped
         copyModelAngles(this.bipedLeftArm, this.bipedLeftArmwear);
         copyModelAngles(this.bipedRightArm, this.bipedRightArmwear);
         copyModelAngles(this.bipedBody, this.bipedBodyWear);
+        ModalUpdateEvent event = new ModalUpdateEvent((EntityPlayer) entityIn, this);
+        Virago.getInstance().getEventBus().call(event);
     }
 
     public void renderRightArm()
