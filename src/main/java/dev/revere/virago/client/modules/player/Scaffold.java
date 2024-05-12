@@ -156,7 +156,7 @@ public class Scaffold extends AbstractModule {
                 } else {
                     mc.thePlayer.setSprinting(false);
                 }
-                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
+                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0 && !fuckedUpAndJumped) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                     if (info.pos != null) this.placeBlock();
                     firstJump = false;
@@ -197,13 +197,13 @@ public class Scaffold extends AbstractModule {
             }
 
             if (fuckedUp && !firstJump) {
+                mc.gameSettings.keyBindSprint.pressed = false;
+                mc.thePlayer.setSprinting(false);
                 if (!fuckedUpAndJumped && !mc.gameSettings.keyBindJump.isKeyDown()) {
                     mc.thePlayer.jump();
-                    mc.gameSettings.keyBindSprint.pressed = false;
-                    mc.thePlayer.setSprinting(false);
                     fuckedUpAndJumped = true;
                 }
-                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0) {
+                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0 && fuckedUpAndJumped) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                     if (info.pos != null) this.placeBlock();
                     fuckedUp = false;
@@ -317,7 +317,7 @@ public class Scaffold extends AbstractModule {
     private final Listener<MoveEvent> moveEventListener = e -> {
         this.moveTowerMotion(e);
         if (mc.thePlayer.isMoving() && mode.getValue() == Mode.WATCHDOG && getBlockCount() != 0) {
-            if (towerMode.getValue() == TowerMode.WATCHDOG) {
+            if (towerMode.getValue() == TowerMode.WATCHDOG || towerMode.getValue() == TowerMode.WATCHDOG_LOWHOP) {
                 mc.thePlayer.setSpeed(e, mc.gameSettings.keyBindJump.isKeyDown() ? 0.2625 : 0.2085);
             } else {
                 if (!mc.gameSettings.keyBindJump.isKeyDown()) {
@@ -326,15 +326,15 @@ public class Scaffold extends AbstractModule {
                     if (isGoingDiagonally()) {
                         mc.thePlayer.setSpeed(e, 0.24);
                     } else {
-                        mc.thePlayer.setSpeed(e, 3);
+                        mc.thePlayer.setSpeed(e, 0.3);
                     }
                 }
             }
         }
 
         if (mode.getValue() == Mode.WATCHDOG_JUMP) {
-            if (firstJump) {
-                //mc.thePlayer.setSpeed(e, 0.02);
+            if (fuckedUp) {
+                mc.thePlayer.setSpeed(e, 0.02);
             } else {
                 if (mc.gameSettings.keyBindJump.isKeyDown()) {
                     mc.thePlayer.setSpeed(e, 0.3);
