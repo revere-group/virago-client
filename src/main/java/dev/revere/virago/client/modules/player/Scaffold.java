@@ -156,16 +156,11 @@ public class Scaffold extends AbstractModule {
                 } else {
                     mc.thePlayer.setSprinting(false);
                 }
-                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0 && !fuckedUpAndJumped) {
+                if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0 && !fuckedUpAndJumped && !fuckedUp) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                     if (info.pos != null) this.placeBlock();
                     firstJump = false;
                     yCoordinateUpdated = false;
-                }
-
-                if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
-                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-                    if (info.pos != null) this.placeBlock();
                 }
             } else {
                 if (mc.gameSettings.keyBindJump.isKeyDown()) {
@@ -184,24 +179,25 @@ public class Scaffold extends AbstractModule {
                     }
                     yCoordinateUpdated = true;
                 }
-
-                if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
-                    info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
-                    if (info.pos != null) this.placeBlock();
-                }
             }
 
+            if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+                info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
+                if (info.pos != null) this.placeBlock();
+            }
             if (mc.thePlayer.posY <= yCoordinate && !firstJump && !mc.gameSettings.keyBindJump.isKeyDown()) {
                 Logger.addChatMessage("fucked up");
                 fuckedUp = true;
             }
 
-            if (fuckedUp && !firstJump) {
+            if (fuckedUp) {
                 mc.gameSettings.keyBindSprint.pressed = false;
                 mc.thePlayer.setSprinting(false);
                 if (!fuckedUpAndJumped && !mc.gameSettings.keyBindJump.isKeyDown()) {
-                    mc.thePlayer.jump();
-                    fuckedUpAndJumped = true;
+                    if (!firstJump) {
+                        mc.thePlayer.jump();
+                        fuckedUpAndJumped = true;
+                    }
                 }
                 if (mc.thePlayer.posY > yCoordinate + 1 && mc.thePlayer.motionY < 0 && fuckedUpAndJumped) {
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
@@ -334,7 +330,7 @@ public class Scaffold extends AbstractModule {
 
         if (mode.getValue() == Mode.WATCHDOG_JUMP) {
             if (fuckedUp) {
-                mc.thePlayer.setSpeed(e, 0.02);
+                mc.thePlayer.setSpeed(e, 0);
             } else {
                 if (mc.gameSettings.keyBindJump.isKeyDown()) {
                     mc.thePlayer.setSpeed(e, 0.3);

@@ -29,14 +29,14 @@ public class NoSlow extends AbstractModule {
     private final Listener<PostMotionEvent> postMotionEventListener = event -> {
         KillAura killAura = Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(KillAura.class);
         if (mc.thePlayer.isUsingItem() && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword && killAura.getSingleTarget() == null) {
-            //mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
-            //mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+            mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+            mc.getNetHandler().addToSendQueueNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
         }
     };
 
     @EventHandler
     private final Listener<PreMotionEvent> preMotionEventListener = event -> {
-        if (mc.thePlayer.isUsingItem() && mc.thePlayer.isMoving()) {
+        if (mc.thePlayer.isUsingItem() && mc.thePlayer.isMoving() && !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) {
             mc.getNetHandler().addToSendQueueNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, null, 0, 0, 0));
         }
     };

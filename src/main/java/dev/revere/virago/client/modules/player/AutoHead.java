@@ -10,6 +10,7 @@ import dev.revere.virago.api.setting.Setting;
 import dev.revere.virago.client.events.player.PreMotionEvent;
 import dev.revere.virago.client.events.player.UpdateEvent;
 import dev.revere.virago.client.services.ModuleService;
+import dev.revere.virago.util.Logger;
 import dev.revere.virago.util.misc.TimerUtil;
 import dev.revere.virago.util.rotation.MathUtil;
 import net.minecraft.item.Item;
@@ -63,7 +64,6 @@ public class AutoHead extends AbstractModule {
         }
     };
 
-
     private void setSlot(int slot) {
         if(slot < 0 || slot > 8)
             return;
@@ -74,9 +74,14 @@ public class AutoHead extends AbstractModule {
         if(timer.hasTimeElapsed(nextUse)) {
             mc.getNetHandler().getNetworkManager().sendPacketWithoutEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
             nextUse = Math.round(MathUtil.getRandom(minimumDelay.getValue(), maximumDelay.getValue()));
+            mc.thePlayer.inventory.currentItem = oldSlot;
             timer.reset();
         }
+    }
 
-        mc.thePlayer.inventory.currentItem = oldSlot;
+    @Override
+    public void onEnable() {
+        nextUse = Math.round(MathUtil.getRandom(minimumDelay.getValue(), maximumDelay.getValue()));
+        super.onEnable();
     }
 }
