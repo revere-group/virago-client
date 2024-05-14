@@ -90,7 +90,7 @@ public class ConfigService implements IService {
                             } else if (setting.getValue() instanceof Color) {
                                 String[] values = moduleData.getString(setting.getPath()).split(":");
 
-                                ((Setting<Color>) setting).setValue(new Color(Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2])));
+                                ((Setting<Color>) setting).setValue(new Color(Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]), Integer.parseInt(values[3])));
                             } else if (setting.getValue() instanceof Integer) {
                                 ((Setting<Integer>) setting).setValue(moduleData.getInt(setting.getPath()));
                             } else if (setting.getValue() instanceof String) {
@@ -149,7 +149,7 @@ public class ConfigService implements IService {
                 module.getSettingHierarchy().forEach(setting -> {
                     try {
                         if (setting.getValue() instanceof Color) {
-                            object.put(setting.getPath(), ((Color) setting.getValue()).getRed() + ":" + ((Color) setting.getValue()).getGreen() + ":" + ((Color) setting.getValue()).getBlue());
+                            object.put(setting.getPath(), ((Color) setting.getValue()).getRed() + ":" + ((Color) setting.getValue()).getGreen() + ":" + ((Color) setting.getValue()).getBlue() + ":" + ((Color) setting.getValue()).getAlpha());
                         } else if (setting.getValue() instanceof Enum<?>) {
                             object.put(setting.getPath(), ((Enum<?>) setting.getValue()).name());
                         } else {
