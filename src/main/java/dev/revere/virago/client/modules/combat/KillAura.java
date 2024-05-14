@@ -58,7 +58,6 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -75,6 +74,7 @@ public class KillAura extends AbstractModule {
     public final Setting<BlockMode> blockMode = new Setting<>("Block Mode", BlockMode.FAKE)
             .describedBy("The autoblock mode.");
 
+    private final Setting<Boolean> spoofItem = new Setting<>("Spoof Item", true).visibleWhen(() -> blockMode.getValue() == BlockMode.WATCHDOG);
     private final Setting<SortMode> sortMode = new Setting<>("Sort Mode", SortMode.RANGE).describedBy("The sort mode.");
     private final Setting<RotationMode> rotationMode = new Setting<>("Rotation Mode", RotationMode.NORMAL).describedBy("The rotation mode.");
     private final Setting<RandomMode> randomMode = new Setting<>("Random Mode", RandomMode.NORMAL).describedBy("The random mode.");
@@ -317,12 +317,14 @@ public class KillAura extends AbstractModule {
           releaseBlock();
       }
 
+      /*
       if(blockMode.getValue() == BlockMode.WATCHDOG && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemSword && mc.thePlayer.getHeldItem() != null) {
           if(blinking && blocking) {
               releaseBlock();
               this.target = this.getSingleTarget();
           }
       }
+       */
     };
 
     @EventHandler
@@ -338,12 +340,16 @@ public class KillAura extends AbstractModule {
 
             mc.getNetHandler().addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
             mc.getNetHandler().addToSendQueue(packet);
+
+            blinking = false;
+            Logger.addChatMessage("packet was c09, released block and stopped blinking because switch item");
             releasePackets();
         }
 
         if(!event.isCancelled() && blockMode.getValue() == BlockMode.WATCHDOG && blocking && packet.getClass().getName().startsWith("C") && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemSword && mc.thePlayer.getHeldItem() != null) {
             event.setCancelled(true);
             packets.add(packet);
+            Logger.addChatMessage("was not c09, blinking: " + packet.getClass().getName());
         }
     };
 
@@ -371,9 +377,9 @@ public class KillAura extends AbstractModule {
                 break;
             case WATCHDOG:
                 if(mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemSword && mc.thePlayer.getHeldItem() != null) {
-
                     mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
                     blocking = true;
+                    blinking = true;
                 }
                 break;
             case VERUS:
@@ -417,6 +423,7 @@ public class KillAura extends AbstractModule {
                 case WATCHDOG:
                     Logger.addChatMessage("passed check nigger");
                     mc.getNetHandler().addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+                    blinking = false;
                     releasePackets();
                     break;
                 case CONTROL:
