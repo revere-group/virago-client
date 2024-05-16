@@ -64,8 +64,8 @@ public class Speed extends AbstractModule {
                 }
                 if (mc.thePlayer.hurtTime < 9) {
                     if (mc.thePlayer.onGround) {
+                        offGroundTicks = 0;
                         if (!niggerjump) {
-                            offGroundTicks = 0;
                             niggerjump = true;
                             return;
                         }

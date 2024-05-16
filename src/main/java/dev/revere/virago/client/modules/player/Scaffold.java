@@ -163,7 +163,7 @@ public class Scaffold extends AbstractModule {
                     yCoordinateUpdated = false;
                 }
             } else {
-                if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                if (mc.gameSettings.keyBindJump.isKeyDown() && !fuckedUp) {
                     yCoordinate = mc.thePlayer.posY;
                     info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ));
                     yCoordinateUpdated = false;
@@ -172,7 +172,7 @@ public class Scaffold extends AbstractModule {
                     if (!yCoordinateUpdated)
                         yCoordinate = mc.thePlayer.posY - 1;
 
-                    if (mc.thePlayer.fallDistance > 0.8 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+                    if (mc.thePlayer.fallDistance > 0.8 && !fuckedUp && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
                         info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate, mc.thePlayer.posZ));
                         if (info.pos != null) this.placeBlock();
                         placeTimer.reset();
@@ -181,7 +181,7 @@ public class Scaffold extends AbstractModule {
                 }
             }
 
-            if (!mc.thePlayer.movementInput.jump && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+            if (!mc.thePlayer.movementInput.jump && !fuckedUp && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
                 info = this.getDiagonalBlockInfo(new BlockPos(mc.thePlayer.posX, yCoordinate - 1, mc.thePlayer.posZ));
                 if (info.pos != null) this.placeBlock();
             }
@@ -242,7 +242,7 @@ public class Scaffold extends AbstractModule {
             if (mode.getValue() != Mode.WATCHDOG_JUMP) {
                 yCoordinate = mc.thePlayer.posY;
             }
-            if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving() && !firstJump) {
+            if (mode.getValue() == Mode.WATCHDOG_JUMP && mc.thePlayer.isMoving() && !firstJump && !fuckedUpAndJumped && !fuckedUp) {
                 mc.thePlayer.jump();
             } else if (keepY.getValue() && autoJump.getValue() && mc.thePlayer.isMoving()) mc.thePlayer.jump();
         }
