@@ -1,7 +1,6 @@
 package dev.revere.virago.util.misc;
 
 public class TimerUtil {
-
     public long lastMS = System.currentTimeMillis();
 
     public void reset() {

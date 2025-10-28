@@ -33,7 +33,6 @@ public class CustomGuiMainMenu extends GuiScreen {
      */
     @Override
     public void initGui() {
-        Virago.getInstance().getDiscordRPC().update("Virago Client v" + Virago.getInstance().getVersion(), "discord.gg/virago");
         int centerX = width / 2;
         int centerY = height / 2;
 
@@ -71,7 +70,7 @@ public class CustomGuiMainMenu extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         //RenderUtils.drawImage(BACKGROUND_TEXTURE, 0, 0, width, height);
         GlStateManager.disableCull();
-        this.backgroundShader.useShader(this.width * 2, this.height * 2, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getDiscordRPC().getCreated()) / 1000f);
+        this.backgroundShader.useShader(this.width * 2, this.height * 2, mouseX, mouseY, (System.currentTimeMillis() - Virago.getInstance().getStarted()) / 1000f);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(-1f, -1f);
         GL11.glVertex2f(-1f, 1f);

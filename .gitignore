@@ -44,3 +44,6 @@ bin/
 ## Gradle MCP ##
 run
 run/*
+
+.idea
+workspace

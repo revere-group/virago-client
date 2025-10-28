@@ -129,10 +129,6 @@ public class KillAura extends AbstractModule {
         if (Virago.getInstance().getServiceManager().getService(ModuleService.class).getModule(Scaffold.class).isEnabled())
             return;
 
-        if (SocketClient.jwt == null && (!(mc.currentScreen instanceof GuiLicenceKey))) {
-            System.exit(0);
-        }
-
         this.target = this.getSingleTarget();
 
         if (blockMode.getValue() == BlockMode.FAKE)
@@ -303,7 +299,7 @@ public class KillAura extends AbstractModule {
 
         mc.thePlayer.swingItem();
         mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.ATTACK));
-        mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.INTERACT));
+        //mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(e, C02PacketUseEntity.Action.INTERACT));
         preAutoblock();
     }
 

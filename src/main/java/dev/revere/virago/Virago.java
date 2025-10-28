@@ -2,18 +2,17 @@ package dev.revere.virago;
 
 import dev.revere.virago.api.event.core.EventBus;
 import dev.revere.virago.api.network.packet.client.C2SUpdate;
+import dev.revere.virago.api.network.socket.SocketClient;
+import dev.revere.virago.api.network.socket.SocketHelper;
 import dev.revere.virago.api.protection.ViragoUser;
 import dev.revere.virago.api.service.IService;
 import dev.revere.virago.api.service.ServiceManager;
-import dev.revere.virago.api.network.socket.SocketClient;
-import dev.revere.virago.api.network.socket.SocketHelper;
-import dev.revere.virago.client.gui.panel.PanelGUI;
-import dev.revere.virago.client.modules.render.ClickGUI;
 import dev.revere.virago.client.gui.newgui.IngameMenu;
 import dev.revere.virago.client.gui.newgui.framework.Menu;
+import dev.revere.virago.client.gui.panel.PanelGUI;
+import dev.revere.virago.client.modules.render.ClickGUI;
 import dev.revere.virago.client.services.*;
 import dev.revere.virago.util.Logger;
-import dev.revere.virago.util.misc.DiscordRPC;
 import dev.revere.virago.util.input.KeybindManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +35,8 @@ import static dev.revere.virago.api.network.socket.SocketHelper.createSocketConn
 @Getter
 @Setter
 public class Virago {
-    @Getter private static final Virago instance = new Virago();
+    @Getter
+    private static final Virago instance = new Virago();
 
     private final String name = "Virago";
     private final String version = "1.0.0";
@@ -46,20 +46,20 @@ public class Virago {
 
     private ServiceManager serviceManager;
     private ViragoUser viragoUser;
-    private DiscordRPC discordRPC;
     private Menu menu;
     private IngameMenu menuImpl;
     private PanelGUI panelGUI;
     private EventBus eventBus;
 
+    public long started = 0L;
+
     /**
      * Starts all services and registers all events
      */
     public void startVirago() {
-        Logger.info("Starting Virago...", getClass());
-        this.discordRPC = new DiscordRPC();
-        this.discordRPC.start();
+        this.started = System.currentTimeMillis();
 
+        Logger.info("Starting Virago...", getClass());
         if (!clientDir.exists() && clientDir.mkdir())
             Logger.info("Created client directory.", getClass());
 
@@ -68,7 +68,7 @@ public class Virago {
         handleManagers();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if(SocketClient.jwt != null) {
+            if (SocketClient.jwt != null) {
                 createSocketConnection(URI.create(getURL("/auth/logout")), new SocketHelper.WebSocketHandler() {
                     @Override
                     public void onOpen(ServerHandshake serverHandshake) {
@@ -84,7 +84,6 @@ public class Virago {
      */
     public void stopVirago() {
         Logger.info("Stopping Virago...", getClass());
-        this.discordRPC.shutdown();
         this.serviceManager.getServices().values().forEach(IService::stopService);
         this.serviceManager.getServices().values().forEach(IService::destroyService);
     }
@@ -104,7 +103,6 @@ public class Virago {
     private void handleEvents() {
         this.eventBus = new EventBus();
         this.eventBus.register(new KeybindManager());
-        this.eventBus.register(new DiscordRPC());
     }
 
     /**

@@ -59,7 +59,7 @@ public class BedwarsHUD extends AbstractModule {
         fontRenderer.drawStringWithShadow("Trap: " + getTrap(), draggable.getX() + 8, draggable.getY() + 18, -1);
 
         font.getIcon10().drawString("a", draggable.getX() + 2, draggable.getY() + 31, -1);
-        fontRenderer.drawStringWithShadow("Sharpness: " + this.sharp, draggable.getX() + 8, draggable.getY() + 27, -1);
+        fontRenderer.drawStringWithShadow("Sharpness: " + (this.sharp ? "Yes" : "None"), draggable.getX() + 8, draggable.getY() + 27, -1);
 
         font.getIcon10().drawString("v", draggable.getX() + 2, draggable.getY() + 40, -1);
         fontRenderer.drawStringWithShadow("Protection: " + this.prot, draggable.getX() + 8, draggable.getY() + 36, -1);
@@ -78,7 +78,7 @@ public class BedwarsHUD extends AbstractModule {
         fontRenderer.drawStringWithShadow("Trap: " + getTrap(), draggable.getX() + 8, draggable.getY() + 18, -1);
 
         font.getIcon10().drawString("a", draggable.getX() + 2, draggable.getY() + 31, -1);
-        fontRenderer.drawStringWithShadow("Sharpness: " + this.sharp, draggable.getX() + 8, draggable.getY() + 27, -1);
+        fontRenderer.drawStringWithShadow("Sharpness: " + (this.sharp ? "Yes" : "None   "), draggable.getX() + 8, draggable.getY() + 27, -1);
 
         font.getIcon10().drawString("v", draggable.getX() + 2, draggable.getY() + 40, -1);
         fontRenderer.drawStringWithShadow("Protection: " + this.prot, draggable.getX() + 8, draggable.getY() + 36, -1);
